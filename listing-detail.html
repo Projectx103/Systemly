@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Listing Details — Systemly</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    /* (Your design variables & styles — kept from your requested palette) */
+    :root{
+      --primary:#F97316;
+      --secondary:#6366F1;
+      --accent:#14B8A6;
+      --bg:#FFF7ED;
+      --text:#1F2937;
+      --white:#FFFFFF;
+      --gray-light:#F3F4F6;
+      --gray-medium:#9CA3AF;
+      --gray-dark:#4B5563;
+      --success:#10B981;
+      --error:#EF4444;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;font-size:16px;}
+    
+    nav{position:sticky;top:0;background:rgba(255,247,237,0.85);backdrop-filter:blur(10px);padding:1rem 5%;box-shadow:var(--shadow-md);z-index:50}
+    .nav-container{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:'Archivo',sans-serif;font-weight:900;font-size:1.75rem;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    
+    .back-btn{background:var(--white);padding:.6rem 1.2rem;border-radius:999px;border:1px solid var(--gray-light);text-decoration:none;color:var(--text);font-weight:600;transition:all 0.2s;}
+    .back-btn:hover{background:var(--gray-light);border-color:var(--gray-medium);}
+    .back-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+
+    .loading-container{min-height:56vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
+    .spinner {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    animation: rotate 1s linear infinite;
+}
+
+.spinner::before,
+.spinner::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+}
+
+.spinner::before {
+    width: 100%;
+    height: 100%;
+    border: 6px solid var(--gray-light);
+}
+
+.spinner::after {
+    width: 100%;
+    height: 100%;
+    border: 6px solid transparent;
+    border-top-color: var(--primary);
+    border-right-color: var(--secondary);
+    animation: rotate 0.8s ease-in-out infinite;
+}
+
+@keyframes rotate {
+    to { transform: rotate(360deg); }
+}
+
+    .detail-container{max-width:1400px;margin:2.5rem auto;padding:0 5%;display:none}
+    .detail-container.active{display:block}
+    .breadcrumb{color:var(--gray-medium);font-size:.85rem;margin-bottom:1.25rem;display:flex;gap:.5rem;align-items:center}
+    .breadcrumb a{color:var(--gray-medium);text-decoration:none}
+    .breadcrumb a:hover{color:var(--text)}
+    .detail-grid{display:grid;grid-template-columns:1fr 380px;gap:2rem}
+    .main-content{display:flex;flex-direction:column;gap:1.5rem} 
+
+    /* image gallery */
+.image-gallery{background:var(--white);border-radius:1rem;overflow:hidden;box-shadow:var(--shadow-lg)}
+
+.main-image-container{
+    height:480px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    cursor: zoom-in;
+}
+
+/* Blurred background for main image */
+.main-image-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    filter: blur(20px);
+    transform: scale(1.1);
+    z-index: 0;
+}
+
+.main-image{
+    position: relative;
+    z-index: 1;
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+    display:block;
+    transition: transform 0.3s ease;
+}
+
+.main-image:hover {
+    transform: scale(1.02);
+}
+
+.image-placeholder{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:4rem;
+    opacity:.15;
+    z-index: 1;
+}
+
+.image-thumbnails{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+    gap:.75rem;
+    padding:1rem;
+    background:var(--white);
+}
+
+.thumbnail{
+    border-radius:8px;
+    overflow:hidden;
+    cursor:pointer;
+    border:3px solid transparent;
+    transition:all 0.2s;
+    height: 100px; /* Fixed height for consistent display */
+}
+
+.thumbnail:hover{
+    border-color:var(--gray-medium);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.thumbnail img{
+    width:100%;
+    height:100%;
+    object-fit:cover; /* Changed to cover for better thumbnail display */
+    display:block;
+}
+
+.thumbnail.active{
+    border-color:var(--primary);
+    box-shadow: 0 0 0 1px var(--primary);
+}
+
+.thumbnail.active:hover{
+    border-color:var(--primary);
+}
+
+/* Image zoom modal */
+.image-zoom-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+}
+
+.image-zoom-modal.active {
+    display: flex;
+}
+
+.image-zoom-modal img {
+    max-width: 95%;
+    max-height: 95%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.zoom-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+    z-index: 10000;
+}
+
+
+
+
+
+
+
+    /* header */
+    .listing-header{background:var(--white);border-radius:1rem;padding:1.5rem 2rem;box-shadow:var(--shadow-md)}
+    .listing-title{font-family:'Archivo',sans-serif;font-size:2.25rem;font-weight:900;margin-bottom:.5rem;line-height:1.2;}
+    .listing-category-badge{display:inline-block;background:rgba(249,115,22,0.1);color:var(--primary);padding:.3rem 1rem;border-radius:999px;font-weight:700;font-size:.875rem}
+    .listing-meta{display:flex;gap:1.5rem;color:var(--gray-medium);margin-top:.8rem;font-size:.9rem;flex-wrap:wrap;border-top:1px solid var(--gray-light);padding-top:1rem;}
+    
+    #statusBadge{
+        font-family:'Archivo',sans-serif;
+        font-weight:900;
+        color:var(--success);
+        text-transform:uppercase;
+        font-size:1rem;
+    }
+
+    /* large description & sections */
+    .section{background:var(--white);padding:1.75rem;border-radius:1rem;box-shadow:var(--shadow-md);line-height:1.6;}
+    /* Adjusted H2 styling to accommodate Font Awesome icons */
+    .section h2{
+        font-family:'Archivo',sans-serif;
+        font-size:1.5rem;
+        font-weight:700;
+        margin-bottom:1rem;
+        border-bottom:2px solid var(--gray-light);
+        padding-bottom:.5rem;
+        display:flex; /* Enable flex for icon alignment */
+        align-items:center;
+    }
+    /* Style for Font Awesome icons in H2 */
+    .section h2 i{
+        margin-right:.75rem;
+        color:var(--secondary);
+        font-size: 1.25em; /* Bigger icon */
+    }
+
+
+.seller-plan-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.seller-plan-badge.premium-seller {
+    background: linear-gradient(45deg, #A67C00, #FFDF8B, #EDCA66, #F0E7BF, #A67C00);
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+    color: #1A1A1A;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.seller-plan-badge.basic-seller {
+    background: linear-gradient(45deg, #6EC8FF, #FFFFFF, #A9DFFF, #FFFFFF, #6EC8FF);
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+    color: #1A1A1A;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.seller-plan-badge.free-seller {
+    background: linear-gradient(45deg, #828282, #E5E5E5, #BABABA, #EFEFEF, #828282);
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+    color: #1A1A1A;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+
+
+
+
+
+    .section h3{font-size:1.15rem;margin-top:1rem;margin-bottom:.5rem;font-weight:600;}
+    .section p, .section div{color:var(--gray-dark);}
+
+    .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;}
+    .metric-card{background:var(--gray-light);padding:1rem;border-radius:10px;border-left:4px solid var(--primary);}
+    .metric-label{font-size:.85rem;color:var(--gray-dark);margin-bottom:.3rem;}
+    .metric-value{font-weight:900;font-family:'Archivo',sans-serif;font-size:1.5rem;color:var(--text);}
+    
+    .detail-item{padding:.6rem 0;border-bottom:1px dashed var(--gray-light);}
+    .detail-item:last-child{border-bottom:none;}
+    .detail-label{font-size:.85rem;color:var(--gray-medium);}
+    .detail-value{font-weight:600;color:var(--text);margin-top:.1rem;}
+
+    /* sidebar */
+    .sidebar{position:sticky;top:100px;display:flex;flex-direction:column;gap:1.5rem}
+    .price-card{background:var(--white);padding:1.75rem;border-radius:1rem;box-shadow:var(--shadow-lg);border:1px solid var(--gray-light);text-align:center;}
+    .price-label{font-size:1rem;color:var(--gray-dark);font-weight:600;}
+    .price-amount{font-family:'Archivo',sans-serif;font-weight:900;font-size:2.8rem;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-top:.2rem;margin-bottom:.3rem;}
+    .price-subtitle{color:var(--gray-medium);font-size:.9rem;}
+    
+    .price-breakdown{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--gray-light);display:flex;flex-direction:column;gap:.5rem;font-size:.9rem;color:var(--gray-dark);}
+    .price-breakdown > div{display:flex;justify-content:space-between;}
+    .breakdown-value{font-weight:600;}
+
+    .cta-button{display:block;width:100%;padding:1rem;border-radius:10px;border:none;background:linear-gradient(135deg,var(--primary),var(--secondary));color:var(--white);font-weight:800;cursor:pointer;margin-top:1rem;font-size:1.1rem;transition:all 0.2s;}
+    .cta-button:hover{opacity:.95;box-shadow:var(--shadow-md);}
+    .cta-button:focus-visible{outline:4px solid rgba(99, 102, 241, 0.5);outline-offset:2px;}
+    .cta-button.secondary{background:var(--white);color:var(--primary);border:2px solid var(--primary);margin-top:.75rem;}
+    .cta-button.secondary:hover{background:var(--bg);box-shadow:var(--shadow-sm);}
+    .cta-button.secondary:focus-visible{outline:4px solid rgba(249, 115, 22, 0.5);outline-offset:2px;}
+
+    .seller-card{background:var(--white);padding:1.5rem;border-radius:1rem;box-shadow:var(--shadow-md);border-left:4px solid var(--accent);}
+    .seller-card h3{font-family:'Archivo',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:1rem;}
+    .seller-info-content{display:flex;gap:.8rem;align-items:center;}
+    .seller-avatar{width:64px;height:64px;border-radius:50%;border:4px solid var(--accent);object-fit:cover;flex-shrink:0;}
+    .seller-details h4{font-weight:700;font-size:1.1rem;margin-bottom:.1rem;}
+    .seller-details p{font-size:.9rem;line-height:1.3;}
+    
+    .trust-badges{padding:1.5rem;background:var(--white);border-radius:1rem;box-shadow:var(--shadow-sm);border:1px solid var(--gray-light);}
+    .trust-badges h3{font-family:'Archivo',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.8rem;}
+    .trust-badge-item{display:flex;align-items:center;gap:.75rem;padding:.5rem 0;color:var(--gray-dark);font-size:.95rem;}
+    /* Updated checkmark icon styling */
+    .trust-badge-item i{color:var(--success);font-size:1.1rem;}
+    
+    .included-list-grid{display:grid;grid-template-columns:1fr;gap:.5rem;}
+    .included-item{display:flex;gap:.75rem;padding:.8rem;background:var(--gray-light);border-radius:10px;align-items:center;font-size:.95rem;}
+    /* Updated included item icon styling */
+    .included-item i{font-size:1.2rem;color:var(--secondary);}
+
+    footer{background:var(--text);color:var(--white);padding:2.5rem 5%;margin-top:3rem;text-align:center}
+    .footer-container{max-width:1400px;margin:0 auto;}
+    .footer-container a{color:inherit;text-decoration:none;transition:color 0.2s;}
+    .footer-container a:hover{color:var(--primary);}
+    .similar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-top:1.5rem}
+    
+    .similar-card{background:var(--white);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.2s, transform 0.2s;cursor:pointer;border:1px solid var(--gray-light);}
+    .similar-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+    
+    .modal-content{background:var(--white);padding:1.75rem;border-radius:1rem;max-width:520px;width:92%;position:relative;box-shadow:var(--shadow-lg);border:1px solid var(--gray-light);}
+    .modal-content h3{font-family:'Archivo',sans-serif;font-size:1.5rem;margin-bottom:.5rem;}
+    #closeModal{position:absolute;right:1rem;top:1rem;border:none;background:transparent;font-size:24px;cursor:pointer;color:var(--gray-dark);}
+    #messageText{width:100%;min-height:140px;padding:.8rem;border:1px solid var(--gray-medium);border-radius:8px;margin-top:.8rem;resize:vertical;}
+
+    @media(max-width:1024px){.detail-grid{grid-template-columns:1fr}.sidebar{position:static;margin-top:1rem;}}
+    @media(max-width:640px){.main-image-container{height:280px}.listing-title{font-size:1.8rem}.detail-grid{gap:1rem;}}
+  </style>
+</head>
+<body>
+  <nav role="navigation">
+    <div class="nav-container">
+      <a class="logo" href="index.html">Systemly</a>
+      <a class="back-btn" href="marketplace.html" aria-label="Back to Marketplace">Back to Marketplace</a>
+    </div>
+  </nav>
+
+  <div class="loading-container" id="loadingContainer">
+  <div class="spinner" role="status" aria-live="polite" aria-label="Loading content"></div>
+  <div id="loadingMessage" style="margin-top: 1.5rem; font-size: 1.1rem; color: var(--gray-dark); font-weight: 500;">
+    Loading listing details...
+  </div>
+</div>
+
+  <main class="detail-container" id="detailContainer" role="main" aria-live="polite">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> / <a href="marketplace.html">Marketplace</a> / <span id="breadcrumbTitle">Loading...</span>
+    </div>
+
+    <div class="detail-grid">
+      <div class="main-content">
+        <section class="image-gallery" aria-label="Listing Image Gallery">
+          <div class="main-image-container">
+            <img id="mainImage" class="main-image" alt="Listing main image, currently selected" style="display:none">
+            <div id="imagePlaceholder" class="image-placeholder" aria-hidden="true">🖼️</div>
+          </div>
+          <div class="image-thumbnails" id="imageThumbnails" role="list"></div>
+        </section>
+
+        <header class="listing-header">
+          <div class="listing-category-badge" id="categoryBadge">Loading...</div>
+          <h1 class="listing-title" id="listingTitle">Loading…</h1>
+          <div class="listing-meta">
+            <div><i class="fa-solid fa-calendar-alt" aria-hidden="true"></i> Listed: <span id="listingDate">Loading…</span></div>
+            <div><i class="fa-solid fa-eye" aria-hidden="true"></i> Views: <span id="listingViews">0</span></div>
+            <div><i class="fa-solid fa-tag" aria-hidden="true"></i> ID: <span id="listingId">—</span></div>
+            <div style="margin-left:auto;"><span id="statusBadge" style="font-weight:700"></span></div>
+          </div>
+        </header>
+
+        <section class="section" id="descriptionBlock">
+          <h2><i class="fa-solid fa-file-lines" aria-hidden="true"></i> Overview</h2>
+          <h3>Short Summary</h3>
+          <p id="shortDescription">Loading…</p>
+          <h3 style="margin-top:.6rem">Detailed Description</h3>
+          <div id="detailedDescription" style="white-space:pre-wrap;color:var(--gray-dark)"></div>
+        </section>
+
+       <section class="section key-metrics" aria-label="Key financial and traffic metrics">
+  <h2><i class="fa-solid fa-chart-bar" aria-hidden="true"></i> Key Metrics</h2>
+  <div class="metrics-grid" style="margin-top:.6rem">
+    <div class="metric-card">
+      <div class="metric-label">Monthly Revenue</div>
+      <div class="metric-value" id="metricRevenue">$0</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Monthly Profit</div>
+      <div class="metric-value" id="metricProfit">$0</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">System Age</div>
+      <div class="metric-value" id="metricAge">N/A</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Support Period</div>
+      <div class="metric-value" id="metricSupport">N/A</div>
+    </div>
+  </div>
+</section>
+        
+        <section class="section" id="highlightsSection">
+          <h2><i class="fa-solid fa-star" aria-hidden="true"></i> Key Highlights</h2>
+          <div id="keyHighlights">Loading…</div>
+        </section>
+
+        <section class="section" id="operationsSection">
+          <h2><i class="fa-solid fa-cogs" aria-hidden="true"></i> Operations & Handover</h2>
+          <div id="operations">Loading…</div>
+        </section>
+
+        <section class="section" id="customersSection">
+          <h2><i class="fa-solid fa-users" aria-hidden="true"></i> Customer Profile</h2>
+          <div id="customers">Loading…</div>
+        </section>
+
+        <section class="section" id="financialsSection">
+          <h2><i class="fa-solid fa-dollar-sign" aria-hidden="true"></i> Financials Summary</h2>
+          <div id="financials">Loading…</div>
+        </section>
+        
+        <section class="section whats-included">
+          <h2><i class="fa-solid fa-box-open" aria-hidden="true"></i> What's Included</h2>
+          <div id="includedList" class="included-list-grid"></div>
+        </section>
+
+        <section class="section additional-details">
+  <h2><i class="fa-solid fa-laptop-code" aria-hidden="true"></i> Technical & Business Details</h2>
+  <div class="detail-grid-2col" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.6rem;margin-top:.6rem">
+    <!-- Category-specific fields will be populated here dynamically -->
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value" id="detailCategory">—</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Business Type</div>
+      <div class="detail-value" id="detailBusinessType">—</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Platform/CMS</div>
+      <div class="detail-value" id="detailPlatform">—</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Tech Stack</div>
+      <div class="detail-value" id="detailStack">—</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Domain</div>
+      <div class="detail-value" id="detailDomain">—</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Monthly Visitors</div>
+      <div class="detail-value" id="detailVisitors">—</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Active Users/Subscribers</div>
+      <div class="detail-value" id="detailActiveUsers">—</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">System Age</div>
+      <div class="detail-value" id="detailSystemAge">—</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Reason for Selling</div>
+      <div class="detail-value" id="detailReasonSelling">—</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Support Period</div>
+      <div class="detail-value" id="detailSupportPeriod">—</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Created On</div>
+      <div class="detail-value" id="detailCreated">—</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Last Updated</div>
+      <div class="detail-value" id="detailUpdated">—</div>
+    </div>
+  </div>
+</section>
+
+        <section class="section" id="additionalNotesSection">
+          <h2><i class="fa-solid fa-clipboard-list" aria-hidden="true"></i> Additional Notes</h2>
+          <div id="additionalNotes">Loading…</div>
+        </section>
+      </div>
+
+      <aside class="sidebar">
+        <section class="price-card" aria-label="Pricing and Purchase Options">
+          <div class="price-label">Asking Price</div>
+          <div class="price-amount" id="priceAmount">$0</div>
+          <div class="price-subtitle" id="priceSubtitle">One-time purchase, Negotiable</div>
+
+          <div class="price-breakdown">
+            <div title="Asking Price divided by Annual Profit">
+                <div class="breakdown-label">Profit Multiple (x)</div>
+                <div id="priceProfitMultiple" class="breakdown-value">N/A</div>
+            </div>
+            <div title="Asking Price divided by Annual Revenue">
+                <div class="breakdown-label">Revenue Multiple (x)</div>
+                <div id="priceRevenueMultiple" class="breakdown-value">N/A</div>
+            </div>
+            <div>
+                <div class="breakdown-label">Est. Profit Margin</div>
+                <div id="priceMargin" class="breakdown-value">N/A</div>
+            </div>
+          </div>
+
+          <button id="buyNowBtn" class="cta-button" aria-label="Buy Now">
+            Make Offer
+          </button>
+          <button id="contactBtn" class="cta-button secondary" aria-label="Contact Seller">
+            Message Seller
+          </button>
+        </section>
+
+        <section class="seller-card" aria-label="Seller Information">
+          <h3><i class="fa-solid fa-user-tie" aria-hidden="true"></i> Seller Information</h3>
+          <div class="seller-info-content">
+            <img src="https://i.pravatar.cc/100" alt="Seller profile avatar" class="seller-avatar" id="sellerAvatar">
+            <div class="seller-details">
+              <h4 id="sellerName">Loading…</h4>
+              <p id="sellerEmail" style="color:var(--gray-medium)">Contact via form</p>
+              <p id="sellerRole" style="font-weight:700; color:var(--accent)">Verified Marketplace Seller</p>
+            </div>
+          </div>
+        </section>
+        
+        <section class="trust-badges" aria-label="Platform Security and Trust Features">
+  <h3><i class="fa-solid fa-shield-alt" aria-hidden="true"></i> Trust & Security</h3>
+  <div class="trust-badge-items">
+    <div class="trust-badge-item"><i class="fa-solid fa-check" aria-hidden="true"></i> PayMongo Secure Payments</div>
+    <div class="trust-badge-item"><i class="fa-solid fa-check" aria-hidden="true"></i> Verified Seller Profiles</div>
+    <div class="trust-badge-item"><i class="fa-solid fa-check" aria-hidden="true"></i> Transaction Protection</div>
+    <div class="trust-badge-item"><i class="fa-solid fa-check" aria-hidden="true"></i> Post-Sale Support & Handover</div>
+  </div>
+</section>
+      </aside>
+    </div>
+  </main>
+
+  <section class="similar-listings" style="max-width:1400px;margin:0 auto;padding:0 5%;margin-top:2.5rem" aria-label="Similar Listings">
+    <h2>Similar Listings</h2>
+    <div id="similarGrid" class="similar-grid"></div>
+  </section>
+
+
+  <footer role="contentinfo">
+    <div class="footer-container">
+      <div style="margin-bottom:.8rem">
+        <a style="margin-right:1rem" href="#">Privacy Policy</a>
+        <a style="margin-right:1rem" href="#">Terms & Conditions</a>
+        <a style="margin-right:1rem" href="#">Support Center</a>
+      </div>
+      <small>© 2025 Systemly Marketplace. All rights reserved.</small>
+    </div>
+  </footer>
+
+  <div id="contactModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);align-items:center;justify-content:center;z-index:2000">
+    <div class="modal-content">
+      <button id="closeModal" aria-label="Close message form">✕</button>
+      <h3 id="contactModalTitle">Contact Seller</h3>
+      <p id="contactSellerIntro" style="color:var(--gray-dark)">Your message will be securely forwarded to the seller's email address.</p>
+      <textarea id="messageText" placeholder="Write your message here... Include your name, contact info, and any specific questions you have." aria-label="Message content"></textarea>
+      <div style="display:flex;gap:.75rem;margin-top:.8rem;justify-content:flex-end;">
+        <button id="closeModalBtn" class="cta-button secondary" style="width:auto;flex:1" aria-label="Cancel and close">Cancel</button>
+        <button id="sendMessageBtn" class="cta-button" style="width:auto;flex:1">Send Message</button>
+      </div>
+    </div>
+  </div>
+
+
+<!-- Image Zoom Modal -->
+<div id="imageZoomModal" class="image-zoom-modal">
+    <span class="zoom-close" onclick="closeImageZoom()">×</span>
+    <img id="zoomedImage" alt="Zoomed listing image">
+</div>
+
+
+
+
+
+
+
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { 
+  getFirestore, 
+  doc, 
+  getDoc, 
+  updateDoc, 
+  collection, 
+  query, 
+  where, 
+  limit, 
+  getDocs, 
+  increment 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD3PQ5oWrzAXOHnb7wrmpRhL9DWIB7w9rE",
+    authDomain: "systemly-db.firebaseapp.com",
+    projectId: "systemly-db",
+    storageBucket: "systemly-db.firebasestorage.app",
+    messagingSenderId: "32599486733",
+    appId: "1:32599486733:web:16d34643c8f920a6fd8044"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+
+    // ---------- utilities ----------
+    const getEl = (id) => document.getElementById(id) || null;
+    const safeSetText = (id, text) => { const el = getEl(id); if (el) el.textContent = text; };
+    const safeSetHTML = (id, html) => { const el = getEl(id); if (el) el.innerHTML = html; };
+
+    function formatTimestamp(ts) {
+      if (!ts) return "N/A";
+      if (typeof ts.toDate === "function") {
+        const d = ts.toDate();
+        return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      }
+      try { return new Date(ts).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); } catch { return String(ts); }
+    }
+
+    function toNumber(value) {
+      if (value === undefined || value === null) return 0;
+      const n = parseFloat(String(value).replace(/[^\d.-]/g, ""));
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function calcMultiples(price, monthlyRevenue, monthlyProfit) {
+        const p = toNumber(price);
+        const r = toNumber(monthlyRevenue) * 12; // Annualize revenue
+        const pr = toNumber(monthlyProfit) * 12; // Annualize profit
+
+        const profitMultiple = (!p || !pr) ? "N/A" : (p / pr).toFixed(1) + "x";
+        const revenueMultiple = (!p || !r) ? "N/A" : (p / r).toFixed(1) + "x";
+
+        return { profitMultiple, revenueMultiple };
+    }
+
+    // ---------- get listing id ----------
+    let listingId = new URLSearchParams(window.location.search).get("id");
+    if (!listingId) listingId = sessionStorage.getItem("selectedListingId");
+
+    const loadingContainer = getEl("loadingContainer");
+    const detailContainer = getEl("detailContainer");
+
+
+
+
+
+
+
+
+
+
+// Format category name
+function formatCategoryName(category) {
+  const categoryMap = {
+    'content': 'Content Site',
+    'saas': 'SaaS Business',
+    'ecommerce': 'Ecommerce',
+    'mobile-app': 'Mobile App',
+    'social-media': 'Social Media & Content',
+    'marketplace': 'Digital Marketplace',
+    'amazon-store': 'Amazon Store',
+    'plugins': 'Plugins & Extensions',
+    'agencies': 'Digital Agency',
+    'service': 'Service Business',
+    'ai-tools': 'AI Apps & Tools',
+    'gaming': 'Gaming',
+    'crypto': 'Crypto & Blockchain',
+    'domain': 'Domain',
+    'projects': 'Projects & Concepts'
+  };
+  return categoryMap[category] || category || "Uncategorized";
+}
+
+// Format system age
+function formatSystemAge(age) {
+  const ageMap = {
+    '0-6': 'Less than 6 months',
+    '6-12': '6-12 months',
+    '1-2': '1-2 years',
+    '2-5': '2-5 years',
+    '5+': '5+ years'
+  };
+  return ageMap[age] || age || "N/A";
+}
+
+// Format support period
+function formatSupportPeriod(period) {
+  const periodMap = {
+    'none': 'No support',
+    '1week': '1 week',
+    '2weeks': '2 weeks',
+    '1month': '1 month',
+    '3months': '3 months'
+  };
+  return periodMap[period] || period || "N/A";
+}
+
+// Format reason for selling
+function formatReason(reason) {
+  const reasonMap = {
+    'new-venture': 'Starting new venture',
+    'focus': 'Want to focus on other projects',
+    'time': 'No time to manage',
+    'retirement': 'Retirement',
+    'other': 'Other'
+  };
+  return reasonMap[reason] || reason || "N/A";
+}
+
+// Populate category-specific fields
+function populateCategorySpecificFields(data) {
+  // SaaS specific
+  if (data.category === 'saas') {
+    safeSetText("detailBusinessType", data.saasType || "N/A");
+    safeSetText("detailActiveUsers", `${toNumber(data.activeSubscribers).toLocaleString()} subscribers`);
+    if (data.mrr) safeSetText("metricRevenue", `₱${toNumber(data.mrr).toLocaleString()} MRR`);
+    if (data.churnRate) {
+      const churnEl = document.createElement("div");
+      churnEl.className = "detail-item";
+      churnEl.innerHTML = `<div class="detail-label">Churn Rate</div><div class="detail-value">${data.churnRate}%</div>`;
+      document.querySelector(".detail-grid-2col")?.appendChild(churnEl);
+    }
+  }
+  
+  // Ecommerce specific
+  if (data.category === 'ecommerce') {
+    safeSetText("detailBusinessType", data.ecommerceType || "N/A");
+    if (data.productCount) safeSetText("detailActiveUsers", `${toNumber(data.productCount).toLocaleString()} products`);
+    if (data.orderVolume) {
+      const ordersEl = document.createElement("div");
+      ordersEl.className = "detail-item";
+      ordersEl.innerHTML = `<div class="detail-label">Monthly Orders</div><div class="detail-value">${toNumber(data.orderVolume).toLocaleString()}</div>`;
+      document.querySelector(".detail-grid-2col")?.appendChild(ordersEl);
+    }
+  }
+
+  // Content Site specific
+  if (data.category === 'content') {
+    safeSetText("detailBusinessType", data.contentType || "N/A");
+    safeSetText("detailVisitors", data.monthlyVisitors ? `${toNumber(data.monthlyVisitors).toLocaleString()}` : "N/A");
+    safeSetText("detailPlatform", data.contentManagementSystem || "N/A");
+  }
+
+  // Mobile App specific
+  if (data.category === 'mobile-app') {
+    safeSetText("detailBusinessType", data.appPlatform || "N/A");
+    safeSetText("detailPlatform", data.techStack || "N/A");
+    if (data.downloads) {
+      const downloadsEl = document.createElement("div");
+      downloadsEl.className = "detail-item";
+      downloadsEl.innerHTML = `<div class="detail-label">Total Downloads</div><div class="detail-value">${toNumber(data.downloads).toLocaleString()}</div>`;
+      document.querySelector(".detail-grid-2col")?.appendChild(downloadsEl);
+    }
+    safeSetText("detailActiveUsers", data.activeUsers ? `${toNumber(data.activeUsers).toLocaleString()}` : "N/A");
+  }
+
+  // Social Media specific
+  if (data.category === 'social-media') {
+    safeSetText("detailBusinessType", data.platformType || "N/A");
+    if (data.followers) {
+      const followersEl = document.createElement("div");
+      followersEl.className = "detail-item";
+      followersEl.innerHTML = `<div class="detail-label">Followers/Subscribers</div><div class="detail-value">${toNumber(data.followers).toLocaleString()}</div>`;
+      document.querySelector(".detail-grid-2col")?.appendChild(followersEl);
+    }
+    safeSetText("detailVisitors", data.monthlyViews ? `${toNumber(data.monthlyViews).toLocaleString()} views` : "N/A");
+  }
+
+  // Add more category-specific handling as needed...
+}
+
+// Populate included list
+function populateIncludedList(data) {
+  const includedListEl = getEl("includedList");
+  if (!includedListEl) return;
+
+  includedListEl.innerHTML = "";
+  const includedItems = [];
+
+  // Parse whatsIncluded field
+  if (data.whatsIncluded) {
+    data.whatsIncluded.split('\n').filter(s => s.trim()).forEach(item => includedItems.push(item));
+  }
+
+  // Icon mapping
+  const iconMap = {
+    'source code': 'fa-solid fa-code',
+    'code': 'fa-solid fa-code',
+    'repository': 'fa-brands fa-github',
+    'github': 'fa-brands fa-github',
+    'documentation': 'fa-solid fa-book-open',
+    'docs': 'fa-solid fa-book-open',
+    'domain': 'fa-solid fa-globe',
+    'website': 'fa-solid fa-globe',
+    'social': 'fa-solid fa-share-alt',
+    'accounts': 'fa-solid fa-users',
+    'customer': 'fa-solid fa-user-friends',
+    'database': 'fa-solid fa-database',
+    'training': 'fa-solid fa-chalkboard-teacher',
+    'support': 'fa-solid fa-headset',
+    'brand': 'fa-solid fa-certificate',
+    'logo': 'fa-solid fa-palette'
+  };
+
+  if (includedItems.length) {
+    includedItems.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "included-item";
+      
+      const lowerItem = item.toLowerCase();
+      let iconClass = 'fa-solid fa-check-circle';
+      
+      for (const [keyword, icon] of Object.entries(iconMap)) {
+        if (lowerItem.includes(keyword)) {
+          iconClass = icon;
+          break;
+        }
+      }
+      
+      div.innerHTML = `<i class="${iconClass}" aria-hidden="true"></i><div style="flex:1">${item}</div>`;
+      includedListEl.appendChild(div);
+    });
+  } else {
+    // Default items if none specified
+    includedListEl.innerHTML = `
+      <div class="included-item"><i class="fa-solid fa-check-circle"></i><div style="flex:1">Full transfer of all digital assets</div></div>
+      <div class="included-item"><i class="fa-solid fa-headset"></i><div style="flex:1">Post-sale transition support</div></div>
+    `;
+  }
+}
+
+// Setup image gallery
+
+
+
+
+
+// ============ NEW FUNCTIONS ============
+
+// Close image zoom modal
+window.closeImageZoom = function() {
+    const modal = document.getElementById('imageZoomModal');
+    if (modal) modal.classList.remove('active');
+};
+
+// Open image zoom modal
+function openImageZoom(imageSrc) {
+    const modal = document.getElementById('imageZoomModal');
+    const zoomedImage = document.getElementById('zoomedImage');
+    if (modal && zoomedImage) {
+        zoomedImage.src = imageSrc;
+        modal.classList.add('active');
+    }
+}
+
+// Enhanced setup image gallery with zoom and blur background
+function setupImageGallery(data) {
+  const thumbnails = getEl("imageThumbnails");
+  const mainImage = getEl("mainImage");
+  const placeholder = getEl("imagePlaceholder");
+  const mainImageContainer = document.querySelector('.main-image-container');
+  
+  if (thumbnails) thumbnails.innerHTML = "";
+
+  const images = Array.isArray(data.images) && data.images.length ? data.images : [];
+  
+  if (images.length) {
+    if (mainImage) { 
+      mainImage.src = images[0]; 
+      mainImage.style.display = "block"; 
+      mainImage.alt = `${data.systemName || "Listing"} main image`;
+      
+      // Set blur background
+      if (mainImageContainer) {
+        mainImageContainer.style.setProperty('--bg-image', `url(${images[0]})`);
+      }
+      
+      // Add click to zoom
+      mainImage.onclick = () => openImageZoom(images[0]);
+      mainImage.style.cursor = 'zoom-in';
+    }
+    if (placeholder) placeholder.style.display = "none";
+
+    images.forEach((img, idx) => {
+      if (!thumbnails) return;
+      const div = document.createElement("div");
+      div.className = "thumbnail" + (idx === 0 ? " active" : "");
+      div.setAttribute('role', 'button');
+      div.setAttribute('tabindex', '0');
+      div.innerHTML = `<img src="${img}" alt="${data.systemName || "Listing"} thumbnail ${idx+1}" loading="lazy" />`;
+      
+      const selectImage = () => {
+        document.querySelectorAll(".thumbnail").forEach(t => t.classList.remove("active"));
+        div.classList.add("active");
+        if (mainImage) {
+          mainImage.src = img;
+          mainImage.alt = `${data.systemName || "Listing"} image ${idx+1}`;
+          mainImage.onclick = () => openImageZoom(img);
+          
+          // Update blur background
+          if (mainImageContainer) {
+            mainImageContainer.style.setProperty('--bg-image', `url(${img})`);
+          }
+        }
+      };
+      
+      div.addEventListener("click", selectImage);
+      div.addEventListener("keypress", (e) => {
+        if (e.key === 'Enter' || e.key === ' ') selectImage();
+      });
+      
+      thumbnails.appendChild(div);
+    });
+  } else {
+    if (mainImage) mainImage.style.display = "none";
+    if (placeholder) placeholder.style.display = "flex";
+  }
+}
+
+// Hide empty sections
+function hideEmptySections(data) {
+    // Hide Key Highlights if empty
+    if (!data.keyHighlights || data.keyHighlights.trim() === '') {
+        const highlightsSection = document.getElementById('highlightsSection');
+        if (highlightsSection) highlightsSection.style.display = 'none';
+    }
+    
+    // Hide Operations if empty
+    if (!data.operations || data.operations.trim() === '') {
+        const operationsSection = document.getElementById('operationsSection');
+        if (operationsSection) operationsSection.style.display = 'none';
+    }
+    
+    // Hide Customer Profile if empty
+    if (!data.customers || data.customers.trim() === '') {
+        const customersSection = document.getElementById('customersSection');
+        if (customersSection) customersSection.style.display = 'none';
+    }
+    
+    // Hide Financials if empty
+    if (!data.financials || data.financials.trim() === '') {
+        const financialsSection = document.getElementById('financialsSection');
+        if (financialsSection) financialsSection.style.display = 'none';
+    }
+    
+    // Hide Additional Notes if empty
+    if (!data.additionalNotes || data.additionalNotes.trim() === '') {
+        const notesSection = document.getElementById('additionalNotesSection');
+        if (notesSection) notesSection.style.display = 'none';
+    }
+}
+
+
+
+
+// Increment views safely
+async function incrementViewCount(listingId) {
+  try {
+    const listingRef = doc(db, "listings", listingId);
+
+    // Use atomic increment — matches the Firestore rule perfectly
+    await updateDoc(listingRef, {
+      views: increment(1)
+    });
+
+    console.log("✅ View count incremented successfully");
+  } catch (error) {
+    console.error("❌ View count update failed:", error);
+  }
+}
+
+
+
+
+
+
+
+
+// Load seller plan badge
+async function loadSellerPlan(userId) {
+    try {
+        const userDocRef = doc(db, 'users', userId);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const plan = (userData.subscriptionPlan || 'free').toLowerCase();
+            
+            const sellerDetails = document.querySelector('.seller-details');
+            if (sellerDetails) {
+                // Remove existing badge if any
+                const existingBadge = sellerDetails.querySelector('.seller-plan-badge');
+                if (existingBadge) existingBadge.remove();
+                
+                // Add new badge
+                const badge = document.createElement('div');
+                badge.className = `seller-plan-badge ${plan}-seller`;
+                
+                if (plan === 'premium') {
+                    badge.innerHTML = '<span style="filter: grayscale(1) brightness(0);">⭐</span> Premium Seller';
+                } else if (plan === 'basic') {
+                    badge.innerHTML = '<span style="filter: grayscale(1) brightness(0);">💎</span> Basic Seller';
+                } else {
+                    badge.innerHTML = '<span style="filter: grayscale(1) brightness(0);">🔷</span> Free Seller';
+                }
+                
+                sellerDetails.appendChild(badge);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading seller plan:', error);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+    // ---------- load listing details ----------
+    async function loadListingDetails() {
+  if (!listingId) {
+    if (loadingContainer) loadingContainer.innerHTML = "<p>No listing selected. Please go back to the marketplace.</p>";
+    return;
+  }
+
+  safeSetText("loadingMessage", "Loading listing details...");
+
+  try {
+    const ref = doc(db, "listings", listingId);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      if (loadingContainer) loadingContainer.innerHTML = "<p>Listing not found or has been removed.</p>";
+      return;
+    }
+
+   // ✅ Increment view count properly
+try {
+  const snap = await getDoc(ref);
+  if (snap.exists()) {
+    const currentViews = snap.data().views || 0;
+    await updateDoc(ref, { views: currentViews + 1 });
+  }
+} catch (err) {
+  console.warn("View count update failed:", err);
+}
+
+
+    const data = snap.data();
+
+// Hide empty sections immediately
+hideEmptySections(data);
+
+// Load seller plan badge
+if (data.userId) {
+    loadSellerPlan(data.userId);
+}
+
+
+
+
+    // Basic fields
+    safeSetText("listingTitle", data.systemName || data.title || "Untitled System");
+    safeSetText("breadcrumbTitle", data.systemName || data.title || "Untitled");
+    safeSetText("categoryBadge", formatCategoryName(data.category || "uncategorized"));
+    safeSetText("listingId", listingId);
+    safeSetText("listingViews", `${toNumber(data.views).toLocaleString()}`);
+    
+    const status = (data.status || "available").toUpperCase();
+    const statusEl = getEl("statusBadge");
+    if (statusEl) {
+        statusEl.style.color = (status === "AVAILABLE" || status === "APPROVED") ? 'var(--success)' : (status === "PENDING" ? 'var(--secondary)' : 'var(--error)');
+        statusEl.textContent = status;
+    }
+
+    // Dates
+    safeSetText("detailCreated", formatTimestamp(data.createdAt));
+    safeSetText("detailUpdated", formatTimestamp(data.updatedAt));
+    safeSetText("listingDate", formatTimestamp(data.createdAt));
+
+    // Descriptions
+    safeSetText("shortDescription", data.shortDescription || "A brief, compelling summary is currently missing for this listing.");
+    safeSetHTML("detailedDescription", data.detailedDescription || "No detailed description provided.");
+
+    // Metric values
+    const askingPrice = toNumber(data.askingPrice);
+    const monthlyRevenue = toNumber(data.monthlyRevenue);
+    const monthlyProfit = toNumber(data.monthlyProfit);
+
+    safeSetText("priceAmount", `₱${askingPrice.toLocaleString()}`);
+    safeSetText("metricRevenue", `₱${monthlyRevenue.toLocaleString()}`);
+    safeSetText("metricProfit", `₱${monthlyProfit.toLocaleString()}`);
+    safeSetText("metricAge", formatSystemAge(data.systemAge));
+    safeSetText("metricSupport", formatSupportPeriod(data.supportPeriod));
+
+    // Calculate Multiples
+    const { profitMultiple, revenueMultiple } = calcMultiples(askingPrice, monthlyRevenue, monthlyProfit);
+    
+    safeSetText("priceProfitMultiple", profitMultiple);
+    safeSetText("priceRevenueMultiple", revenueMultiple);
+    safeSetText("priceMargin", monthlyRevenue > 0 ? `${((monthlyProfit / monthlyRevenue) * 100).toFixed(1)}%` : "N/A");
+
+    // Technical & Business Details - Universal Fields
+    safeSetText("detailCategory", formatCategoryName(data.category));
+    safeSetText("detailDomain", data.domain || "N/A");
+    safeSetText("detailPlatform", data.platform || data.contentManagementSystem || data.ecommercePlatform || "N/A");
+    safeSetText("detailStack", data.techStack || "N/A");
+    safeSetText("detailSystemAge", formatSystemAge(data.systemAge));
+    safeSetText("detailReasonSelling", formatReason(data.reasonForSelling));
+    safeSetText("detailSupportPeriod", formatSupportPeriod(data.supportPeriod));
+
+    // Category-specific fields
+    populateCategorySpecificFields(data);
+
+    // Seller info
+    safeSetText("sellerName", data.userName || "Marketplace Seller");
+    safeSetText("sellerEmail", data.userEmail || "Contact via form");
+    const avatarEl = getEl("sellerAvatar");
+    if (avatarEl) {
+      avatarEl.src = data.userAvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.userName || "Seller")}&background=14B8A6&color=fff`;
+    }
+
+    // What's Included section
+    populateIncludedList(data);
+
+    // Images gallery
+    setupImageGallery(data);
+
+    // Similar listings
+    loadSimilarListings(data.category, listingId).catch(e => console.warn("similar load:", e));
+
+    // Hide loading and show container
+    if (loadingContainer) loadingContainer.style.display = "none";
+    if (detailContainer) detailContainer.classList.add("active");
+
+  } catch (err) {
+    console.error("Error loading listing:", err);
+    const message = `<p>A critical error occurred while loading listing details. Please try again.</p>`;
+    if (loadingContainer) loadingContainer.innerHTML = message;
+  }
+}
+    // ---------- helper: load similar (no change needed here) ----------
+    async function loadSimilarListings(category, excludeId) {
+      try {
+        const grid = getEl("similarGrid");
+        if (!grid) return;
+        
+        if (!category) {
+            grid.innerHTML = "<p style='color:var(--gray-medium)'>No category defined to find similar listings.</p>";
+            return;
+        }
+
+        const q = query(collection(db, "listings"), where("category", "==", category), limit(5));
+        const snap = await getDocs(q);
+        
+        grid.innerHTML = "";
+        let count = 0;
+        
+        snap.forEach(docSnap => {
+          if (docSnap.id === excludeId || count >= 4) return;
+          count++;
+          
+          const item = docSnap.data();
+          const card = document.createElement("a");
+          card.href = `listing-detail.html?id=${docSnap.id}`;
+          card.className = "similar-card";
+          
+          const img = (item.images && item.images[0]) || item.mainImage || (item.thumbnails && item.thumbnails[0]) || "";
+          const imgHTML = img 
+              ? `<div style="height:140px;background:var(--gray-light);overflow:hidden;border-bottom:1px solid var(--gray-light)"><img src="${img}" style="width:100%;height:100%;object-fit:cover" alt="Image for ${item.systemName || item.title || 'Untitled'}"></div>`
+              : `<div style="height:140px;background:var(--gray-light);display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--gray-medium)"><i class="fa-solid fa-lightbulb" aria-hidden="true"></i></div>`;
+
+          card.innerHTML = `${imgHTML}
+  <div style="padding:.8rem 1rem">
+    <div style="font-weight:700;font-size:1.1rem;color:var(--text);">
+      ${item.systemName || item.title || 'Untitled'}
+    </div>
+    <div style="color:var(--primary);font-weight:800;font-family:'Archivo',sans-serif;font-size:1.2rem;margin-top:.4rem">
+      ₱${toNumber(item.askingPrice).toLocaleString()}
+    </div>
+  </div>`;
+
+          
+          card.addEventListener("click", (e) => {
+             sessionStorage.setItem("selectedListingId", docSnap.id);
+          });
+          grid.appendChild(card);
+        });
+
+        if (count === 0) {
+            grid.innerHTML = "<p style='color:var(--gray-medium)'>No other similar listings found in this category.</p>";
+        }
+      } catch (e) {
+        console.error("Error loading similar listings:", e);
+      }
+    }
+
+    // ---------- modal controls (no change needed here) ----------
+    const contactModal = getEl("contactModal");
+    const contactBtn = getEl("contactBtn");
+    const closeModal = getEl("closeModal");
+    const closeModalBtn = getEl("closeModalBtn");
+    const sendMessageBtn = getEl("sendMessageBtn");
+    const messageText = getEl("messageText");
+
+    const toggleModal = (show) => {
+        if (contactModal) contactModal.style.display = show ? "flex" : "none";
+    };
+
+    if (contactBtn) {
+      contactBtn.addEventListener("click", () => toggleModal(true));
+    }
+    if (closeModal) closeModal.addEventListener("click", () => toggleModal(false));
+    if (closeModalBtn) closeModalBtn.addEventListener("click", () => toggleModal(false));
+    
+    if (sendMessageBtn && messageText) {
+      sendMessageBtn.addEventListener("click", () => {
+        if (!messageText.value.trim()) {
+            alert("Please write a message before sending.");
+            messageText.focus();
+            return;
+        }
+
+        const sellerEmail = (getEl("sellerEmail") && getEl("sellerEmail").textContent) || "";
+        if (!sellerEmail || sellerEmail === "Contact via form") {
+            alert("Seller contact is only available through a verified email. Please contact the marketplace support for assistance.");
+            return;
+        }
+        
+        const body = encodeURIComponent(messageText.value.trim());
+        const subject = encodeURIComponent(`Inquiry on Listing: ${getEl("listingTitle")?.textContent || listingId}`);
+        window.location.href = `mailto:${sellerEmail}?subject=${subject}&body=${body}`;
+        
+        toggleModal(false);
+      });
+    }
+
+    window.addEventListener("click", (ev) => {
+      if (ev.target === contactModal) toggleModal(false);
+    });
+
+    // load
+    loadListingDetails();
+  </script>
+</body>
+</html>

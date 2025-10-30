@@ -1,0 +1,3220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell Your System - Systemly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+   <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #F97316;
+            --secondary: #6366F1;
+            --accent: #14B8A6;
+            --bg: #FFF7ED;
+            --text: #1F2937;
+            --white: #FFFFFF;
+            --gray-light: #F3F4F6;
+            --gray-medium: #9CA3AF;
+            --gray-dark: #4B5563;
+            --success: #10B981;
+            --error: #EF4444;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Archivo', sans-serif;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            padding: 1.2rem 5%;
+            background: rgba(255, 247, 237, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Archivo', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .user-profile {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            transition: background 0.3s;
+        }
+
+        .user-profile.logged-in {
+            display: flex;
+        }
+
+        .user-profile:hover {
+            background: var(--gray-light);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .sign-in-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 0.65rem 1.8rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+
+        .sign-in-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+        }
+
+        /* Auth Modal */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-modal.active {
+            display: flex;
+        }
+
+        .auth-content {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 30px;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--gray-medium);
+            transition: color 0.3s;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            color: var(--text);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            color: var(--gray-dark);
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--gray-light);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-medium);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .auth-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--gray-light);
+            border-radius: 12px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Sarabun', sans-serif;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+        }
+
+        .auth-divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--gray-medium);
+            position: relative;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: var(--gray-light);
+        }
+
+        .auth-divider::before {
+            left: 0;
+        }
+
+        .auth-divider::after {
+            right: 0;
+        }
+
+        .google-signin-btn {
+            width: 100%;
+            background: var(--white);
+            border: 2px solid var(--gray-light);
+            padding: 1rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .google-signin-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.2);
+        }
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .auth-note {
+            text-align: center;
+            color: var(--gray-dark);
+            font-size: 0.85rem;
+            margin-top: 1.5rem;
+        }
+
+        .auth-note a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 4rem 5% 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="30" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .hero-content h1 {
+            color: var(--white);
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 900;
+        }
+
+        .hero-content p {
+            color: var(--white);
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 2.5rem;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-number {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--white);
+            font-family: 'Archivo', sans-serif;
+        }
+
+        .hero-stat-label {
+            color: var(--white);
+            opacity: 0.9;
+            font-size: 1rem;
+            margin-top: 0.3rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 900px;
+            margin: -3rem auto 4rem;
+            padding: 0 5%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .form-container {
+            background: var(--white);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            padding: 3rem;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .form-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: var(--gray-dark);
+            font-size: 1.1rem;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gray-light);
+            z-index: 0;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            z-index: 1;
+            transition: width 0.5s;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            cursor: pointer;
+            min-width: 60px;
+        }
+
+        .step:hover .step-circle {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 3px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .step.active .step-circle {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            border-color: transparent;
+        }
+
+        .step.active:hover .step-circle {
+            transform: scale(1.05);
+        }
+
+        .step.completed .step-circle {
+            background: var(--success);
+            color: var(--white);
+            border-color: transparent;
+        }
+
+        .step.completed:hover .step-circle {
+            background: var(--success);
+            transform: scale(1.1);
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            color: var(--gray-medium);
+            font-weight: 600;
+        }
+
+        .step.active .step-label {
+            color: var(--text);
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--gray-light);
+            border-radius: 15px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-hint {
+            font-size: 0.9rem;
+            color: var(--gray-medium);
+            margin-top: 0.5rem;
+        }
+
+        .required {
+            color: var(--error);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Image Upload Styles */
+        .image-upload-container {
+            border: 2px dashed var(--gray-light);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .image-upload-container:hover {
+            border-color: var(--primary);
+            background: var(--gray-light);
+        }
+
+        .image-upload-container input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            font-size: 0.9rem;
+            color: var(--gray-medium);
+        }
+
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .image-preview-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--gray-light);
+        }
+
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-item .remove-image {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--error);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .image-preview-item .remove-image:hover {
+            background: #DC2626;
+            transform: scale(1.1);
+        }
+
+        .upload-progress {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--gray-light);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .upload-progress.active {
+            display: block;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s;
+        }
+
+        .file-upload {
+            border: 2px dashed var(--gray-light);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary);
+            background: var(--gray-light);
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            margin-top: 2.5rem;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .btn-secondary {
+            background: var(--gray-light);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-medium);
+            color: var(--white);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            flex: 1;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .success-message h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .success-message p {
+            color: var(--gray-dark);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Loading indicator for auth check */
+        .auth-loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .auth-loading.active {
+            display: block;
+        }
+
+        .auth-loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--gray-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.step-indicator::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(99, 102, 241, 0.2);
+    z-index: 0;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 1;
+    z-index: 1;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: var(--text);
+    transition: all 0.3s;
+    margin-bottom: 0.5rem;
+}
+
+.step.active .step-number {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: var(--white);
+    border-color: var(--secondary);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.step.completed .step-number {
+    background: var(--accent);
+    color: var(--white);
+    border-color: var(--accent);
+}
+
+.step-label {
+    font-size: 0.9rem;
+    color: var(--text);
+    opacity: 0.7;
+    text-align: center;
+}
+
+.step.active .step-label {
+    opacity: 1;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /* Smooth transitions */
+        #authRequired,
+        #listingForm {
+            transition: opacity 0.3s ease, display 0s 0.3s;
+        }
+
+        #authRequired.hidden,
+        #listingForm.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* User dropdown menu animations */
+        #userDropdownMenu {
+            animation: slideDown 0.2s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Category Selection Styles */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .category-card {
+            background: var(--white);
+            border: 3px solid var(--gray-light);
+            border-radius: 20px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(249, 115, 22, 0.2);
+        }
+
+        .category-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.05), rgba(99, 102, 241, 0.05));
+            box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
+        }
+
+        .category-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .category-card p {
+            font-size: 0.95rem;
+            color: var(--gray-dark);
+            line-height: 1.5;
+        }
+
+        .category-card.new-badge {
+            position: relative;
+        }
+
+        .badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: linear-gradient(135deg, var(--accent), var(--secondary));
+            color: var(--white);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text);
+            color: var(--white);
+            padding: 4rem 5% 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-brand p {
+            opacity: 0.8;
+            line-height: 1.8;
+        }
+
+        .footer-links h4 {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--white);
+            opacity: 0.8;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            opacity: 0.7;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .form-container {
+                padding: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-steps {
+                overflow-x: auto;
+                justify-content: flex-start;
+                padding-bottom: 1rem;
+            }
+
+            .step {
+                min-width: 80px;
+            }
+
+            .step-label {
+                font-size: 0.75rem;
+            }
+
+            .step-circle {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+
+            .image-preview-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .category-card {
+                padding: 1.5rem;
+            }
+
+            .category-icon {
+                font-size: 2.5rem;
+            }
+
+            .category-card h4 {
+                font-size: 1.1rem;
+            }
+
+            .category-card p {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .category-grid {
+                gap: 0.8rem;
+            }
+
+            .category-card {
+                padding: 1.2rem;
+            }
+
+            .badge {
+                font-size: 0.65rem;
+                padding: 0.25rem 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">Systemly</a>
+            <div class="nav-links">
+                <a href="marketplace.html">Marketplace</a>
+                <a href="how-it-works.html">How It Works</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="about.html">About</a>
+            </div>
+            <button class="sign-in-btn" id="signInBtn" onclick="showAuthModal()">Sign In</button>
+            <div class="user-profile" id="userProfile">
+                <img src="" alt="User" class="user-avatar" id="userAvatar">
+                <span class="user-name" id="userName"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Modal -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-content">
+            <button class="close-modal" onclick="closeAuthModal()">×</button>
+            <div class="auth-header">
+                <h2>Welcome to Systemly</h2>
+                <p>Sign in to list your digital system</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('signin')">Sign In</button>
+                <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+            </div>
+
+            <!-- Sign In Form -->
+            <form class="auth-form active" id="signInForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-input" id="signInEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-input" id="signInPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="submit-btn">Sign In</button>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form class="auth-form" id="signUpForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" class="form-input" id="signUpName" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-input" id="signUpEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-input" id="signUpPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="submit-btn">Create Account</button>
+            </form>
+
+            <div class="auth-divider">or</div>
+            
+            <button class="google-signin-btn" id="googleSignInBtn">
+                <svg class="google-icon" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+            </button>
+
+            <div class="auth-note">
+                By continuing, you agree to our <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>
+            </div>
+        </div>
+    </div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Sell Your Digital System</h1>
+            <p>Join thousands of entrepreneurs who have successfully sold their systems on Systemly. Get your fair valuation and reach qualified buyers.</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-number">₱24M+</div>
+                    <div class="hero-stat-label">Total Sales Volume</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">14 Days</div>
+                    <div class="hero-stat-label">Average Sell Time</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">98%</div>
+                    <div class="hero-stat-label">Success Rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="main-content">
+        <div class="form-container">
+            <div id="authRequired" style="display: block;">
+                <div class="auth-loading active" id="authLoading">
+                    <div class="spinner"></div>
+                    <p>Checking authentication...</p>
+                </div>
+                
+                <div id="authRequiredContent" style="display: none;">
+                    <div style="text-align: center; padding: 3rem;">
+                        <svg style="width: 80px; height: 80px; margin: 0 auto 1.5rem; color: var(--primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        <h2 style="margin-bottom: 1rem;">Ready to List Your System?</h2>
+                        <p style="margin-bottom: 2rem; color: var(--text); opacity: 0.8;">Sign in to get started with your listing</p>
+                        <button class="btn btn-primary" id="authRequiredBtn" style="width: auto; padding: 1rem 3rem; display: inline-flex; align-items: center; gap: 0.5rem;">                         <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                            </svg>
+                            Sign In to Continue
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quota Info and Form will be inserted here by JavaScript -->
+
+            <div id="listingForm" class="listing-form" style="display: none;">
+                <div class="form-header">
+                    <h2>List Your Digital System</h2>
+                    <p>Complete all steps to publish your listing</p>
+                </div>
+
+                <div class="progress-steps">
+                    <div class="progress-line" id="progressLine" style="width: 0%"></div>
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Category</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Details</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Images</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Financials</div>
+                    </div>
+                    <div class="step" data-step="5">
+                        <div class="step-number">5</div>
+                        <div class="step-label">Extras</div>
+                    </div>
+                    <div class="step" data-step="6">
+                        <div class="step-number">6</div>
+                        <div class="step-label">Review</div>
+                    </div>
+                </div>
+
+                <form id="sellSystemForm">
+                    <!-- Step 1: Category Selection -->
+                    <div class="form-step active" data-step="1">
+                        <div class="form-header" style="margin-bottom: 2rem;">
+                            <h3>What business category best describes your asset?</h3>
+                            <p>Select the category that best matches your business</p>
+                        </div>
+
+                        <div class="category-grid">
+                            <div class="category-card" data-category="content" onclick="selectCategory('content')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <h4>Content</h4>
+                                <p>Blog, Directory, Review, Forum/Community</p>
+                            </div>
+
+                            <div class="category-card" data-category="saas" onclick="selectCategory('saas')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <h4>SaaS</h4>
+                                <p>Sell any SaaS business</p>
+                            </div>
+
+                            <div class="category-card" data-category="ecommerce" onclick="selectCategory('ecommerce')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                </div>
+                                <h4>Ecommerce</h4>
+                                <p>Sell any Ecommerce Business or Asset</p>
+                            </div>
+
+                            <div class="category-card" data-category="mobile-app" onclick="selectCategory('mobile-app')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <h4>Mobile App</h4>
+                                <p>Sell your iOS or Android Mobile App</p>
+                            </div>
+
+                            <div class="category-card" data-category="social-media" onclick="selectCategory('social-media')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <h4>YouTube, Social Media & Newsletters</h4>
+                                <p>Sell any Youtube Channel, Social Media Account or Newsletter</p>
+                            </div>
+
+                            <div class="category-card" data-category="marketplace" onclick="selectCategory('marketplace')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    </svg>
+                                </div>
+                                <h4>Marketplace</h4>
+                                <p>Sell any Digital Marketplace</p>
+                            </div>
+
+                            <div class="category-card" data-category="amazon-store" onclick="selectCategory('amazon-store')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                    </svg>
+                                </div>
+                                <h4>Amazon Store</h4>
+                                <p>Sell your Amazon Store (FBA, FBM) or KDP ebook</p>
+                            </div>
+
+                            <div class="category-card new-badge" data-category="plugins" onclick="selectCategory('plugins')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path>
+                                    </svg>
+                                </div>
+                                <h4>Plugins & Extensions</h4>
+                                <p>Shopify, Wordpress and Chrome Plugins/Extensions</p>
+                                <span class="badge">New!</span>
+                            </div>
+
+                            <div class="category-card new-badge" data-category="agencies" onclick="selectCategory('agencies')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                                    </svg>
+                                </div>
+                                <h4>Digital Agencies</h4>
+                                <p>Brand & Creative, Marketing and Software Agencies</p>
+                                <span class="badge">New!</span>
+                            </div>
+
+                            <div class="category-card" data-category="service" onclick="selectCategory('service')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                </div>
+                                <h4>Service</h4>
+                                <p>Sell any Digital or Physical service business</p>
+                            </div>
+
+                            <div class="category-card new-badge" data-category="ai-tools" onclick="selectCategory('ai-tools')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                    </svg>
+                                </div>
+                                <h4>AI Apps & Tools</h4>
+                                <p>Apps, Tools and Services based on major LLM platforms or AI technology</p>
+                                <span class="badge">New!</span>
+                            </div>
+
+                            <div class="category-card new-badge" data-category="gaming" onclick="selectCategory('gaming')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path>
+                                    </svg>
+                                </div>
+                                <h4>Gaming</h4>
+                                <p>Sell Game Apps and the rights for Addons, Skins, Mods and Avatars</p>
+                                <span class="badge">New!</span>
+                            </div>
+
+                            <div class="category-card new-badge" data-category="crypto" onclick="selectCategory('crypto')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <h4>Crypto & Blockchain</h4>
+                                <p>Sites and apps built on major blockchains</p>
+                                <span class="badge">New!</span>
+                            </div>
+
+                            <div class="category-card" data-category="domain" onclick="selectCategory('domain')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                                    </svg>
+                                </div>
+                                <h4>Domain</h4>
+                                <p>Sell any Domain</p>
+                            </div>
+
+                            <div class="category-card new-badge" data-category="projects" onclick="selectCategory('projects')">
+                                <div class="category-icon">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                    </svg>
+                                </div>
+                                <h4>Projects & Concepts</h4>
+                                <p>Unique, fully built digital assets generating limited or no revenue</p>
+                                <span class="badge">New!</span>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="category" id="selectedCategory" required>
+                    </div>
+
+                    <!-- Step 2: Category-Specific Details -->
+                    <div class="form-step" data-step="2">
+                        <div id="categorySpecificFields">
+                            <!-- Fields will be dynamically inserted based on selected category -->
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Image Upload -->
+                    <div class="form-step" data-step="3">
+                        <div class="form-group">
+                            <label>System Images <span class="required">*</span></label>
+                            <div class="image-upload-container" id="imageUploadContainer">
+                                <input type="file" id="imageUpload" accept="image/*" multiple>
+                                <svg style="width: 64px; height: 64px; margin-bottom: 1rem; color: var(--primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <div class="upload-text">Click to upload images</div>
+                                <div class="upload-hint">Upload up to 5 images (JPG, PNG, GIF - Max 5MB each)</div>
+                            </div>
+                            
+                            <div class="upload-progress" id="uploadProgress">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span id="uploadStatus">Uploading...</span>
+                                    <span id="uploadPercentage">0%</span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="image-preview-grid" id="imagePreviewGrid">
+                                <!-- Uploaded images will appear here -->
+                            </div>
+                            
+                            <div class="form-hint" style="margin-top: 1rem;">
+                                <strong>Tip:</strong> Include screenshots of dashboards, analytics, and key features. First image will be the main thumbnail.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Financial Information -->
+                    <div class="form-step" data-step="4">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Monthly Revenue (₱) <span class="required">*</span></label>
+                                <input type="number" class="form-input" name="monthlyRevenue" required placeholder="5000">
+                                <div class="form-hint">Average over last 6 months</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Monthly Profit (₱) <span class="required">*</span></label>
+                                <input type="number" class="form-input" name="monthlyProfit" required placeholder="3500">
+                                <div class="form-hint">Revenue minus expenses</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Asking Price (₱) <span class="required">*</span></label>
+                            <input type="number" class="form-input" name="askingPrice" required placeholder="50000">
+                            <div class="form-hint">Our AI suggests pricing based on 12-36x monthly profit</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Reason for Selling <span class="required">*</span></label>
+                            <select class="form-select" name="reasonForSelling" required>
+                                <option value="">Select reason</option>
+                                <option value="new-venture">Starting new venture</option>
+                                <option value="focus">Want to focus on other projects</option>
+                                <option value="time">No time to manage</option>
+                                <option value="retirement">Retirement</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Upload Financial Documents</label>
+                            <div class="file-upload" onclick="document.getElementById('financialDocs').click()">
+                                <input type="file" id="financialDocs" name="financialDocs" accept=".pdf,.xlsx,.csv" multiple style="display: none;">
+                                <svg style="width: 48px; height: 48px; margin-bottom: 0.5rem; color: var(--primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <div class="upload-text">Click to upload documents</div>
+                                <div class="upload-hint">PDF, Excel, or CSV (optional but recommended)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Additional Details -->
+                    <div class="form-step" data-step="5">
+                        <div class="form-group">
+                            <label>System Age <span class="required">*</span></label>
+                            <select class="form-select" name="systemAge" required>
+                                <option value="">Select age</option>
+                                <option value="0-6">Less than 6 months</option>
+                                <option value="6-12">6-12 months</option>
+                                <option value="1-2">1-2 years</option>
+                                <option value="2-5">2-5 years</option>
+                                <option value="5+">5+ years</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>What's Included? <span class="required">*</span></label>
+                            <textarea class="form-textarea" name="whatsIncluded" required placeholder="List everything included in the sale (domain, source code, social media accounts, customer lists, etc.)"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Support Period <span class="required">*</span></label>
+                            <select class="form-select" name="supportPeriod" required>
+                                <option value="">Select support period</option>
+                                <option value="none">No support</option>
+                                <option value="1week">1 week</option>
+                                <option value="2weeks">2 weeks</option>
+                                <option value="1month">1 month</option>
+                                <option value="3months">3 months</option>
+                            </select>
+                            <div class="form-hint">How long will you help the buyer transition?</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: Review & Submit -->
+                    <div class="form-step" data-step="6">
+                        <div class="form-header" style="margin-bottom: 2rem;">
+                            <h3>Review Your Listing</h3>
+                            <p>Please review all information before submitting</p>
+                        </div>
+
+                        <div id="reviewContent" style="background: var(--gray-light); padding: 2rem; border-radius: 15px;">
+                            <!-- Review content will be populated by JavaScript -->
+                        </div>
+
+                        <div class="form-group" style="margin-top: 2rem;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="agreeTerms" required style="width: 20px; height: 20px; margin-right: 1rem; cursor: pointer; accent-color: var(--primary);">
+                                <span>I agree to the <a href="terms.html" style="color: var(--primary);">Terms of Service</a> and confirm all information is accurate</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                            <svg style="width: 20px; height: 20px; margin-right: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            Previous
+                        </button>
+                        <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
+                            Next
+                            <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn" style="display: none;">
+                            <svg style="width: 20px; height: 20px; margin-right: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Submit Listing
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Success Message -->
+                <div class="success-message" id="successMessage">
+                    <svg style="width: 80px; height: 80px; margin: 0 auto 1.5rem; color: var(--accent);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h2>Listing Submitted Successfully!</h2>
+                    <p>Your system is now under review. Our team will verify the information and publish your listing within 24-48 hours.</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="window.location.href='marketplace.html'" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            Browse Marketplace
+                        </button>
+                        <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                            </svg>
+                            View Dashboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>Systemly</h3>
+                <p>The trusted marketplace for buying and selling digital systems, automation workflows, and online businesses.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="marketplace.html">Browse Systems</a></li>
+                    <li><a href="sell.html">Sell Your System</a></li>
+                    <li><a href="how-it-works.html">How It Works</a></li>
+                    <li><a href="pricing.html">Pricing</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Valuation Tool</a></li>
+                    <li><a href="#">Success Stories</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                    <li><a href="terms.html">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Systemly. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, doc, setDoc, updateDoc, getDoc, query, where, getDocs, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyD3PQ5oWrzAXOHnb7wrmpRhL9DWIB7w9rE",
+        authDomain: "systemly-db.firebaseapp.com",
+        projectId: "systemly-db",
+        storageBucket: "systemly-db.firebasestorage.app",
+        messagingSenderId: "32599486733",
+        appId: "1:32599486733:web:16d34643c8f920a6fd8044"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    // Global variables
+    let currentUser = null;
+    let currentStep = 1;
+    const totalSteps = 6;
+    const formData = {};
+    const uploadedImages = [];
+    const IMGBB_API_KEY = '56f396d0e165ef6050b1d28ce616f67e';
+    const MAX_IMAGES = 5;
+    let selectedCategory = null;
+    let userQuotaInfo = null;
+
+    // Category-specific form fields configuration
+    const categoryFields = {
+        'content': {
+            name: 'Content Site',
+            fields: [
+                { name: 'systemName', label: 'Site/Business Name', type: 'text', required: true, placeholder: 'e.g., Tech Review Blog' },
+                { name: 'contentType', label: 'Content Type', type: 'select', required: true, options: ['Blog', 'Directory', 'Review Site', 'Forum/Community', 'News Site', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Comprehensive description including niche, audience, content strategy, and unique value proposition', rows: 6 },
+                { name: 'domain', label: 'Domain Name', type: 'text', required: true, placeholder: 'example.com' },
+                { name: 'monthlyVisitors', label: 'Monthly Visitors/Pageviews', type: 'number', placeholder: '10000' },
+                { name: 'contentManagementSystem', label: 'CMS/Platform', type: 'select', options: ['WordPress', 'Ghost', 'Webflow', 'Custom Built', 'Other'] }
+            ]
+        },
+        'saas': {
+            name: 'SaaS Business',
+            fields: [
+                { name: 'systemName', label: 'SaaS Name', type: 'text', required: true, placeholder: 'e.g., Project Management Tool' },
+                { name: 'saasType', label: 'SaaS Type', type: 'select', required: true, options: ['B2B', 'B2C', 'B2B2C', 'Enterprise', 'SMB'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe your SaaS product, features, target market, and competitive advantages', rows: 6 },
+                { name: 'techStack', label: 'Tech Stack', type: 'text', required: true, placeholder: 'e.g., React, Node.js, PostgreSQL, AWS' },
+                { name: 'mrr', label: 'Monthly Recurring Revenue (MRR)', type: 'number', required: true, placeholder: '5000' },
+                { name: 'activeSubscribers', label: 'Active Subscribers', type: 'number', required: true, placeholder: '150' },
+                { name: 'churnRate', label: 'Monthly Churn Rate (%)', type: 'number', placeholder: '5' },
+                { name: 'pricingModel', label: 'Pricing Model', type: 'select', options: ['Subscription', 'Usage-Based', 'Freemium', 'One-Time Payment', 'Tiered', 'Other'] }
+            ]
+        },
+        'ecommerce': {
+            name: 'Ecommerce Business',
+            fields: [
+                { name: 'systemName', label: 'Store Name', type: 'text', required: true, placeholder: 'e.g., Organic Skincare Store' },
+                { name: 'ecommerceType', label: 'Business Model', type: 'select', required: true, options: ['Dropshipping', 'Print on Demand', 'Private Label', 'Wholesale', 'Handmade/Craft', 'Digital Products', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe your products, niche, target audience, and what makes your store unique', rows: 6 },
+                { name: 'platform', label: 'Ecommerce Platform', type: 'select', required: true, options: ['Shopify', 'WooCommerce', 'BigCommerce', 'Magento', 'Custom Built', 'Other'] },
+                { name: 'productCount', label: 'Number of Products', type: 'number', placeholder: '50' },
+                { name: 'averageOrderValue', label: 'Average Order Value (₱)', type: 'number', placeholder: '75' },
+                { name: 'orderVolume', label: 'Monthly Orders', type: 'number', placeholder: '200' }
+            ]
+        },
+        'mobile-app': {
+            name: 'Mobile App',
+            fields: [
+                { name: 'systemName', label: 'App Name', type: 'text', required: true, placeholder: 'e.g., Fitness Tracker Pro' },
+                { name: 'appPlatform', label: 'Platform', type: 'select', required: true, options: ['iOS Only', 'Android Only', 'Both iOS & Android', 'Cross-Platform'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe your app features, target users, and unique selling points', rows: 6 },
+                { name: 'appCategory', label: 'App Category', type: 'select', required: true, options: ['Productivity', 'Health & Fitness', 'Entertainment', 'Education', 'Finance', 'Social Networking', 'Games', 'Utilities', 'Other'] },
+                { name: 'downloads', label: 'Total Downloads', type: 'number', placeholder: '50000' },
+                { name: 'activeUsers', label: 'Monthly Active Users', type: 'number', placeholder: '10000' },
+                { name: 'techStack', label: 'Development Framework', type: 'select', options: ['Native iOS (Swift)', 'Native Android (Kotlin/Java)', 'React Native', 'Flutter', 'Xamarin', 'Other'] },
+                { name: 'monetization', label: 'Monetization Method', type: 'select', options: ['In-App Purchases', 'Subscription', 'Ads', 'Freemium', 'Paid App', 'Sponsorships', 'Multiple', 'None'] }
+            ]
+        },
+        'social-media': {
+            name: 'Social Media & Content',
+            fields: [
+                { name: 'systemName', label: 'Channel/Account Name', type: 'text', required: true, placeholder: 'e.g., Tech Tips Daily' },
+                { name: 'platformType', label: 'Platform', type: 'select', required: true, options: ['YouTube', 'Instagram', 'TikTok', 'Twitter/X', 'Newsletter', 'Podcast', 'Multiple Platforms', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe your content, niche, audience demographics, and engagement metrics', rows: 6 },
+                { name: 'followers', label: 'Followers/Subscribers', type: 'number', required: true, placeholder: '50000' },
+                { name: 'engagement', label: 'Average Engagement Rate (%)', type: 'number', placeholder: '3.5' },
+                { name: 'monthlyViews', label: 'Monthly Views/Impressions', type: 'number', placeholder: '100000' },
+                { name: 'contentNiche', label: 'Content Niche', type: 'text', placeholder: 'e.g., Technology, Lifestyle, Finance' }
+            ]
+        },
+        'marketplace': {
+            name: 'Digital Marketplace',
+            fields: [
+                { name: 'systemName', label: 'Marketplace Name', type: 'text', required: true, placeholder: 'e.g., Freelance Designer Hub' },
+                { name: 'marketplaceType', label: 'Marketplace Type', type: 'select', required: true, options: ['Service Marketplace', 'Product Marketplace', 'Two-Sided Platform', 'P2P Marketplace', 'B2B Marketplace', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe your marketplace, user base, transaction flow, and competitive advantages', rows: 6 },
+                { name: 'registeredUsers', label: 'Registered Users', type: 'number', placeholder: '5000' },
+                { name: 'activeListings', label: 'Active Listings/Products', type: 'number', placeholder: '500' },
+                { name: 'monthlyTransactions', label: 'Monthly Transactions', type: 'number', placeholder: '200' },
+                { name: 'commissionRate', label: 'Commission Rate (%)', type: 'number', placeholder: '10' }
+            ]
+        },
+        'amazon-store': {
+            name: 'Amazon Store',
+            fields: [
+                { name: 'systemName', label: 'Store/Brand Name', type: 'text', required: true, placeholder: 'e.g., Premium Home Goods' },
+                { name: 'amazonType', label: 'Amazon Business Type', type: 'select', required: true, options: ['FBA (Fulfilled by Amazon)', 'FBM (Fulfilled by Merchant)', 'KDP (Kindle Publishing)', 'Private Label FBA', 'Wholesale FBA', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe your products, brand, sourcing, and competitive advantages', rows: 6 },
+                { name: 'skuCount', label: 'Number of SKUs', type: 'number', placeholder: '15' },
+                { name: 'monthlyUnits', label: 'Monthly Units Sold', type: 'number', placeholder: '500' },
+                { name: 'averageSellingPrice', label: 'Average Selling Price (₱)', type: 'number', placeholder: '35' },
+                { name: 'amazonMarketplace', label: 'Primary Marketplace', type: 'select', options: ['Amazon.com (USA)', 'Amazon.co.uk (UK)', 'Amazon.de (Germany)', 'Amazon.ca (Canada)', 'Multiple Marketplaces', 'Other'] }
+            ]
+        },
+        'plugins': {
+            name: 'Plugins & Extensions',
+            fields: [
+                { name: 'systemName', label: 'Plugin/Extension Name', type: 'text', required: true, placeholder: 'e.g., SEO Optimizer Pro' },
+                { name: 'pluginPlatform', label: 'Platform', type: 'select', required: true, options: ['WordPress Plugin', 'Shopify App', 'Chrome Extension', 'Firefox Extension', 'Safari Extension', 'Multiple Platforms', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe functionality, features, target users, and benefits', rows: 6 },
+                { name: 'activeInstalls', label: 'Active Installations', type: 'number', placeholder: '5000' },
+                { name: 'rating', label: 'Average Rating (1-5)', type: 'number', step: '0.1', placeholder: '4.5' },
+                { name: 'reviewCount', label: 'Number of Reviews', type: 'number', placeholder: '250' },
+                { name: 'pricingModel', label: 'Pricing Model', type: 'select', options: ['Free', 'Freemium', 'One-Time Purchase', 'Subscription', 'Usage-Based', 'Other'] }
+            ]
+        },
+        'agencies': {
+            name: 'Digital Agency',
+            fields: [
+                { name: 'systemName', label: 'Agency Name', type: 'text', required: true, placeholder: 'e.g., Creative Digital Solutions' },
+                { name: 'agencyType', label: 'Agency Type', type: 'select', required: true, options: ['Brand & Creative', 'Digital Marketing', 'Software Development', 'SEO/SEM', 'Social Media Marketing', 'Full-Service', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe your services, client base, team structure, and unique value proposition', rows: 6 },
+                { name: 'activeClients', label: 'Active Clients', type: 'number', placeholder: '15' },
+                { name: 'teamSize', label: 'Team Size', type: 'number', placeholder: '5' },
+                { name: 'averageProjectValue', label: 'Average Project Value (₱)', type: 'number', placeholder: '5000' },
+                { name: 'retainerClients', label: 'Retainer Clients', type: 'number', placeholder: '8' }
+            ]
+        },
+        'service': {
+            name: 'Service Business',
+            fields: [
+                { name: 'systemName', label: 'Service Name', type: 'text', required: true, placeholder: 'e.g., Virtual Assistant Services' },
+                { name: 'serviceType', label: 'Service Type', type: 'select', required: true, options: ['Consulting', 'Freelancing', 'Coaching', 'Training/Education', 'Design Services', 'Development Services', 'Virtual Assistant', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe your services, target clients, delivery method, and competitive advantages', rows: 6 },
+                { name: 'deliveryMethod', label: 'Delivery Method', type: 'select', options: ['Online/Remote', 'In-Person', 'Hybrid', 'Self-Service Platform', 'Other'] },
+                { name: 'activeClients', label: 'Active/Monthly Clients', type: 'number', placeholder: '20' },
+                { name: 'averageProjectDuration', label: 'Average Project Duration', type: 'text', placeholder: 'e.g., 2 weeks, 1 month' }
+            ]
+        },
+        'ai-tools': {
+            name: 'AI Apps & Tools',
+            fields: [
+                { name: 'systemName', label: 'AI Tool Name', type: 'text', required: true, placeholder: 'e.g., AI Content Generator' },
+                { name: 'aiPlatform', label: 'AI Platform/Technology', type: 'select', required: true, options: ['OpenAI (GPT)', 'Anthropic (Claude)', 'Google (Gemini/Bard)', 'Custom ML Model', 'Multiple Platforms', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe your AI tool, use cases, features, and how it leverages AI technology', rows: 6 },
+                { name: 'aiUseCase', label: 'Primary Use Case', type: 'select', required: true, options: ['Content Generation', 'Image Generation', 'Data Analysis', 'Automation', 'Chatbot/Assistant', 'Code Generation', 'Translation', 'Summarization', 'Other'] },
+                { name: 'activeUsers', label: 'Active Users', type: 'number', placeholder: '1000' },
+                { name: 'apiCalls', label: 'Monthly API Calls/Usage', type: 'number', placeholder: '50000' },
+                { name: 'pricingModel', label: 'Pricing Model', type: 'select', options: ['Subscription', 'Pay-per-Use', 'Freemium', 'API Credits', 'Free with Ads', 'Enterprise', 'Other'] }
+            ]
+        },
+        'gaming': {
+            name: 'Gaming Business',
+            fields: [
+                { name: 'systemName', label: 'Game/Asset Name', type: 'text', required: true, placeholder: 'e.g., Fantasy RPG Adventure' },
+                { name: 'gamingType', label: 'Gaming Type', type: 'select', required: true, options: ['Mobile Game', 'PC Game', 'Console Game', 'Browser Game', 'Game Addons/Mods', 'Game Skins', 'Game Assets', 'Avatar/Character Sales', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe your game/assets, gameplay, target audience, and unique features', rows: 6 },
+                { name: 'gamePlatform', label: 'Platform', type: 'select', required: true, options: ['iOS', 'Android', 'Steam', 'Epic Games', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Roblox', 'Minecraft', 'Unity Asset Store', 'Other'] },
+                { name: 'downloads', label: 'Total Downloads/Sales', type: 'number', placeholder: '10000' },
+                { name: 'activeUsers', label: 'Monthly Active Users', type: 'number', placeholder: '5000' },
+                { name: 'gameGenre', label: 'Game Genre', type: 'text', placeholder: 'e.g., RPG, Strategy, Puzzle' }
+            ]
+        },
+        'crypto': {
+            name: 'Crypto & Blockchain',
+            fields: [
+                { name: 'systemName', label: 'Project Name', type: 'text', required: true, placeholder: 'e.g., NFT Marketplace' },
+                { name: 'cryptoType', label: 'Project Type', type: 'select', required: true, options: ['NFT Marketplace', 'DeFi Platform', 'Crypto Exchange', 'Blockchain App', 'Token/Coin', 'DAO', 'Web3 Service', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe your project, blockchain technology, use case, and community', rows: 6 },
+                { name: 'blockchain', label: 'Blockchain', type: 'select', required: true, options: ['Ethereum', 'Binance Smart Chain', 'Polygon', 'Solana', 'Avalanche', 'Cardano', 'Multi-Chain', 'Other'] },
+                { name: 'smartContracts', label: 'Smart Contracts', type: 'select', options: ['Yes - Audited', 'Yes - Not Audited', 'No', 'In Development'] },
+                { name: 'activeWallets', label: 'Active Wallets/Users', type: 'number', placeholder: '1000' },
+                { name: 'totalVolume', label: 'Total Transaction Volume (₱)', type: 'number', placeholder: '100000' }
+            ]
+        },
+        'domain': {
+            name: 'Domain',
+            fields: [
+                { name: 'systemName', label: 'Domain Name', type: 'text', required: true, placeholder: 'e.g., techstartup.com' },
+                { name: 'domainExtension', label: 'Domain Extension', type: 'select', required: true, options: ['.com', '.net', '.org', '.io', '.co', '.ai', '.app', '.dev', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Describe why this domain is valuable (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe the domain value, potential use cases, SEO metrics, and why someone should buy it', rows: 6 },
+                { name: 'domainAge', label: 'Domain Age', type: 'select', required: true, options: ['Less than 1 year', '1-2 years', '2-5 years', '5-10 years', '10+ years'] },
+                { name: 'currentTraffic', label: 'Current Monthly Traffic', type: 'number', placeholder: '0' },
+                { name: 'backlinks', label: 'Number of Backlinks', type: 'number', placeholder: '0' },
+                { name: 'domainAuthority', label: 'Domain Authority (DA)', type: 'number', placeholder: '0' }
+            ]
+        },
+        'projects': {
+            name: 'Projects & Concepts',
+            fields: [
+                { name: 'systemName', label: 'Project Name', type: 'text', required: true, placeholder: 'e.g., Smart Home Dashboard' },
+                { name: 'projectType', label: 'Project Type', type: 'select', required: true, options: ['MVP/Prototype', 'Beta Product', 'Concept/Idea', 'Partially Built', 'Complete but No Revenue', 'Other'] },
+                { name: 'shortDescription', label: 'Short Description', type: 'textarea', required: true, maxlength: 200, placeholder: 'Brief overview (max 200 characters)' },
+                { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', required: true, placeholder: 'Describe your project, current state, features, potential market, and monetization possibilities', rows: 6 },
+                { name: 'completionStatus', label: 'Completion Status (%)', type: 'number', required: true, placeholder: '75' },
+                { name: 'techStack', label: 'Tech Stack', type: 'text', placeholder: 'e.g., React, Python, Firebase' },
+                { name: 'developmentTime', label: 'Time Invested', type: 'text', placeholder: 'e.g., 6 months, 200 hours' },
+                { name: 'targetMarket', label: 'Target Market/Industry', type: 'text', placeholder: 'e.g., Small businesses, Developers' }
+            ]
+        }
+    };
+
+    // ============================================
+    // EDIT MODE DETECTION AND DATA LOADING
+    // ============================================
+    let isEditMode = false;
+    let editingListingId = null;
+    let editingListingData = null;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get('edit');
+
+    if (editId) {
+        isEditMode = true;
+        editingListingId = editId;
+        editingListingData = JSON.parse(sessionStorage.getItem('editingListingData') || '{}');
+        
+        if (editingListingData && editingListingData.id === editId) {
+            console.log('📝 Edit mode activated for listing:', editId);
+            window.addEventListener('DOMContentLoaded', function() {
+                setTimeout(populateEditForm, 1000);
+            });
+        } else {
+            alert('Could not load listing data for editing');
+            window.location.href = 'dashboard.html';
+        }
+    }
+
+    function populateEditForm() {
+        console.log('Populating form with:', editingListingData);
+        
+        const heroTitle = document.querySelector('.hero-content h1');
+        const heroDesc = document.querySelector('.hero-content p');
+        if (heroTitle) heroTitle.textContent = 'Edit Your Listing';
+        if (heroDesc) heroDesc.textContent = 'Update your digital system information';
+        
+        if (editingListingData.category) {
+            selectedCategory = editingListingData.category;
+            selectCategory(selectedCategory);
+        }
+        
+        Object.keys(editingListingData).forEach(key => {
+            if (key !== 'id' && key !== 'userId' && key !== 'createdAt' && key !== 'images' && key !== 'thumbnails') {
+                formData[key] = editingListingData[key];
+            }
+        });
+        
+        if (editingListingData.images && editingListingData.images.length > 0) {
+            editingListingData.images.forEach((url, index) => {
+                uploadedImages.push({
+                    url: url,
+                    display_url: url,
+                    thumb: editingListingData.thumbnails?.[index] || url,
+                    filename: `Image ${index + 1}`
+                });
+            });
+            renderImagePreviews();
+        }
+        
+        setTimeout(() => {
+            fillAllFormFields();
+        }, 500);
+    }
+
+    function fillAllFormFields() {
+        console.log('Filling form fields with:', formData);
+        
+        Object.keys(formData).forEach(key => {
+            const field = document.querySelector(`[name="${key}"]`);
+            if (field && formData[key] !== undefined && formData[key] !== null) {
+                field.value = formData[key];
+                console.log(`Set ${key} = ${formData[key]}`);
+            }
+        });
+        
+        if (selectedCategory) {
+            const categoryField = document.getElementById('selectedCategory');
+            if (categoryField) {
+                categoryField.value = selectedCategory;
+            }
+        }
+    }
+
+    // ============================================
+     // ============================================
+    // AUTH STATE OBSERVER WITH QUOTA CHECK
+    // ============================================
+    let authCheckTimeout;
+   onAuthStateChanged(auth, async (user) => {
+    clearTimeout(authCheckTimeout);
+    
+    if (user) {
+        try {
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userDocRef);
+            
+            let userData;
+            
+            if (userDoc.exists()) {
+                userData = userDoc.data();
+            } else {
+                // Create user document if it doesn't exist
+                console.warn('⚠️ User document not found, creating...');
+                userData = {
+                    email: user.email,
+                    name: user.displayName || user.email.split('@')[0],
+                    role: 'seller',
+                    subscriptionPlan: 'free',
+                    createdAt: new Date().toISOString(),
+                    listings: { active: 0, total: 0 },
+                    stats: { totalViews: 0, inquiries: 0, sales: 0, alerts: 0, savedSearches: 0 },
+                    profile: { bio: '', company: '', website: '', phone: '', location: 'Quezon City, Metro Manila, PH', verified: false },
+                    status: 'active'
+                };
+                await setDoc(userDocRef, userData);
+            }
+            
+            // Check if user is suspended
+            if (userData.status === 'suspended') {
+                alert('⚠️ Your account has been suspended. You cannot create or edit listings.\n\nReason: ' + (userData.suspensionReason || 'Account policy violation'));
+                await signOut(auth);
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Check quota only if NOT in edit mode
+            if (!isEditMode) {
+                await checkUserQuota(user, userData);
+            }
+            
+            currentUser = user;
+            updateUIForLoggedInUser(user);
+            
+        } catch (error) {
+            console.error('Error checking user status:', error);
+            currentUser = user;
+            updateUIForLoggedInUser(user);
+        }
+    } else {
+        authCheckTimeout = setTimeout(() => {
+            currentUser = null;
+            updateUIForLoggedOutUser();
+            showAuthModal();
+            switchTab('signup');
+        }, 100);
+    }
+});
+
+    // ============================================
+    // QUOTA CHECK FUNCTION
+    // ============================================
+    async function checkUserQuota(user, userData) {
+    const plan = userData.subscriptionPlan || 'free';
+    
+    // Get listings created this month
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    const monthlyListingsQuery = query(
+        collection(db, 'listings'),
+        where('userId', '==', user.uid),
+        where('createdAt', '>=', firstDayOfMonth)
+    );
+    
+    const monthlyListingsSnapshot = await getDocs(monthlyListingsQuery);
+    const monthlyListingsCount = monthlyListingsSnapshot.size;
+    
+    console.log(`📊 Quota Check - Plan: ${plan}, Used: ${monthlyListingsCount}, User: ${user.uid}`); // ADD THIS DEBUG LINE
+    
+    // Define quota limits
+    const quotaLimits = {
+        free: 1,
+        basic: 3,
+        premium: Infinity
+    };
+    
+    const userQuota = quotaLimits[plan] || 1;
+    
+    // Store quota info globally
+    userQuotaInfo = {
+        plan: plan,
+        used: monthlyListingsCount,
+        limit: userQuota,
+        exceeded: monthlyListingsCount >= userQuota && plan !== 'premium'
+    };
+    
+    console.log('🔍 Quota Info:', userQuotaInfo); // ADD THIS DEBUG LINE
+    
+    // Display quota info
+    displayQuotaInfo(plan, monthlyListingsCount, userQuota);
+    
+    // Check if user exceeded quota
+    if (userQuotaInfo.exceeded) {
+        console.log('❌ Quota exceeded!'); // ADD THIS DEBUG LINE
+        showQuotaExceededMessage(plan, userQuota);
+        disableListingForm();
+    } else {
+        console.log('✅ Quota OK'); // ADD THIS DEBUG LINE
+    }
+}
+
+    // Display quota information
+    function displayQuotaInfo(plan, used, limit) {
+        const quotaInfoHTML = `
+            <div style="background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(99, 102, 241, 0.1)); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.2rem;">
+                            <svg style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                            </svg>
+                            Your Plan: ${plan.charAt(0).toUpperCase() + plan.slice(1)}
+                        </h4>
+                        <p style="margin: 0; color: var(--text); font-size: 1rem;">
+                            <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 0.3rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Monthly Listings: <strong style="color: var(--primary);">${used} of ${limit === Infinity ? 'Unlimited' : limit}</strong>
+                        </p>
+                    </div>
+                    ${plan !== 'premium' ? `
+                        <a href="pricing.html" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 0.75rem 1.5rem; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                            Upgrade Plan
+                        </a>
+                    ` : `
+                        <div style="background: var(--accent); color: white; padding: 0.75rem 1.5rem; border-radius: 50px; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Unlimited Listings
+                        </div>
+                    `}
+                </div>
+            </div>
+        `;
+        
+        const formContainer = document.querySelector('.listing-form');
+        if (formContainer && !document.getElementById('quotaInfoBanner')) {
+            const banner = document.createElement('div');
+            banner.id = 'quotaInfoBanner';
+            banner.innerHTML = quotaInfoHTML;
+            formContainer.insertAdjacentElement('beforebegin', banner);
+        }
+    }
+
+    // Show quota exceeded message
+    function showQuotaExceededMessage(plan, limit) {
+        const messageHTML = `
+            <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(249, 115, 22, 0.1)); padding: 2.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid #EF4444; text-align: center;">
+                <svg style="width: 64px; height: 64px; margin: 0 auto 1rem; color: #EF4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <h3 style="color: #EF4444; margin-bottom: 1rem; font-size: 1.8rem;">Monthly Listing Quota Reached</h3>
+                <p style="color: var(--text); margin-bottom: 1.5rem; font-size: 1.1rem;">You've reached your ${plan} plan limit of ${limit} listing${limit > 1 ? 's' : ''} per month. Upgrade to list more systems!</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="pricing.html" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s;">
+                        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                        Upgrade Now
+                    </a>
+                    <a href="index.html" style="background: white; color: var(--text); padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600; border: 2px solid var(--text); display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s;">
+                        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Go Home
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        const formContainer = document.querySelector('.listing-form');
+        if (formContainer && !document.getElementById('quotaExceededMessage')) {
+            const message = document.createElement('div');
+            message.id = 'quotaExceededMessage';
+            message.innerHTML = messageHTML;
+            formContainer.insertAdjacentElement('beforebegin', message);
+        }
+    }
+
+    // Disable the listing form
+    function disableListingForm() {
+        const form = document.getElementById('sellSystemForm');
+        if (form) {
+            const inputs = form.querySelectorAll('input, textarea, select, button');
+            inputs.forEach(input => {
+                input.disabled = true;
+                input.style.opacity = '0.5';
+                input.style.cursor = 'not-allowed';
+            });
+        }
+    }
+
+    // Update UI for logged in user
+    function updateUIForLoggedInUser(user) {
+        const signInBtn = document.getElementById('signInBtn');
+        const userProfile = document.getElementById('userProfile');
+        
+        requestAnimationFrame(() => {
+            if (signInBtn) signInBtn.style.display = 'none';
+            if (userProfile) userProfile.classList.add('logged-in');
+            
+            const userName = document.getElementById('userName');
+            if (userName) userName.textContent = user.displayName || user.email.split('@')[0];
+            
+            const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email)}&background=F97316&color=fff`;
+            const userAvatar = document.getElementById('userAvatar');
+            if (userAvatar) userAvatar.src = avatarUrl;
+            
+            const authRequired = document.getElementById('authRequired');
+            const listingForm = document.getElementById('listingForm');
+            if (authRequired) authRequired.style.display = 'none';
+            if (listingForm) listingForm.style.display = 'block';
+        });
+        
+        if (userProfile) userProfile.onclick = showUserMenu;
+    }
+
+    // Update UI for logged out user
+    function updateUIForLoggedOutUser() {
+        const signInBtn = document.getElementById('signInBtn');
+        const userProfile = document.getElementById('userProfile');
+        
+        requestAnimationFrame(() => {
+            if (signInBtn) signInBtn.style.display = 'block';
+            if (userProfile) userProfile.classList.remove('logged-in');
+            
+            const authRequired = document.getElementById('authRequired');
+            const listingForm = document.getElementById('listingForm');
+            if (authRequired) authRequired.style.display = 'block';
+            if (listingForm) listingForm.style.display = 'none';
+        });
+    }
+
+    // Switch auth tabs
+    window.switchTab = function(tab) {
+        const tabs = document.querySelectorAll('.auth-tab');
+        const forms = document.querySelectorAll('.auth-form');
+        
+        tabs.forEach(t => t.classList.remove('active'));
+        forms.forEach(f => f.classList.remove('active'));
+        
+        if (tab === 'signin') {
+            tabs[0].classList.add('active');
+            document.getElementById('signInForm').classList.add('active');
+        } else {
+            tabs[1].classList.add('active');
+            document.getElementById('signUpForm').classList.add('active');
+        }
+    }
+
+    // Show/Close Auth Modal
+    // Show/Close Auth Modal
+window.showAuthModal = function() {
+    document.getElementById('authModal').classList.add('active');
+}
+
+window.closeAuthModal = function() {
+    document.getElementById('authModal').classList.remove('active');
+}
+
+// Add event listener for auth required button
+document.addEventListener('DOMContentLoaded', () => {
+    const authRequiredBtn = document.getElementById('authRequiredBtn');
+    if (authRequiredBtn) {
+        authRequiredBtn.addEventListener('click', showAuthModal);
+    }
+});
+
+
+
+    window.closeAuthModal = function() {
+        document.getElementById('authModal').classList.remove('active');
+    }
+
+    // Email/Password Sign Up with user profile creation
+    document.getElementById('signUpForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('signUpName').value;
+        const email = document.getElementById('signUpEmail').value;
+        const password = document.getElementById('signUpPassword').value;
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCredential.user, { displayName: name });
+            
+            // Create user document in Firestore
+const userDocRef = doc(db, 'users', userCredential.user.uid);
+await setDoc(userDocRef, {
+    email: email,
+    name: name,
+    role: 'seller',
+    subscriptionPlan: 'free',
+    createdAt: new Date().toISOString(),
+    listings: { active: 0, total: 0 },
+    stats: { totalViews: 0, inquiries: 0, sales: 0, alerts: 0, savedSearches: 0 },
+    profile: { bio: '', company: '', website: '', phone: '', location: 'Quezon City, Metro Manila, PH', verified: false },
+    status: 'active'
+});
+            
+            console.log('User created:', userCredential.user);
+            closeAuthModal();
+            
+            // Check for redirect
+            const redirectTo = sessionStorage.getItem('redirectAfter');
+            if (redirectTo) {
+                sessionStorage.removeItem('redirectAfter');
+                window.location.href = redirectTo;
+            }
+        } catch (error) {
+            console.error('Error signing up:', error);
+            alert(error.message);
+        }
+    });
+
+    // Email/Password Sign In
+    document.getElementById('signInForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('signInEmail').value;
+        const password = document.getElementById('signInPassword').value;
+
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            console.log('User signed in:', userCredential.user);
+            closeAuthModal();
+            
+            // Check for redirect
+            const redirectTo = sessionStorage.getItem('redirectAfter');
+            if (redirectTo) {
+                sessionStorage.removeItem('redirectAfter');
+                window.location.href = redirectTo;
+            }
+        } catch (error) {
+            console.error('Error signing in:', error);
+            alert(error.message);
+        }
+    });
+
+    // Google Sign In
+    document.getElementById('googleSignInBtn').addEventListener('click', async () => {
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            
+            // Create/update user document
+            const userDocRef = doc(db, 'users', result.user.uid);
+            const userDoc = await getDoc(userDocRef);
+            
+          if (!userDoc.exists()) {
+    await setDoc(userDocRef, {
+        email: result.user.email,
+        name: result.user.displayName,
+        role: 'seller',
+        subscriptionPlan: 'free',
+        createdAt: new Date().toISOString(),
+        listings: { active: 0, total: 0 },
+        stats: { totalViews: 0, inquiries: 0, sales: 0, alerts: 0, savedSearches: 0 },
+        profile: { bio: '', company: '', website: '', phone: '', location: '', verified: false },
+        status: 'active'
+    });
+}
+            
+            console.log('User signed in with Google:', result.user);
+            closeAuthModal();
+            
+            // Check for redirect
+            const redirectTo = sessionStorage.getItem('redirectAfter');
+            if (redirectTo) {
+                sessionStorage.removeItem('redirectAfter');
+                window.location.href = redirectTo;
+            }
+        } catch (error) {
+            console.error('Error signing in with Google:', error);
+            alert('Failed to sign in with Google. Please try again.');
+        }
+    });
+
+    // User menu
+    window.showUserMenu = function(event) {
+        event.stopPropagation();
+        
+        const existingMenu = document.getElementById('userDropdownMenu');
+        if (existingMenu) {
+            existingMenu.remove();
+            return;
+        }
+        
+        const menu = document.createElement('div');
+        menu.id = 'userDropdownMenu';
+        menu.style.cssText = `
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: var(--white);
+            border: 2px solid var(--gray-light);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            min-width: 220px;
+            z-index: 1000;
+            overflow: hidden;
+        `;
+        
+        menu.innerHTML = `
+            <div style="padding: 1rem; border-bottom: 1px solid var(--gray-light);">
+                <div style="font-weight: 600; margin-bottom: 0.3rem;">${currentUser.displayName || 'User'}</div>
+                <div style="font-size: 0.85rem; color: var(--gray-medium);">${currentUser.email}</div>
+            </div>
+            <div style="padding: 0.5rem 0;">
+                <a href="admin_sell_page.html" style="display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s;">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="profile.html#profile" style="display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s;">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span>Profile</span>
+                </a>
+                <a href="dashboard.html#listings" style="display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s;">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span>My Listings</span>
+                </a>
+                <div style="height: 1px; background: var(--gray-light); margin: 0.5rem 0;"></div>
+                <a href="#" onclick="handleSignOut(event)" style="display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1rem; color: var(--error); text-decoration: none; transition: background 0.2s;">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span>Sign Out</span>
+                </a>
+            </div>
+        `;
+        
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.background = 'var(--gray-light)';
+            });
+            link.addEventListener('mouseleave', function() {
+                this.style.background = '';
+            });
+        });
+        
+        const userProfileEl = document.querySelector('.user-profile');
+        if (userProfileEl) {
+            userProfileEl.style.position = 'relative';
+            userProfileEl.appendChild(menu);
+        }
+        
+        setTimeout(() => {
+            document.addEventListener('click', closeUserMenu);
+        }, 0);
+    }
+
+    function closeUserMenu() {
+        const menu = document.getElementById('userDropdownMenu');
+        if (menu) {
+            menu.remove();
+        }
+        document.removeEventListener('click', closeUserMenu);
+    }
+
+    window.handleSignOut = async function(event) {
+        event.preventDefault();
+        closeUserMenu();
+        
+        if (confirm('Are you sure you want to sign out?')) {
+            try {
+                await signOut(auth);
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error signing out:', error);
+                alert('Failed to sign out. Please try again.');
+            }
+        }
+    }
+
+    // Select category function
+    window.selectCategory = function(category) {
+        selectedCategory = category;
+        
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        
+        const categoryCard = document.querySelector(`[data-category="${category}"]`);
+        if (categoryCard) categoryCard.classList.add('selected');
+        
+        const categoryField = document.getElementById('selectedCategory');
+        if (categoryField) categoryField.value = category;
+        
+        generateCategoryFields(category);
+    }
+
+    // Generate category-specific form fields
+    function generateCategoryFields(category) {
+        const container = document.getElementById('categorySpecificFields');
+        const config = categoryFields[category];
+        
+        if (!config) {
+            container.innerHTML = '<p>Category configuration not found.</p>';
+            return;
+        }
+        
+        let html = `
+            <div class="form-header" style="margin-bottom: 2rem;">
+                <h3>${config.name} Details</h3>
+                <p>Please provide detailed information about your ${config.name.toLowerCase()}</p>
+            </div>
+        `;
+        
+        config.fields.forEach(field => {
+            if (field.type === 'text' || field.type === 'number') {
+                html += `
+                    <div class="form-group">
+                        <label>${field.label} ${field.required ? '<span class="required">*</span>' : ''}</label>
+                        <input 
+                            type="${field.type}" 
+                            class="form-input" 
+                            name="${field.name}" 
+                            ${field.required ? 'required' : ''} 
+                            placeholder="${field.placeholder || ''}"
+                            ${field.maxlength ? `maxlength="${field.maxlength}"` : ''}
+                            ${field.step ? `step="${field.step}"` : ''}
+                        >
+                        ${field.hint ? `<div class="form-hint">${field.hint}</div>` : ''}
+                    </div>
+                `;
+            } else if (field.type === 'textarea') {
+                html += `
+                    <div class="form-group">
+                        <label>${field.label} ${field.required ? '<span class="required">*</span>' : ''}</label>
+                        <textarea 
+                            class="form-textarea" 
+                            name="${field.name}" 
+                            ${field.required ? 'required' : ''} 
+                            placeholder="${field.placeholder || ''}"
+                            ${field.maxlength ? `maxlength="${field.maxlength}"` : ''}
+                            ${field.rows ? `style="min-height: ${field.rows * 30}px;"` : ''}
+                        ></textarea>
+                        ${field.hint ? `<div class="form-hint">${field.hint}</div>` : ''}
+                    </div>
+                `;
+            } else if (field.type === 'select') {
+                html += `
+                    <div class="form-group">
+                        <label>${field.label} ${field.required ? '<span class="required">*</span>' : ''}</label>
+                        <select class="form-select" name="${field.name}" ${field.required ? 'required' : ''}>
+                            <option value="">Select ${field.label}</option>
+                            ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                        </select>
+                        ${field.hint ? `<div class="form-hint">${field.hint}</div>` : ''}
+                    </div>
+                `;
+            }
+        });
+        
+        container.innerHTML = html;
+        
+        // Re-fill fields if editing
+        if (isEditMode) {
+            setTimeout(fillAllFormFields, 100);
+        }
+    }
+
+    // Make completed steps clickable
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.step').forEach((step, index) => {
+            step.addEventListener('click', function() {
+                const targetStep = index + 1;
+                
+                if (targetStep < currentStep) {
+                    const stepsToMove = targetStep - currentStep;
+                    changeStep(stepsToMove);
+                }
+            });
+        });
+    });
+
+    // Image Upload Functionality
+    const imageUploadContainer = document.getElementById('imageUploadContainer');
+    if (imageUploadContainer) {
+        imageUploadContainer.addEventListener('click', function() {
+            if (uploadedImages.length < MAX_IMAGES) {
+                document.getElementById('imageUpload').click();
+            } else {
+                alert(`Maximum ${MAX_IMAGES} images allowed`);
+            }
+        });
+    }
+
+    const imageUpload = document.getElementById('imageUpload');
+    if (imageUpload) {
+        imageUpload.addEventListener('change', async function(e) {
+            const files = Array.from(e.target.files);
+            
+            if (uploadedImages.length + files.length > MAX_IMAGES) {
+                alert(`You can only upload up to ${MAX_IMAGES} images. Currently you have ${uploadedImages.length} image(s).`);
+                return;
+            }
+
+            for (const file of files) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`${file.name} is larger than 5MB. Please choose a smaller file.`);
+                    continue;
+                }
+
+                if (!file.type.startsWith('image/')) {
+                    alert(`${file.name} is not an image file.`);
+                    continue;
+                }
+
+                await uploadImageToImgBB(file);
+            }
+
+            e.target.value = '';
+        });
+    }
+
+    // Upload image to ImgBB
+    async function uploadImageToImgBB(file) {
+        const uploadProgress = document.getElementById('uploadProgress');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const uploadPercentage = document.getElementById('uploadPercentage');
+        const progressBar = document.getElementById('progressBar');
+
+        if (uploadProgress) uploadProgress.classList.add('active');
+        if (uploadStatus) uploadStatus.textContent = `Uploading ${file.name}...`;
+        if (uploadPercentage) uploadPercentage.textContent = '0%';
+        if (progressBar) progressBar.style.width = '0%';
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const xhr = new XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percentComplete = Math.round((e.loaded / e.total) * 100);
+                    if (uploadPercentage) uploadPercentage.textContent = percentComplete + '%';
+                    if (progressBar) progressBar.style.width = percentComplete + '%';
+                }
+            });
+
+            xhr.addEventListener('load', () => {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        uploadedImages.push({
+                            url: response.data.url,
+                            display_url: response.data.display_url,
+                            delete_url: response.data.delete_url,
+                            thumb: response.data.thumb.url,
+                            filename: file.name
+                        });
+                        
+                        renderImagePreviews();
+                        if (uploadStatus) uploadStatus.textContent = 'Upload complete!';
+                        
+                        setTimeout(() => {
+                            if (uploadProgress) uploadProgress.classList.remove('active');
+                        }, 1000);
+                    } else {
+                        throw new Error('Upload failed');
+                    }
+                } else {
+                    throw new Error(`Upload failed with status ${xhr.status}`);
+                }
+            });
+
+            xhr.addEventListener('error', () => {
+                console.error('Upload error');
+                alert(`Failed to upload ${file.name}. Please try again.`);
+                if (uploadProgress) uploadProgress.classList.remove('active');
+            });
+
+            xhr.open('POST', `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`);
+            xhr.send(formData);
+
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert(`Failed to upload ${file.name}. Please try again.`);
+            if (uploadProgress) uploadProgress.classList.remove('active');
+        }
+    }
+
+    // Render image previews
+    function renderImagePreviews() {
+        const grid = document.getElementById('imagePreviewGrid');
+        if (!grid) return;
+        
+        grid.innerHTML = uploadedImages.map((img, index) => `
+            <div class="image-preview-item">
+                <img src="${img.display_url}" alt="Preview ${index + 1}">
+                <button class="remove-image" onclick="removeImage(${index})" type="button">×</button>
+                ${index === 0 ? '<div style="position: absolute; bottom: 0.5rem; left: 0.5rem; background: var(--primary); color: white; padding: 0.3rem 0.6rem; border-radius: 5px; font-size: 0.75rem; font-weight: 600;">Main</div>' : ''}
+            </div>
+        `).join('');
+    }
+
+    // Remove image
+    window.removeImage = function(index) {
+        if (confirm('Are you sure you want to remove this image?')) {
+            uploadedImages.splice(index, 1);
+            renderImagePreviews();
+        }
+    }
+
+    // Form step navigation
+    window.changeStep = function(direction) {
+        // Only validate when moving forward
+        if (direction === 1) {
+            // Validate category selection on step 1
+            if (currentStep === 1 && !selectedCategory) {
+                alert('Please select a business category to continue');
+                return;
+            }
+
+            // Validate required fields when moving forward
+            if (!validateStep(currentStep)) {
+                return;
+            }
+
+            // Special validation for image step (step 3)
+            if (currentStep === 3 && uploadedImages.length === 0) {
+                alert('Please upload at least one image of your system');
+                return;
+            }
+        }
+
+        saveStepData(currentStep);
+
+        const newStep = currentStep + direction;
+        
+        if (newStep < 1 || newStep > totalSteps) return;
+
+        const currentStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+        const currentStepIndicator = document.querySelector(`.step[data-step="${currentStep}"]`);
+        if (currentStepEl) currentStepEl.classList.remove('active');
+        if (currentStepIndicator) currentStepIndicator.classList.remove('active');
+
+        currentStep = newStep;
+        
+        const newStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+        const newStepIndicator = document.querySelector(`.step[data-step="${currentStep}"]`);
+        if (newStepEl) newStepEl.classList.add('active');
+        if (newStepIndicator) newStepIndicator.classList.add('active');
+
+        for (let i = 1; i < currentStep; i++) {
+            const stepIndicator = document.querySelector(`.step[data-step="${i}"]`);
+            if (stepIndicator) stepIndicator.classList.add('completed');
+        }
+
+        const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+        const progressLine = document.getElementById('progressLine');
+        if (progressLine) progressLine.style.width = progress + '%';
+
+        updateButtons();
+
+        if (currentStep === 6) {
+            populateReview();
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Validate step
+    function validateStep(step) {
+        const stepElement = document.querySelector(`.form-step[data-step="${step}"]`);
+        if (!stepElement) return true;
+        
+        const requiredFields = stepElement.querySelectorAll('[required]');
+        
+        for (let field of requiredFields) {
+            if (!field.value.trim()) {
+                alert('Please fill in all required fields');
+                field.focus();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Save step data
+    function saveStepData(step) {
+        const stepElement = document.querySelector(`.form-step[data-step="${step}"]`);
+        if (!stepElement) return;
+        
+        const inputs = stepElement.querySelectorAll('input, select, textarea');
+        
+        inputs.forEach(input => {
+            if (input.name && input.type !== 'file') {
+                formData[input.name] = input.value;
+            }
+        });
+
+        // Save images
+        if (step === 3) {
+            formData.images = uploadedImages.map(img => img.display_url);
+            formData.mainImage = uploadedImages.length > 0 ? uploadedImages[0].display_url : null;
+        }
+    }
+
+    // Update buttons
+    function updateButtons() {
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (prevBtn) prevBtn.style.display = currentStep === 1 ? 'none' : 'block';
+        
+        if (currentStep === totalSteps) {
+            if (nextBtn) nextBtn.style.display = 'none';
+            if (submitBtn) {
+                submitBtn.style.display = 'block';
+                submitBtn.innerHTML = isEditMode ? 
+                    `<svg style="width: 20px; height: 20px; margin-right: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>Update Listing` :
+                    `<svg style="width: 20px; height: 20px; margin-right: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Submit Listing`;
+            }
+        } else {
+            if (nextBtn) {
+                nextBtn.style.display = 'block';
+                nextBtn.innerHTML = `Next<svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>`;
+            }
+            if (submitBtn) submitBtn.style.display = 'none';
+        }
+    }
+
+    // Populate review content
+    function populateReview() {
+        const reviewContent = document.getElementById('reviewContent');
+        if (!reviewContent) return;
+        
+        const categoryName = categoryFields[selectedCategory]?.name || 'Business';
+        
+        reviewContent.innerHTML = `
+            <h3 style="margin-bottom: 1.5rem; font-size: 1.5rem;">Your Listing Summary</h3>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Category</h4>
+                <p><strong>${categoryName}</strong></p>
+            </div>
+
+            ${uploadedImages.length > 0 ? `
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Images (${uploadedImages.length})</h4>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    ${uploadedImages.map((img, index) => `
+                        <img src="${img.display_url}" alt="Image ${index + 1}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 2px solid ${index === 0 ? 'var(--primary)' : 'var(--gray-light)'};">
+                    `).join('')}
+                </div>
+            </div>
+            ` : ''}
+
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Basic Information</h4>
+                <p><strong>Name:</strong> ${formData.systemName || 'N/A'}</p>
+                ${formData.shortDescription ? `<p><strong>Description:</strong> ${formData.shortDescription}</p>` : ''}
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Financial Details</h4>
+                <p><strong>Monthly Revenue:</strong> ₱${parseInt(formData.monthlyRevenue || 0).toLocaleString()}</p>
+                <p><strong>Monthly Profit:</strong> ₱${parseInt(formData.monthlyProfit || 0).toLocaleString()}</p>
+                <p><strong>Asking Price:</strong> ₱${parseInt(formData.askingPrice || 0).toLocaleString()}</p>
+                ${formData.reasonForSelling ? `<p><strong>Reason for Selling:</strong> ${formData.reasonForSelling}</p>` : ''}
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Additional Details</h4>
+                ${Object.keys(formData).filter(key => 
+                    !['systemName', 'shortDescription', 'detailedDescription', 'monthlyRevenue', 'monthlyProfit', 'askingPrice', 'reasonForSelling', 'category', 'images', 'mainImage'].includes(key)
+                ).map(key => {
+                    if (formData[key] && formData[key] !== '') {
+                        return `<p><strong>${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</strong> ${formData[key]}</p>`;
+                    }
+                    return '';
+                }).join('')}
+            </div>
+
+            <div style="background: var(--white); padding: 1rem; border-radius: 10px; border-left: 4px solid var(--accent);">
+                <p style="margin: 0; color: var(--gray-dark);">
+                    <strong>Note:</strong> Your listing will be reviewed by our team within 24-48 hours. You'll receive an email notification once it's published.
+                </p>
+            </div>
+        `;
+    }
+
+    // Form submission
+    const sellSystemForm = document.getElementById('sellSystemForm');
+    if (sellSystemForm) {
+        sellSystemForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!currentUser) {
+                alert('Please sign in to submit your listing');
+                return;
+            }
+
+            // Check suspension status
+            try {
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                const userDoc = await getDoc(userDocRef);
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    if (userData.status === 'suspended') {
+                        alert('⚠️ Your account is suspended. You cannot submit listings.');
+                        await signOut(auth);
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking user status:', error);
+            }
+
+            // Check quota only if NOT editing
+            if (!isEditMode && userQuotaInfo && userQuotaInfo.exceeded) {
+                alert(`You've reached your ${userQuotaInfo.plan} plan limit. Please upgrade to list more systems.`);
+                window.location.href = 'pricing.html';
+                return;
+            }
+
+            const agreeTerms = document.getElementById('agreeTerms');
+            if (agreeTerms && !agreeTerms.checked) {
+                alert('Please agree to the terms of service');
+                return;
+            }
+
+            if (uploadedImages.length === 0) {
+                alert('Please upload at least one image');
+                return;
+            }
+
+            if (!selectedCategory) {
+                alert('Please select a business category');
+                return;
+            }
+
+            saveStepData(currentStep);
+
+            try {
+                const submitBtn = document.getElementById('submitBtn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = `<svg style="width: 20px; height: 20px; margin-right: 0.5rem; animation: spin 1s linear infinite;" fill="none" viewBox="0 0 24 24"><circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>${isEditMode ? 'Updating...' : 'Submitting...'}`;
+                submitBtn.disabled = true;
+
+                const listingData = {
+                    ...formData,
+                    category: selectedCategory,
+                    categoryName: categoryFields[selectedCategory]?.name || '',
+                    images: uploadedImages.map(img => img.display_url),
+                    mainImage: uploadedImages[0].display_url,
+                    thumbnails: uploadedImages.map(img => img.thumb),
+                    imageCount: uploadedImages.length,
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email,
+                    userName: currentUser.displayName || currentUser.email.split('@')[0],
+                    status: isEditMode ? (editingListingData.status || 'pending') : 'pending',
+                    views: isEditMode ? (editingListingData.views || 0) : 0,
+                    inquiries: isEditMode ? (editingListingData.inquiries || 0) : 0
+                };
+
+                if (isEditMode) {
+                    // UPDATE existing listing
+                    listingData.updatedAt = serverTimestamp();
+                    
+                    const listingRef = doc(db, 'listings', editingListingId);
+                    await updateDoc(listingRef, listingData);
+                    
+                    console.log('✅ Listing updated:', editingListingId);
+                    
+                    sessionStorage.removeItem('editingListingId');
+                    sessionStorage.removeItem('editingListingData');
+                    
+                    alert('✅ Listing updated successfully!');
+                    window.location.href = 'marketplace.html?tab=listings';
+                    
+                } else {
+                    // CREATE new listing
+                    listingData.createdAt = serverTimestamp();
+                    const docRef = await addDoc(collection(db, 'listings'), listingData);
+                    console.log('✅ Listing created with ID:', docRef.id);
+
+                    // Update user's listing count
+                    const userDocRef = doc(db, 'users', currentUser.uid);
+                    await updateDoc(userDocRef, {
+                        'listings.active': increment(1),
+                        'listings.total': increment(1)
+                    });
+
+                    // Hide form and show success message
+                    sellSystemForm.style.display = 'none';
+                    const progressSteps = document.querySelector('.progress-steps');
+                    const formHeader = document.querySelector('.form-header');
+                    if (progressSteps) progressSteps.style.display = 'none';
+                    if (formHeader) formHeader.style.display = 'none';
+                    
+                    const successMessage = document.getElementById('successMessage');
+                    if (successMessage) successMessage.classList.add('active');
+                }
+
+            } catch (error) {
+                console.error('❌ Error submitting listing:', error);
+                alert('Failed to ' + (isEditMode ? 'update' : 'submit') + ' listing. Please try again.');
+                
+                const submitBtn = document.getElementById('submitBtn');
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            }
+        });
+    }
+
+    // Close modal when clicking outside
+    const authModal = document.getElementById('authModal');
+    if (authModal) {
+        authModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAuthModal();
+            }
+        });
+    }
+
+    // Initialize drag and drop for images
+    if (imageUploadContainer) {
+        imageUploadContainer.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.style.borderColor = 'var(--primary)';
+            this.style.background = 'var(--gray-light)';
+        });
+
+        imageUploadContainer.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.style.borderColor = '';
+            this.style.background = '';
+        });
+
+        imageUploadContainer.addEventListener('drop', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.style.borderColor = '';
+            this.style.background = '';
+
+            const files = Array.from(e.dataTransfer.files);
+            
+            if (uploadedImages.length + files.length > MAX_IMAGES) {
+                alert(`You can only upload up to ${MAX_IMAGES} images. Currently you have ${uploadedImages.length} image(s).`);
+                return;
+            }
+
+            for (const file of files) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`${file.name} is larger than 5MB. Please choose a smaller file.`);
+                    continue;
+                }
+
+                if (!file.type.startsWith('image/')) {
+                    alert(`${file.name} is not an image file.`);
+                    continue;
+                }
+
+                await uploadImageToImgBB(file);
+            }
+        });
+    }
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'ArrowRight') {
+            e.preventDefault();
+            if (currentStep < totalSteps) {
+                changeStep(1);
+            }
+        }
+        
+        if ((e.ctrlKey || e.metaKey) && e.key === 'ArrowLeft') {
+            e.preventDefault();
+            if (currentStep > 1) {
+                changeStep(-1);
+            }
+        }
+
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('authModal');
+            if (modal && modal.classList.contains('active')) {
+                closeAuthModal();
+            }
+        }
+    });
+
+    // Auto-save form data to prevent data loss
+    let autoSaveTimeout;
+    if (sellSystemForm) {
+        sellSystemForm.addEventListener('input', function() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                saveStepData(currentStep);
+                console.log('Form data auto-saved');
+            }, 2000);
+        });
+    }
+
+    // Warn user before leaving if form has data
+    window.addEventListener('beforeunload', function(e) {
+        if (Object.keys(formData).length > 0 || uploadedImages.length > 0) {
+            const confirmationMessage = 'You have unsaved changes. Are you sure you want to leave?';
+            e.returnValue = confirmationMessage;
+            return confirmationMessage;
+        }
+    });
+
+    // Add CSS for spin animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Log for debugging
+    console.log('Systemly Sell Form initialized');
+    console.log('ImgBB API ready');
+    console.log('Max images:', MAX_IMAGES);
+    console.log('Total categories:', Object.keys(categoryFields).length);
+    console.log('Edit mode:', isEditMode);
+</script>
+</body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html>

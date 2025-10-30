@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Center - Systemly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #F97316;
+            --secondary: #6366F1;
+            --accent: #14B8A6;
+            --bg: #FFF7ED;
+            --text: #1F2937;
+            --white: #FFFFFF;
+            --gray-light: #F3F4F6;
+            --gray-medium: #9CA3AF;
+            --gray-dark: #4B5563;
+            --success: #10B981;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Archivo', sans-serif;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 247, 237, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Archivo', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-back {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .nav-back:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 5rem 5% 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="30" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            color: var(--white);
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            color: var(--white);
+            font-size: 1.3rem;
+            opacity: 0.95;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Search Bar */
+        .search-container {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-box {
+            background: var(--white);
+            border-radius: 60px;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .search-icon {
+            color: var(--gray-medium);
+            font-size: 1.3rem;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            font-size: 1.1rem;
+            outline: none;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .search-input::placeholder {
+            color: var(--gray-medium);
+        }
+
+        /* Quick Links */
+        .quick-links {
+            max-width: 1400px;
+            margin: -3rem auto 4rem;
+            padding: 0 5%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .quick-links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .quick-link-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text);
+            border: 2px solid transparent;
+        }
+
+        .quick-link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            border-color: var(--primary);
+        }
+
+        .quick-link-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+        }
+
+        .quick-link-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-link-card p {
+            color: var(--gray-dark);
+            font-size: 0.95rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 5% 4rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--gray-dark);
+        }
+
+        /* FAQ Section */
+        .faq-categories {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .faq-nav {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .faq-nav-item {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 500;
+        }
+
+        .faq-nav-item:hover {
+            background: var(--gray-light);
+        }
+
+        .faq-nav-item.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+        }
+
+        .faq-content-section {
+            display: none;
+        }
+
+        .faq-content-section.active {
+            display: block;
+        }
+
+        .faq-item {
+            background: var(--white);
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .faq-question {
+            padding: 1.5rem 2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .faq-question:hover {
+            color: var(--primary);
+        }
+
+        .faq-toggle {
+            width: 30px;
+            height: 30px;
+            background: var(--gray-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .faq-item.active .faq-toggle {
+            background: var(--primary);
+            color: var(--white);
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+        }
+
+        .faq-answer-content {
+            padding: 0 2rem 1.5rem;
+            color: var(--gray-dark);
+            line-height: 1.8;
+        }
+
+        /* Contact Section */
+        .contact-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .contact-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .contact-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--white);
+            margin: 0 auto 1.5rem;
+        }
+
+        .contact-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .contact-card p {
+            color: var(--gray-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .contact-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(249, 115, 22, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text);
+            color: var(--white);
+            padding: 3rem 5% 1.5rem;
+            margin-top: 4rem;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--white);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .faq-categories {
+                grid-template-columns: 1fr;
+            }
+
+            .faq-nav {
+                position: static;
+                display: flex;
+                overflow-x: auto;
+                gap: 0.5rem;
+                padding-bottom: 1rem;
+            }
+
+            .faq-nav-item {
+                white-space: nowrap;
+                margin-bottom: 0;
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            display: none;
+        }
+
+        .no-results.show {
+            display: block;
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">Systemly</a>
+            <a href="index.html" class="nav-back">
+                <i class="fa-solid fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>How Can We Help You?</h1>
+            <p>Search our knowledge base or browse categories below</p>
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" class="search-input" id="helpSearch" placeholder="Search for answers...">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="quick-links">
+        <div class="quick-links-grid">
+            <div class="quick-link-card" data-category="getting-started">
+                <div class="quick-link-icon">
+                    <i class="fa-solid fa-rocket"></i>
+                </div>
+                <h3>Getting Started</h3>
+                <p>Learn the basics of buying and selling on Systemly</p>
+            </div>
+
+            <div class="quick-link-card" data-category="buying">
+                <div class="quick-link-icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </div>
+                <h3>Buying Systems</h3>
+                <p>Everything about purchasing digital systems safely</p>
+            </div>
+
+            <div class="quick-link-card" data-category="selling">
+                <div class="quick-link-icon">
+                    <i class="fa-solid fa-tag"></i>
+                </div>
+                <h3>Selling Systems</h3>
+                <p>Tips for listing and selling your systems</p>
+            </div>
+
+            <div class="quick-link-card" data-category="payments">
+                <div class="quick-link-icon">
+                    <i class="fa-solid fa-credit-card"></i>
+                </div>
+                <h3>Payments & Billing</h3>
+                <p>Payment methods, refunds, and transaction security</p>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <div class="section">
+            <div class="section-header">
+                <h2>Frequently Asked <span class="gradient-text">Questions</span></h2>
+                <p>Find answers to common questions about Systemly</p>
+            </div>
+
+            <div class="faq-categories">
+                <div class="faq-nav">
+                    <div class="faq-nav-item active" data-category="getting-started">
+                        <i class="fa-solid fa-rocket"></i>
+                        Getting Started
+                    </div>
+                    <div class="faq-nav-item" data-category="buying">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        Buying Systems
+                    </div>
+                    <div class="faq-nav-item" data-category="selling">
+                        <i class="fa-solid fa-tag"></i>
+                        Selling Systems
+                    </div>
+                    <div class="faq-nav-item" data-category="payments">
+                        <i class="fa-solid fa-credit-card"></i>
+                        Payments
+                    </div>
+                    <div class="faq-nav-item" data-category="account">
+                        <i class="fa-solid fa-user"></i>
+                        Account
+                    </div>
+                    <div class="faq-nav-item" data-category="technical">
+                        <i class="fa-solid fa-wrench"></i>
+                        Technical
+                    </div>
+                </div>
+
+                <div class="faq-content">
+                    <!-- Getting Started -->
+                    <div class="faq-content-section active" data-category="getting-started">
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                What is Systemly and how does it work?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Systemly is a secure marketplace for buying and selling complete digital systems, automation workflows, and online businesses. We connect verified sellers with buyers, provide secure PayMongo transactions, and facilitate smooth transfers of digital assets. Think of us as the trusted middleman that ensures both parties get what they expect.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                How do I create an account?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Click "Sign Up" in the top right corner, enter your email and create a password, or sign in with Google. After verification, you can immediately browse listings. To buy or sell, complete your profile with additional verification details.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                Is Systemly free to use?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Browsing and creating an account is completely free. Sellers pay a small commission (5-10% depending on plan) only when their system sells. Buyers pay no fees. We also offer premium seller plans with enhanced visibility and features.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                What types of systems can I find on Systemly?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    You'll find e-commerce stores, SaaS businesses, content websites, mobile apps, social media accounts, automation workflows, plugins, digital agencies, AI tools, and more. Every listing includes detailed metrics, revenue data, and asset inventories.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buying Systems -->
+                    <div class="faq-content-section" data-category="buying">
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                How do I purchase a system?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">Browse listings, click on one you're interested in, review all details, and click "Acquire Now." You'll go through our secure checkout process with PayMongo. Funds are held by the system for 24 hours until the seller transfers all assets and you confirm receipt.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                How do I know if a listing is legitimate?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    All listings are manually reviewed by our team. We verify revenue claims, check asset ownership, and validate seller identity. Look for the "Verified" badge on listings. You can also request additional documentation during due diligence.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                Can I negotiate the price?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Yes! Use the "Message Seller" button to start a conversation and make an offer. Many sellers are open to negotiation, especially for quick sales. Our team can also mediate discussions if needed.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                What happens after I purchase?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    After payment, the seller has 7 days to transfer all listed assets (domains, code, accounts, etc.). You'll receive a transfer checklist to verify. Once you confirm receipt, funds are released to the seller. Our support team guides you through every step.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                What if the system doesn't match the description?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    If you discover discrepancies during the verification period, contact our support team immediately. We'll investigate and mediate. If the seller misrepresented the system, you're eligible for a full refund through our buyer protection program.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selling Systems -->
+                    <div class="faq-content-section" data-category="selling">
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                How do I list my system for sale?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Click "Sell Now," complete the listing form with detailed information about your system, upload screenshots and documentation, set your asking price, and submit for review. Our team typically approves listings within 24-48 hours.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                How should I price my system?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Use our free AI valuation tool for an estimate based on revenue, profit, age, and market comparables. Typical multiples are 2-4x annual profit for established systems. Price competitively to attract serious buyers while maximizing your return.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                What fees do sellers pay?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Free sellers pay 10% commission on successful sales. Basic plan (₱399/month) reduces this to 7%, and Premium plan (₱799/month) charges only 5%. Commission is only charged when your system sells, never upfront.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                How long does it take to sell?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Average time to sale is 30-60 days for well-priced, documented systems. Premium listings with comprehensive data and active seller engagement sell faster. We'll provide visibility metrics and optimization tips in your seller dashboard.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                What should I include in my listing?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Include accurate revenue/profit data, traffic stats, customer information, operational details, included assets (domains, code, accounts), tech stack, and growth opportunities. More transparency = faster sales at better prices. Upload screenshots, analytics, and documentation.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payments -->
+                    <div class="faq-content-section" data-category="payments">
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                What payment methods do you accept?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    We use PayMongo for secure transactions, supporting credit cards, debit cards, GCash, GrabPay, and bank transfers. All payments are processed securely and held by the system until transfer completion.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                How does escrow protection work?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    When you purchase, your payment is held securely in escrow. The seller transfers assets, you verify everything matches the listing, and then you approve release. If issues arise, our team investigates before releasing funds. This protects both parties.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                When do sellers receive payment?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Funds are released to sellers after the buyer confirms receipt of all assets and the verification period (7 days) completes. Payments are typically processed within 3-5 business days to your chosen payout method.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                Are there any hidden fees?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    No hidden fees! Buyers pay zero fees. Sellers pay only the stated commission percentage when their system sells. PayMongo processing fees are included in our commission, so the price you see is what you pay/receive.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                Can I get a refund?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Yes, if the system doesn't match the listing description or the seller fails to transfer assets as promised. During the 7-day verification period, you can dispute and request a full refund. Our team reviews all disputes fairly and quickly.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account -->
+                    <div class="faq-content-section" data-category="account">
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                How do I change my password?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Go to your Dashboard → Settings → Security. Click "Change Password," enter your current password and new password, then save. You'll receive a confirmation email. If you forgot your password, use the "Forgot Password" link on the login page.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                How do I verify my account?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Email verification happens automatically when you sign up. For additional verification (required for selling and large purchases), go to Dashboard → Verification and upload a government ID. Verification typically completes within 24 hours.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                Can I have multiple accounts?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    No, each user is allowed one account. Multiple accounts may be flagged and suspended. If you need separate buyer and seller profiles, both functions are available in a single account. Contact support if you have special business needs.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                How do I delete my account?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Go to Dashboard → Settings → Account → Delete Account. You'll need to confirm via email. Note: You cannot delete your account if you have active listings or pending transactions. All data will be permanently deleted after 30 days.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                What are the different subscription plans?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Free: Browse and buy unlimited, sell with 10% commission. Basic (₱999/month): 7% commission, priority support, 5 active listings. Premium (₱2,999/month): 5% commission, featured listings, unlimited active listings, dedicated account manager, advanced analytics.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Technical -->
+                    <div class="faq-content-section" data-category="technical">
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                Why can't I upload images?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Images must be under 5MB each and in JPG, PNG, or WebP format. Make sure you have a stable internet connection. If problems persist, try a different browser, clear your cache, or compress your images before uploading.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                What browsers are supported?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Systemly works best on the latest versions of Chrome, Firefox, Safari, and Edge. We recommend keeping your browser updated for the best experience. Mobile browsers are fully supported on both iOS and Android.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                Why am I getting logged out frequently?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    This usually happens if cookies are disabled or you're in incognito mode. Enable cookies in your browser settings and check "Remember Me" when logging in. Sessions last 30 days by default. Clear your browser cache if issues continue.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                How do I report a bug or technical issue?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Click the "Report Issue" button in your dashboard footer, or email support@systemly.com with details about the problem, what you were doing, and your browser/device. Screenshots are very helpful. We aim to respond within 24 hours.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                Is my data secure on Systemly?
+                                <div class="faq-toggle"><i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    Yes! We use bank-level 256-bit SSL encryption for all data transmission. Passwords are hashed and never stored in plain text. Payment data is handled by PayMongo (PCI-DSS compliant). We never share your data with third parties without consent.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-results" id="noResults">
+                <div class="no-results-icon">🔍</div>
+                <h3>No results found</h3>
+                <p>Try searching with different keywords or browse categories above</p>
+            </div>
+        </div>
+
+        <!-- Contact Support Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Still Need <span class="gradient-text">Help?</span></h2>
+                <p>Our support team is here to assist you</p>
+            </div>
+
+            <div class="contact-options">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <h3>Live Chat</h3>
+                    <p>Chat with our support team in real-time. Available Monday-Friday, 9AM-6PM PHT.</p>
+                    <a href="#" class="contact-btn" onclick="alert('Live chat coming soon!'); return false;">Start Chat</a>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <h3>Email Support</h3>
+                    <p>Send us an email and we'll get back to you within 24 hours.</p>
+                    <a href="mailto:support@systemly.com" class="contact-btn">Email Us</a>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fa-solid fa-book"></i>
+                    </div>
+                    <h3>Documentation</h3>
+                    <p>Browse our detailed guides and tutorials for step-by-step help.</p>
+                    <a href="#" class="contact-btn" onclick="alert('Documentation coming soon!'); return false;">View Docs</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="marketplace.html">Marketplace</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="about.html">About</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Systemly. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ Toggle
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.parentElement;
+                const isActive = faqItem.classList.contains('active');
+                
+                // Close all other FAQs in the same category
+                faqItem.closest('.faq-content-section').querySelectorAll('.faq-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Toggle current FAQ
+                if (!isActive) {
+                    faqItem.classList.add('active');
+                }
+            });
+        });
+
+        // Category Navigation
+        document.querySelectorAll('.faq-nav-item').forEach(navItem => {
+            navItem.addEventListener('click', () => {
+                const category = navItem.getAttribute('data-category');
+                
+                // Update active nav item
+                document.querySelectorAll('.faq-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                navItem.classList.add('active');
+                
+                // Show corresponding content section
+                document.querySelectorAll('.faq-content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.querySelector(`.faq-content-section[data-category="${category}"]`).classList.add('active');
+                
+                // Scroll to FAQ section on mobile
+                if (window.innerWidth <= 968) {
+                    document.querySelector('.faq-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Quick Link Cards
+        document.querySelectorAll('.quick-link-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const category = card.getAttribute('data-category');
+                
+                // Update nav and content
+                document.querySelectorAll('.faq-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`.faq-nav-item[data-category="${category}"]`).classList.add('active');
+                
+                document.querySelectorAll('.faq-content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.querySelector(`.faq-content-section[data-category="${category}"]`).classList.add('active');
+                
+                // Scroll to FAQ section
+                document.querySelector('.faq-categories').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Search Functionality
+        const searchInput = document.getElementById('helpSearch');
+        const noResults = document.getElementById('noResults');
+        let searchTimeout;
+
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                
+                if (searchTerm === '') {
+                    // Reset: show all FAQs
+                    document.querySelectorAll('.faq-item').forEach(item => {
+                        item.style.display = 'block';
+                    });
+                    noResults.classList.remove('show');
+                    return;
+                }
+                
+                let resultsFound = false;
+                
+                // Search through all FAQ items
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    const question = item.querySelector('.faq-question').textContent.toLowerCase();
+                    const answer = item.querySelector('.faq-answer-content').textContent.toLowerCase();
+                    
+                    if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                        item.style.display = 'block';
+                        resultsFound = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Show/hide no results message
+                if (resultsFound) {
+                    noResults.classList.remove('show');
+                } else {
+                    noResults.classList.add('show');
+                }
+            }, 300);
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        console.log('Systemly Help Center loaded successfully');
+    </script>
+</body>
+</html>

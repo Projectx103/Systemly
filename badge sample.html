@@ -1,0 +1,578 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Circle VIP Badge</title>
+    <style>
+        :root {
+            --gold-gradient: linear-gradient(45deg, #A67C00, #FFDF8B, #EDCA66, #F0E7BF, #A67C00);
+            --silver-gradient: linear-gradient(45deg, #7B7B7B, #D8D8D8, #ABABAB, #EBEBEB, #7B7B7B);
+            --platinum-gradient: linear-gradient(45deg, #828282, #E5E5E5, #BABABA, #EFEFEF, #828282);
+            --diamond-gradient: linear-gradient(45deg, #6EC8FF, #FFFFFF, #A9DFFF, #FFFFFF, #6EC8FF);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 700px;
+            background: #101014;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            height: 700px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .background-pattern {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle at center, transparent 0%, transparent 35%, rgba(166, 124, 0, 0.05) 75%);
+            animation: rotate 30s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .badge-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            z-index: 1;
+        }
+
+        .tier-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            color: white;
+            background: rgba(16, 16, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .tier-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .tier-btn.active {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .gold {
+            background: var(--gold-gradient);
+            background-size: 200% 200%;
+            animation: gradient-shift 5s ease infinite;
+            color: #000;
+        }
+
+        .silver {
+            background: var(--silver-gradient);
+            background-size: 200% 200%;
+            animation: gradient-shift 5s ease infinite;
+            color: #000;
+        }
+
+        .platinum {
+            background: var(--platinum-gradient);
+            background-size: 200% 200%;
+            animation: gradient-shift 5s ease infinite;
+            color: #000;
+        }
+
+        .diamond {
+            background: var(--diamond-gradient);
+            background-size: 200% 200%;
+            animation: gradient-shift 5s ease infinite;
+            color: #000;
+        }
+
+        @keyframes gradient-shift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .badge-container {
+            width: 320px;
+            height: 320px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s ease;
+            z-index: 1;
+        }
+
+        .badge {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            border-radius: 50%;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(255, 223, 139, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            backface-visibility: hidden;
+            transition: all 0.5s ease;
+            transform: translateZ(5px);
+        }
+
+        .badge-front {
+            transform: rotateY(0deg);
+        }
+
+        .badge-back {
+            transform: rotateY(180deg);
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .flipped .badge-container {
+            transform: rotateY(180deg);
+        }
+
+        .badge::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            top: -25%;
+            left: -25%;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .badge::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+        }
+
+        .gold-badge {
+            background: var(--gold-gradient);
+            background-size: 200% 200%;
+            animation: gradient-shift 5s ease infinite;
+        }
+
+        .silver-badge {
+            background: var(--silver-gradient);
+            background-size: 200% 200%;
+            animation: gradient-shift 5s ease infinite;
+        }
+
+        .platinum-badge {
+            background: var(--platinum-gradient);
+            background-size: 200% 200%;
+            animation: gradient-shift 5s ease infinite;
+        }
+
+        .diamond-badge {
+            background: var(--diamond-gradient);
+            background-size: 200% 200%;
+            animation: gradient-shift 5s ease infinite;
+        }
+
+        .badge-border {
+            position: absolute;
+            width: 110%;
+            height: 110%;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            top: -5%;
+            left: -5%;
+            animation: pulse 2s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+                transform: scale(0.98);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0.6;
+                transform: scale(0.98);
+            }
+        }
+
+        .badge-icon {
+            margin-top: 45px;
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+
+        .badge-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: #1A1A1A;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+        }
+
+        .badge-title {
+            margin-top: 20px;
+            font-size: 28px;
+            font-weight: 800;
+            color: #1A1A1A;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+        }
+
+        .badge-subtitle {
+            margin-top: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #1A1A1A;
+            letter-spacing: 2px;
+        }
+
+        .badge-description {
+            margin-top: 15px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #1A1A1A;
+            text-align: center;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+
+        .badge-perks {
+            text-align: center;
+            font-size: 14px;
+            color: #1A1A1A;
+            padding: 10px 20px;
+            line-height: 1.6;
+        }
+
+        .perk-title {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1A1A1A;
+        }
+
+        .perk-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .perk-item::before {
+            content: '✓';
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        .badge-action {
+            margin-top: 40px;
+            z-index: 2;
+        }
+
+        .flip-badge {
+            background: rgba(16, 16, 20, 0.8);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .flip-badge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @media (max-width: 480px) {
+            .badge-container {
+                width: 280px;
+                height: 280px;
+            }
+
+            .badge-icon {
+                margin-top: 35px;
+                width: 60px;
+                height: 60px;
+            }
+
+            .badge-title {
+                font-size: 24px;
+            }
+
+            .badge-subtitle {
+                font-size: 14px;
+            }
+
+            .badge-selector {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .tier-btn {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="background-pattern"></div>
+        <div class="particles" id="particles"></div>
+        
+        <div class="badge-selector">
+            <button class="tier-btn" data-tier="gold">Gold</button>
+            <button class="tier-btn" data-tier="silver">Silver</button>
+            <button class="tier-btn" data-tier="platinum">Platinum</button>
+            <button class="tier-btn" data-tier="diamond">Diamond</button>
+        </div>
+        
+        <div class="badge-container">
+            <div class="badge badge-front gold-badge">
+                <div class="badge-border"></div>
+                <div class="badge-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,1L9,9L1,12L9,15L12,23L15,15L23,12L15,9L12,1Z"/>
+                    </svg>
+                </div>
+                <h1 class="badge-title">Elite Circle</h1>
+                <h2 class="badge-subtitle">Gold Member</h2>
+                <p class="badge-description">Your exclusive gateway to premium content and elevated experiences</p>
+            </div>
+            
+            <div class="badge badge-back gold-badge">
+                <div class="badge-perks">
+                    <h3 class="perk-title">Gold Benefits</h3>
+                    <div class="perk-item">Priority customer support</div>
+                    <div class="perk-item">Ad-free browsing experience</div>
+                    <div class="perk-item">Early access to new features</div>
+                    <div class="perk-item">Exclusive monthly content</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="badge-action">
+            <button class="flip-badge">See Benefits</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const badgeContainer = document.querySelector('.badge-container');
+            const flipButton = document.querySelector('.flip-badge');
+            const tierButtons = document.querySelectorAll('.tier-btn');
+            const badgeFront = document.querySelector('.badge-front');
+            const badgeBack = document.querySelector('.badge-back');
+            const badgeTitle = document.querySelector('.badge-title');
+            const badgeSubtitle = document.querySelector('.badge-subtitle');
+            const badgeDescription = document.querySelector('.badge-description');
+            const badgePerks = document.querySelector('.badge-perks');
+            const perkTitle = document.querySelector('.perk-title');
+            const container = document.querySelector('.container');
+            
+            // Set Gold as default
+            document.querySelector('[data-tier="gold"]').classList.add('gold', 'active');
+            
+            // Flip badge functionality
+            flipButton.addEventListener('click', function() {
+                container.classList.toggle('flipped');
+                
+                if (container.classList.contains('flipped')) {
+                    flipButton.textContent = 'Show Badge';
+                } else {
+                    flipButton.textContent = 'See Benefits';
+                }
+            });
+            
+            // Tier selection functionality
+            tierButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tier = this.getAttribute('data-tier');
+                    
+                    // Remove all active classes
+                    tierButtons.forEach(btn => {
+                        btn.classList.remove('gold', 'silver', 'platinum', 'diamond', 'active');
+                    });
+                    
+                    // Remove all badge classes
+                    badgeFront.classList.remove('gold-badge', 'silver-badge', 'platinum-badge', 'diamond-badge');
+                    badgeBack.classList.remove('gold-badge', 'silver-badge', 'platinum-badge', 'diamond-badge');
+                    
+                    // Add active class to current button
+                    this.classList.add(tier, 'active');
+                    
+                    // Update badge classes
+                    badgeFront.classList.add(`${tier}-badge`);
+                    badgeBack.classList.add(`${tier}-badge`);
+                    
+                    // Update text content based on tier
+                    badgeSubtitle.textContent = `${tier.charAt(0).toUpperCase() + tier.slice(1)} Member`;
+                    perkTitle.textContent = `${tier.charAt(0).toUpperCase() + tier.slice(1)} Benefits`;
+                    
+                    // Update perks based on tier
+                    const perkItems = document.querySelectorAll('.perk-item');
+                    
+                    if (tier === 'gold') {
+                        perkItems[0].textContent = 'Priority customer support';
+                        perkItems[1].textContent = 'Ad-free browsing experience';
+                        perkItems[2].textContent = 'Early access to new features';
+                        perkItems[3].textContent = 'Exclusive monthly content';
+                    } else if (tier === 'silver') {
+                        perkItems[0].textContent = 'Basic priority support';
+                        perkItems[1].textContent = 'Reduced ads experience';
+                        perkItems[2].textContent = 'Limited early access';
+                        perkItems[3].textContent = 'Selected premium content';
+                    } else if (tier === 'platinum') {
+                        perkItems[0].textContent = 'Dedicated support team';
+                        perkItems[1].textContent = 'Premium UI customization';
+                        perkItems[2].textContent = 'Exclusive virtual events';
+                        perkItems[3].textContent = 'Unlimited premium downloads';
+                    } else if (tier === 'diamond') {
+                        perkItems[0].textContent = 'Personal concierge service';
+                        perkItems[1].textContent = 'Exclusive networking events';
+                        perkItems[2].textContent = 'Priority feature requests';
+                        perkItems[3].textContent = 'Limited edition perks';
+                    }
+                    
+                    // Add the before element back
+                    perkItems.forEach(item => {
+                        item.classList.add('perk-item');
+                    });
+                    
+                    // Update description based on tier
+                    if (tier === 'gold') {
+                        badgeDescription.textContent = 'Your exclusive gateway to premium content and elevated experiences';
+                    } else if (tier === 'silver') {
+                        badgeDescription.textContent = 'Enjoy enhanced features and special community access';
+                    } else if (tier === 'platinum') {
+                        badgeDescription.textContent = 'Unlock extraordinary privileges and VIP treatment';
+                    } else if (tier === 'diamond') {
+                        badgeDescription.textContent = 'Our highest tier with unparalleled exclusivity and luxury';
+                    }
+                });
+            });
+            
+            // Particle effect
+            function createParticles() {
+                const particlesContainer = document.getElementById('particles');
+                const particleCount = 20;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.style.position = 'absolute';
+                    particle.style.width = `${Math.random() * 5 + 2}px`;
+                    particle.style.height = particle.style.width;
+                    particle.style.background = 'rgba(255, 223, 139, 0.6)';
+                    particle.style.borderRadius = '50%';
+                    particle.style.top = `${Math.random() * 100}%`;
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.boxShadow = '0 0 10px rgba(255, 223, 139, 0.8)';
+                    
+                    // Animation
+                    particle.style.animation = `float ${Math.random() * 10 + 10}s linear infinite`;
+                    particle.style.opacity = Math.random() * 0.5 + 0.2;
+                    
+                    // Add keyframe animation dynamically
+                    const keyframes = `
+                        @keyframes float {
+                            0% {
+                                transform: translate(0, 0) rotate(0deg);
+                                opacity: ${Math.random() * 0.5 + 0.2};
+                            }
+                            25% {
+                                transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(${Math.random() * 360}deg);
+                                opacity: ${Math.random() * 0.5 + 0.5};
+                            }
+                            50% {
+                                transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(${Math.random() * 360}deg);
+                                opacity: ${Math.random() * 0.5 + 0.2};
+                            }
+                            75% {
+                                transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(${Math.random() * 360}deg);
+                                opacity: ${Math.random() * 0.5 + 0.5};
+                            }
+                            100% {
+                                transform: translate(0, 0) rotate(0deg);
+                                opacity: ${Math.random() * 0.5 + 0.2};
+                            }
+                        }
+                    `;
+                    
+                    const style = document.createElement('style');
+                    style.appendChild(document.createTextNode(keyframes));
+                    document.head.appendChild(style);
+                    
+                    particlesContainer.appendChild(particle);
+                }
+            }
+            
+            createParticles();
+        });
+    </script>
+</body>
+</html>

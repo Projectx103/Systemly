@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings - Systemly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* The existing CSS is included here */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #F97316;
+            --secondary: #6366F1;
+            --accent: #14B8A6;
+            --bg: #FFF7ED;
+            --text: #1F2937;
+            --white: #FFFFFF;
+            --gray-light: #F3F4F6;
+            --gray-medium: #9CA3AF;
+            --gray-dark: #4B5563;
+            --success: #10B981;
+            --error: #EF4444;
+            --warning: #F59E0B;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Archivo', sans-serif;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            padding: 1.2rem 5%;
+            background: rgba(255, 247, 237, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Archivo', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .back-btn {
+            background: var(--gray-light);
+            color: var(--text);
+            padding: 0.65rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: var(--gray-medium);
+            color: var(--white);
+            transform: translateX(-5px);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 5%;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            text-align: center;
+            position: relative;
+        }
+
+        .profile-completion {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .completion-ring {
+            transform: rotate(-90deg);
+        }
+
+        .completion-circle-bg {
+            fill: none;
+            stroke: var(--gray-light);
+            stroke-width: 8;
+        }
+
+        .completion-circle {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease, stroke 0.5s;
+        }
+
+        .profile-avatar-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--white);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .edit-avatar-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: 3px solid var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--white);
+        }
+
+        .edit-avatar-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-avatar-wrapper input[type="file"] {
+            display: none;
+        }
+
+        .completion-percentage {
+    position: absolute;
+    bottom: calc(100% + 8px); /* moves it above the avatar */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    z-index: 3; /* ensures it appears above all avatar layers */
+}
+
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .profile-email {
+            color: var(--gray-medium);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-badges {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .badge-verified {
+            background: linear-gradient(135deg, var(--success), var(--accent));
+            color: var(--white);
+        }
+
+        .badge-seller {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+        }
+
+        /* Plan Card */
+        .plan-card {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--gray-medium), var(--gray-dark));
+        }
+        
+        /* Plan-specific styles to override the default linear-gradient for the border */
+        .plan-basic::before {
+             background: linear-gradient(90deg, var(--primary), var(--warning));
+        }
+
+        .plan-premium::before {
+             background: linear-gradient(90deg, var(--secondary), var(--accent));
+        }
+
+        .plan-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .plan-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+
+        .plan-free .plan-icon {
+            background: linear-gradient(135deg, var(--gray-medium), var(--gray-dark));
+        }
+
+        .plan-basic .plan-icon {
+            background: linear-gradient(135deg, var(--primary), var(--warning));
+        }
+
+        .plan-premium .plan-icon {
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+        }
+
+        .plan-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .plan-info p {
+            color: var(--gray-medium);
+            font-size: 0.9rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .plan-features li {
+            padding: 0.7rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 0.95rem;
+        }
+
+        .plan-features li i.fa-circle-check {
+            color: var(--success);
+            font-size: 0.9rem;
+        }
+        
+        .plan-features li i.fa-circle-xmark {
+            color: var(--error);
+            font-size: 0.9rem;
+        }
+
+        .plan-features li.disabled {
+            color: var(--gray-medium);
+            opacity: 0.7; /* Slightly higher opacity for better contrast */
+        }
+
+
+        .upgrade-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 1rem;
+            border-radius: 15px;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Sarabun', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .upgrade-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(249, 115, 22, 0.3);
+        }
+
+        .upgrade-btn.current {
+            background: var(--gray-light);
+            color: var(--gray-dark);
+            cursor: default;
+            font-weight: 700;
+        }
+
+        .upgrade-btn.current:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Specific plan button colors for Basic/Premium */
+        .plan-basic .upgrade-btn {
+             background: linear-gradient(135deg, var(--secondary), var(--accent));
+        }
+        
+        .plan-premium .upgrade-btn {
+            /* Handled by .current class */
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Settings Section */
+        .settings-section {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gray-light);
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(99, 102, 241, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 900;
+        }
+
+        /* Form Groups */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--gray-light);
+            border-radius: 12px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+            outline: none;
+            background: var(--white);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-hint {
+            font-size: 0.85rem;
+            color: var(--gray-medium);
+            margin-top: 0.5rem;
+        }
+
+        .char-count {
+            font-size: 0.85rem;
+            color: var(--gray-medium);
+            text-align: right;
+            margin-top: 0.3rem;
+        }
+
+        /* Save Button */
+        .save-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 1rem 2.5rem;
+            border-radius: 15px;
+            border: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Sarabun', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(249, 115, 22, 0.3);
+        }
+
+        .save-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: linear-gradient(135deg, var(--success), var(--accent));
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            align-items: center;
+            gap: 0.8rem;
+            animation: slideInDown 0.5s ease-out;
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Danger Zone */
+        .danger-zone {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(249, 115, 22, 0.05));
+            border: 2px solid rgba(239, 68, 68, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+
+        .danger-zone h4 {
+            color: var(--error);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .danger-zone p {
+            color: var(--gray-dark);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .danger-btn {
+            background: var(--error);
+            color: var(--white);
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .danger-btn:hover {
+            background: #DC2626;
+            transform: translateY(-2px);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                order: 2;
+            }
+
+            .main-content {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .settings-section {
+                padding: 1.5rem;
+            }
+
+            .profile-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">Systemly</a>
+           <a href="javascript:void(0);" class="back-btn" onclick="history.back()">
+    Back to Dashboard
+</a>
+
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="profile-card">
+                <div class="profile-completion">
+                    <svg class="completion-ring" width="140" height="140">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#F97316;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="gradient-basic" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#F97316;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="gradient-premium" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="completion-circle-bg" cx="70" cy="70" r="60"></circle>
+                        <circle class="completion-circle" id="completionCircle" cx="70" cy="70" r="60" 
+                                stroke-dasharray="377" stroke-dashoffset="377"></circle>
+                    </svg>
+                    <div class="profile-avatar-wrapper">
+                        <img src="" alt="Profile" class="profile-avatar" id="profileAvatar">
+                        <label for="avatarUpload" class="edit-avatar-btn" title="Update Profile Picture">
+                            <i class="fa-solid fa-camera"></i>
+                        </label>
+                        <input type="file" id="avatarUpload" accept="image/*">
+                    </div>
+                    <div class="completion-percentage" id="completionPercentage">0%</div>
+                </div>
+                <h3 class="profile-name" id="profileName">Loading...</h3>
+                <p class="profile-email" id="profileEmail">loading@example.com</p>
+                <div class="profile-badges">
+                    <span class="badge badge-seller">
+                        <i class="fa-solid fa-store"></i>
+                        Account
+                    </span>
+                    <span class="badge badge-verified" id="verifiedBadge" style="display: none;">
+                        <i class="fa-solid fa-circle-check"></i>
+                        Verified
+                    </span>
+                </div>
+            </div>
+
+            <div class="plan-card" id="planCard">
+                <div class="plan-header">
+                    <div class="plan-icon">
+                        <i class="fa-solid fa-crown" id="planIcon"></i>
+                    </div>
+                    <div class="plan-info">
+                        <h3 id="planName">Free Plan</h3>
+                        <p id="planDescription">Get started with basics</p>
+                    </div>
+                </div>
+                <ul class="plan-features" id="planFeatures">
+                    </ul>
+                <button class="upgrade-btn" id="upgradeBtn" onclick="window.location.href='pricing.html'">
+                    <i class="fa-solid fa-rocket"></i>
+                    Upgrade Plan
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <section class="settings-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div>
+                        <h2>Personal Information</h2>
+                        <p style="color: var(--gray-medium); font-size: 0.95rem; margin-top: 0.3rem;">Update your personal details and profile information</p>
+                    </div>
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Profile updated successfully!</span>
+                </div>
+
+                <form id="profileForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fullName">Full Name *</label>
+                            <input type="text" class="form-input" id="fullName" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" class="form-input" id="email" disabled>
+                            <div class="form-hint">Email cannot be changed</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" class="form-input" id="phone" placeholder="+63 912 345 6789">
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" class="form-input" id="location" placeholder="Quezon City, Metro Manila, PH">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bio">Bio</label>
+                        <textarea class="form-textarea" id="bio" maxlength="500" placeholder="Tell us about yourself... (Minimum 20 characters for 100% profile)"></textarea>
+                        <div class="char-count"><span id="bioCount">0</span>/500</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="company">Company Name</label>
+                            <input type="text" class="form-input" id="company" placeholder="Your Company">
+                        </div>
+                        <div class="form-group">
+                            <label for="website">Website</label>
+                            <input type="url" class="form-input" id="website" placeholder="https://yourwebsite.com">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="save-btn" id="saveBtn">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Save Changes
+                    </button>
+                </form>
+            </section>
+
+            <section class="settings-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <h2>Account Settings</h2>
+                        <p style="color: var(--gray-medium); font-size: 0.95rem; margin-top: 0.3rem;">Manage your account security and preferences</p>
+                    </div>
+                </div>
+
+                <div class="danger-zone">
+                    <h4>
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Danger Zone
+                    </h4>
+                    <p>Permanently delete your Systemly account and all associated data.</p>
+                    <button class="danger-btn" onclick="deleteAccount()">
+                        <i class="fa-solid fa-trash"></i>
+                        Delete Account
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, updateProfile, deleteUser } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        
+        // You would typically move this to a separate config file
+        const firebaseConfig = {
+            apiKey: "AIzaSyD3PQ5oWrzAXOHnb7wrmpRhL9DWIB7w9rE",
+            authDomain: "systemly-db.firebaseapp.com",
+            projectId: "systemly-db",
+            storageBucket: "systemly-db.firebasestorage.app",
+            messagingSenderId: "32599486733",
+            appId: "1:32599486733:web:16d34643c8f920a6fd8044"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let userData = null;
+
+        // Plan configurations
+        const planConfigs = {
+            free: {
+                name: 'Free Plan',
+                description: 'Get started with basics',
+                icon: 'fa-rocket',
+                colorClass: 'plan-free',
+                upgradeText: 'Upgrade Plan',
+                features: [
+                    { text: '1 listing per month', enabled: true },
+                    { text: 'Basic analytics', enabled: true },
+                    { text: 'Email support', enabled: true },
+                    { text: 'Priority support', enabled: false },
+                    { text: 'Advanced analytics', enabled: false },
+                    { text: 'Unlimited listings', enabled: false }
+                ]
+            },
+            basic: {
+                name: 'Basic Plan',
+                description: 'Perfect for growing businesses',
+                icon: 'fa-star',
+                colorClass: 'plan-basic',
+                upgradeText: 'Upgrade to Premium',
+                features: [
+                    { text: '3 listings per month', enabled: true },
+                    { text: 'Advanced analytics', enabled: true },
+                    { text: 'Priority email support', enabled: true },
+                    { text: 'Featured listings', enabled: true },
+                    { text: '24/7 phone support', enabled: false },
+                    { text: 'Unlimited listings', enabled: false }
+                ]
+            },
+            premium: {
+                name: 'Premium Plan',
+                description: 'Unlimited everything',
+                icon: 'fa-crown',
+                colorClass: 'plan-premium',
+                upgradeText: 'Current Plan',
+                features: [
+                    { text: 'Unlimited listings', enabled: true },
+                    { text: 'Advanced analytics', enabled: true },
+                    { text: '24/7 priority support', enabled: true },
+                    { text: 'Featured listings', enabled: true },
+                    { text: 'Dedicated account manager', enabled: true },
+                    { text: 'Custom branding', enabled: true }
+                ]
+            }
+        };
+
+        // ==========================================
+        // AUTHENTICATION & DATA LOADING
+        // ==========================================
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserData(user);
+            } else {
+                // Redirect unauthenticated users
+                window.location.href = 'login.html';
+            }
+        });
+
+        async function loadUserData(user) {
+            try {
+                const userDocRef = doc(db, 'users', user.uid);
+                const userDoc = await getDoc(userDocRef);
+                
+                if (userDoc.exists()) {
+                    userData = userDoc.data();
+                    const currentPlan = userData.subscriptionPlan || 'free';
+                    
+                    populateProfileData(user, userData);
+                    updatePlanDisplay(currentPlan);
+                    calculateProfileCompletion(userData);
+                } else {
+                    console.warn('User document not found, initializing basic data structure.');
+                    // Fallback to minimal data if Firestore doc doesn't exist (e.g., new users)
+                    userData = { subscriptionPlan: 'free' };
+                    populateProfileData(user, userData);
+                    updatePlanDisplay('free');
+                    calculateProfileCompletion(userData);
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // ==========================================
+        // PROFILE POPULATION & COMPLETION LOGIC
+        // ==========================================
+
+        function populateProfileData(user, data) {
+            const profile = data.profile || {};
+            
+            document.getElementById('profileName').textContent = data.name || user.displayName || 'User';
+            document.getElementById('profileEmail').textContent = user.email;
+            
+            // Set Avatar - falls back to UI-Avatars if no photoURL is present
+            const avatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || user.email)}&size=100&background=F97316&color=fff`;
+            document.getElementById('profileAvatar').src = avatar;
+            
+            // Populate form fields
+            document.getElementById('fullName').value = data.name || '';
+            document.getElementById('email').value = user.email;
+            document.getElementById('phone').value = profile.phone || '';
+            document.getElementById('location').value = profile.location || '';
+            document.getElementById('bio').value = profile.bio || '';
+            document.getElementById('company').value = profile.company || '';
+            document.getElementById('website').value = profile.website || '';
+            
+            updateCharCount();
+            
+            // Show verified badge (dummy logic for display)
+            if (profile.verified) {
+                document.getElementById('verifiedBadge').style.display = 'flex';
+            }
+        }
+        
+
+
+
+        function calculateProfileCompletion(data) {
+            let completedFields = 0;
+            // Define all required fields and their conditions
+            const completionCriteria = [
+                { check: !!data.name && data.name.trim().length > 2, weight: 1 }, // 1. Name is set
+                { check: !!currentUser.photoURL, weight: 1 }, // 2. Avatar is set (simplified)
+                { check: !!data.profile?.phone, weight: 1 }, // 3. Phone is set
+                { check: !!data.profile?.location, weight: 1 }, // 4. Location is set
+                { check: !!data.profile?.bio && data.profile.bio.trim().length >= 20, weight: 2 }, // 5. Bio is set and descriptive (higher weight)
+                { check: !!data.profile?.company, weight: 1 }, // 6. Company is set
+                { check: !!data.profile?.website, weight: 1 } // 7. Website is set
+            ];
+            
+            const totalWeight = 8; // Sum of all weights
+
+            completedFields = completionCriteria.filter(c => c.check).reduce((sum, c) => sum + c.weight, 0);
+
+            const percentage = Math.min(100, Math.round((completedFields / totalWeight) * 100));
+            updateCompletionDisplay(percentage);
+            return percentage;
+        }
+
+        function updateCompletionDisplay(percentage) {
+            const radius = 60;
+            const circumference = 2 * Math.PI * radius; // Approx 377
+            const offset = circumference - (percentage / 100) * circumference;
+            
+            const circle = document.getElementById('completionCircle');
+            const percentageText = document.getElementById('completionPercentage');
+
+            percentageText.textContent = `${percentage}%`;
+            circle.style.strokeDashoffset = offset;
+
+            // Use the success color if 100% complete
+            if (percentage === 100) {
+                circle.style.stroke = 'var(--success)';
+                percentageText.style.color = 'var(--success)';
+            } else {
+                // Re-apply the gradient for less than 100%
+                circle.style.stroke = 'url(#gradient)';
+                percentageText.style.color = 'var(--primary)';
+            }
+        }
+
+        function updateCharCount() {
+            const bio = document.getElementById('bio');
+            document.getElementById('bioCount').textContent = bio.value.length;
+        }
+
+
+        // ==========================================
+        // PLAN DISPLAY LOGIC
+        // ==========================================
+
+        function updatePlanDisplay(plan) {
+            const config = planConfigs[plan] || planConfigs.free;
+            const planCard = document.getElementById('planCard');
+            const planFeaturesList = document.getElementById('planFeatures');
+            const upgradeBtn = document.getElementById('upgradeBtn');
+            const planIcon = document.getElementById('planIcon');
+
+            // Update plan card classes for border and icon color styling
+            planCard.className = `plan-card ${config.colorClass}`;
+            
+            // Update plan info
+            document.getElementById('planName').textContent = config.name;
+            document.getElementById('planDescription').textContent = config.description;
+            planIcon.className = `fa-solid ${config.icon}`;
+            
+            // Update features list
+            const featuresHTML = config.features.map(feature => `
+                <li class="${feature.enabled ? '' : 'disabled'}">
+                    <i class="fa-solid ${feature.enabled ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+                    ${feature.text}
+                </li>
+            `).join('');
+            planFeaturesList.innerHTML = featuresHTML;
+
+            // Update button
+            upgradeBtn.innerHTML = `<i class="fa-solid ${plan === 'premium' ? 'fa-medal' : 'fa-rocket'}"></i> ${config.upgradeText}`;
+            if (plan === 'premium') {
+                upgradeBtn.classList.add('current');
+                upgradeBtn.disabled = true;
+            } else {
+                upgradeBtn.classList.remove('current');
+                upgradeBtn.disabled = false;
+            }
+        }
+
+        // ==========================================
+        // FORM SUBMISSION AND HANDLERS
+        // ==========================================
+
+        const profileForm = document.getElementById('profileForm');
+        const bioTextarea = document.getElementById('bio');
+        const saveBtn = document.getElementById('saveBtn');
+        const successMessage = document.getElementById('successMessage');
+
+        profileForm.addEventListener('submit', handleProfileUpdate);
+        bioTextarea.addEventListener('input', updateCharCount);
+
+        // Basic avatar update placeholder
+        document.getElementById('avatarUpload').addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileAvatar').src = e.target.result;
+                    // In a real application:
+                    // 1. Upload file to Firebase Storage
+                    // 2. Get the download URL
+                    // 3. Call updateProfile(currentUser, { photoURL: downloadURL });
+                    // 4. Recalculate completion
+                };
+                reader.readAsDataURL(file);
+                // Temporarily disable the save button to prompt the user to save changes
+                saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+                saveBtn.disabled = false;
+            }
+        });
+        
+        // This function saves the profile form data
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+            
+            saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
+            saveBtn.disabled = true;
+
+            const fullName = document.getElementById('fullName').value;
+            const phone = document.getElementById('phone').value;
+            const location = document.getElementById('location').value;
+            const bio = document.getElementById('bio').value;
+            const company = document.getElementById('company').value;
+            const website = document.getElementById('website').value;
+
+            try {
+                // 1. Update Firebase Auth (for displayName)
+                await updateProfile(currentUser, {
+                    displayName: fullName
+                });
+
+                // 2. Update Firestore Document
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                await updateDoc(userDocRef, {
+                    name: fullName,
+                    profile: {
+                        phone: phone,
+                        location: location,
+                        bio: bio,
+                        company: company,
+                        website: website,
+                        verified: userData.profile?.verified || false // Preserve existing verified status
+                    },
+                    // Update main data fields for completion calculation consistency
+                    updatedAt: new Date().toISOString()
+                }, { merge: true }); // Merge ensures other fields are not overwritten
+
+                // 3. Reload and update UI
+                await loadUserData(currentUser); // Re-fetch and re-render all data
+
+                // 4. Display success
+                successMessage.classList.add('show');
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                }, 4000);
+
+            } catch (error) {
+                console.error("Error updating profile: ", error);
+                alert("Failed to update profile. Please try again. Error: " + error.message);
+            } finally {
+                // Reset button state
+                saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+                saveBtn.disabled = false;
+            }
+        }
+
+        // Global function for account deletion (used in the Danger Zone)
+        window.deleteAccount = async function() {
+            if (!confirm('Are you absolutely sure you want to delete your account? This action is irreversible.')) {
+                return;
+            }
+
+            try {
+                // 1. Delete Firestore data
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                await deleteDoc(userDocRef);
+
+                // 2. Delete the user from Firebase Auth
+                await deleteUser(currentUser);
+
+                // 3. Redirect to login/homepage
+                alert('Your account has been successfully deleted.');
+                window.location.href = 'login.html';
+
+            } catch (error) {
+                console.error("Error deleting account: ", error);
+                // If the error is 'auth/requires-recent-login', inform the user.
+                if (error.code === 'auth/requires-recent-login') {
+                    alert('Security Error: Please log out and log back in to perform this security-sensitive action.');
+                } else {
+                    alert("Account deletion failed. Error: " + error.message);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

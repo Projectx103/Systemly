@@ -1,0 +1,2269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Systemly</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #F97316;
+  --secondary: #6366F1;
+  --accent: #14B8A6;
+  --bg: #FFF7ED;
+  --text: #1F2937;
+  --white: #FFFFFF;
+  --gray-light: #F3F4F6;
+  --gray: #6B7280;
+  --gray-dark: #374151;  /* ADD THIS */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --info: #3B82F6;  /* ADD THIS */
+}
+
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+body.loaded { opacity: 1; }
+
+h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
+
+/* Loading Screen */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 9999;
+}
+
+.loading-screen.hidden { display: none; }
+
+.loader {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--gray-light);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Sidebar Navigation - ADD THIS */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: var(--white);
+  border-right: 1px solid var(--gray-light);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 2rem 1.5rem;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.logo {
+  font-family: 'Archivo', sans-serif;
+  font-size: 2rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+  display: block;
+}
+
+.user-profile {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.user-profile-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  min-width: 50px;  /* ADD THIS - prevents shrinking */
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1.2rem;
+  flex-shrink: 0;  /* ADD THIS - prevents flex squishing */
+}
+.user-details {
+  flex: 1;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.user-email {
+  font-size: 0.85rem;
+  color: var(--gray);
+}
+
+.role-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--white);
+  display: inline-block;
+}
+
+/* ADD THESE NEW BADGE STYLES */
+.plan-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Premium Badge - Gold */
+.plan-badge.premium {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #1A1A1A;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.plan-badge.premium::before {
+  content: '👑';
+}
+
+/* Basic Badge - Blue */
+.plan-badge.basic {
+  background: linear-gradient(135deg, #6366F1, #3B82F6);
+  color: #FFFFFF;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.plan-badge.basic::before {
+  content: '💎';
+}
+
+/* Free Badge - Gray */
+.plan-badge.free {
+  background: linear-gradient(135deg, #9CA3AF, #6B7280);
+  color: #FFFFFF;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.plan-badge.free::before {
+  content: '📦';
+}
+
+/* Shimmer animation for Premium */
+@keyframes shimmer {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 2px 15px rgba(255, 215, 0, 0.8);
+  }
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 1rem 0;
+}
+
+.nav-section {
+  margin-bottom: 1.5rem;
+}
+
+.nav-section-title {
+  padding: 0.5rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.5rem;
+  color: var(--text);
+  text-decoration: none;
+  transition: all 0.2s;
+  position: relative;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  background: var(--bg);
+  color: var(--primary);
+}
+
+.nav-item.active {
+  background: linear-gradient(to right, rgba(249, 115, 22, 0.1), transparent);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--primary), var(--secondary));
+}
+
+.nav-item i {
+  width: 20px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.nav-item.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nav-item .lock-icon {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--gray);
+}
+
+.sidebar-footer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--gray-light);
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 0.8rem;
+  background: var(--error);
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+/* Main Content - ADD THIS */
+.main-content {
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.top-bar {
+  background: var(--white);
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--gray-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 900;
+}
+
+.top-bar-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.content-area {
+  padding: 2rem;
+}
+
+/* ADD gray-dark variable to :root if not present */
+
+/* Subscription Banner */
+.subscription-banner {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--white);
+  padding: 2rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
+}
+
+.banner-content h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.banner-content p {
+  opacity: 0.95;
+  font-size: 1rem;
+}
+
+.subscription-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 0.8rem;
+  display: inline-block;
+}
+
+.upgrade-btn {
+  background: var(--white);
+  color: var(--primary);
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border: none;
+  cursor: pointer;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 1rem;
+}
+
+.upgrade-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+/* Dashboard Tabs */
+
+
+
+/* Tab Content */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  transition: transform 0.3s;
+}
+
+.stat-card:hover { transform: translateY(-5px); }
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.stat-icon.primary {
+  background: rgba(249, 115, 22, 0.1);
+  color: var(--primary);
+}
+
+.stat-icon.secondary {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--secondary);
+}
+
+.stat-icon.accent {
+  background: rgba(20, 184, 166, 0.1);
+  color: var(--accent);
+}
+
+.stat-icon.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 0.3rem;
+}
+
+.stat-label {
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+/* Content Cards */
+.content-card {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  margin-bottom: 2rem;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.card-header h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.card-action {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 1rem;
+}
+
+.card-action:hover { color: var(--secondary); }
+
+/* Locked Feature Overlay */
+.locked-feature {
+  position: relative;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.locked-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  gap: 1rem;
+  z-index: 10;
+}
+
+.locked-overlay i {
+  font-size: 3rem;
+  color: var(--gray);
+}
+
+.locked-overlay p {
+  color: var(--text);
+  font-weight: 600;
+  text-align: center;
+}
+
+.unlock-btn {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--white);
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.unlock-btn:hover { transform: scale(1.05); }
+
+/* Upgrade Modal */
+.upgrade-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(5px);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+
+.upgrade-modal.active { display: flex; }
+
+.modal-content {
+  background: var(--white);
+  padding: 3rem;
+  border-radius: 30px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.close-modal {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--gray);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.close-modal:hover {
+  background: var(--gray-light);
+  color: var(--text);
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.modal-icon { font-size: 4rem; margin-bottom: 1rem; }
+
+.modal-header h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.current-plan-info {
+  background: var(--gray-light);
+  padding: 1.5rem;
+  border-radius: 15px;
+  margin-bottom: 2rem;
+}
+
+.upgrade-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.plan-option {
+  border: 2px solid var(--gray-light);
+  padding: 1.5rem;
+  border-radius: 15px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.plan-option:hover {
+  border-color: var(--primary);
+  background: var(--bg);
+}
+
+.plan-option-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.plan-option-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.plan-option-price {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.plan-option-features {
+  list-style: none;
+  margin-bottom: 1rem;
+}
+
+.plan-option-features li {
+  padding: 0.4rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.plan-option-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--white);
+  padding: 1rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.plan-option-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--white);
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--gray);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+  opacity: 0.3;
+}
+
+/* REPLACE existing @media with this */
+@media (max-width: 1024px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    display: none;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .subscription-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  
+  .top-bar {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .content-area {
+    padding: 1rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loader"></div>
+  <p>Loading your dashboard...</p>
+</div>
+
+<!-- Top Navigation -->
+<!-- NEW Dashboard Layout -->
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html" class="logo">Systemly</a>
+    </div>
+    
+    <div class="user-profile">
+  <div class="user-profile-content">
+    <div class="user-avatar" id="sidebarAvatar">U</div>
+    <div class="user-details">
+      <div class="user-name" id="sidebarName">User</div>
+      <div class="user-email" id="sidebarEmail">user@email.com</div>
+    </div>
+  </div>
+  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+    <span class="role-badge" id="sidebarRole">Seller</span>
+    <span class="plan-badge" id="planBadge">Free</span>
+  </div>
+</div>
+    
+    <nav class="sidebar-nav" id="sidebarNav">
+      <!-- Navigation will be dynamically inserted -->
+    </nav>
+    
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+  
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="top-bar">
+      <h1 class="page-title" id="pageTitle">Dashboard</h1>
+      <div class="top-bar-actions">
+        <a href="marketplace.html" class="btn-primary" style="text-decoration: none;">
+          <i class="fa-solid fa-store"></i> Marketplace
+        </a>
+        <button class="btn-primary" id="topBarAction" onclick="handleMainAction()">
+          <i class="fa-solid fa-plus"></i> Create Listing
+        </button>
+      </div>
+    </div>
+    
+    <div class="content-area" id="contentArea">
+      <!-- Subscription Banner -->
+      <div class="subscription-banner" id="subscriptionBanner">
+        <div class="banner-content">
+          <h2 id="planTitle">Free Plan</h2>
+          <p id="planDescription">Current plan description</p>
+          <span class="subscription-badge" id="planBadge">Plan details</span>
+        </div>
+        <button class="upgrade-btn" id="upgradeBtn" onclick="showUpgradeModal()">Upgrade Plan</button>
+      </div>
+      
+      <!-- Tab Content Container -->
+      <div id="tabContainer"></div>
+    </div>
+  </main>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Upgrade Modal -->
+<div class="upgrade-modal" id="upgradeModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeUpgradeModal()">×</button>
+    
+    <div class="modal-header">
+      <div class="modal-icon">🚀</div>
+      <h2 id="modalTitle">Upgrade Your Plan</h2>
+      <p id="modalMessage">Unlock more features</p>
+    </div>
+
+    <div class="current-plan-info">
+      <h4>Your Current Plan</h4>
+      <p id="modalCurrentPlan"></p>
+    </div>
+
+    <div class="upgrade-options" id="upgradeOptions"></div>
+
+    <p style="text-align: center; color: var(--gray); font-size: 0.9rem;">
+      All plans include secure transactions and support
+    </p>
+  </div>
+</div>
+
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD3PQ5oWrzAXOHnb7wrmpRhL9DWIB7w9rE",
+  authDomain: "systemly-db.firebaseapp.com",
+  projectId: "systemly-db",
+  storageBucket: "systemly-db.firebasestorage.app",
+  messagingSenderId: "32599486733",
+  appId: "1:32599486733:web:16d34643c8f920a6fd8044"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let userData = null;
+let userListings = [];
+
+// ============================================
+// SUBSCRIPTION PLANS CONFIGURATION
+// ============================================
+
+const PLANS = {
+  seller: {
+    free: {
+      name: 'Free Plan',
+      price: 0,
+      currency: '₱',
+      billingCycle: 'forever',
+      maxListings: 1,
+      features: [
+        '1 active listing',
+        'Basic listing visibility',
+        'Buyer inquiry messages',
+        'Standard support'
+      ],
+      lockedFeatures: ['analytics', 'featured', 'priority-support'],
+      paymentUrl: null
+    },
+    basic: {
+      name: 'Basic Plan',
+      price: 399,
+      currency: '₱',
+      billingCycle: 'month',
+      maxListings: 5,
+      features: [
+        'Up to 5 active listings',
+        'Priority search placement',
+        'Full analytics dashboard',
+        'Performance insights',
+        'Direct buyer contact',
+        'Email support',
+        'Featured homepage placement'
+      ],
+      lockedFeatures: ['priority-support', 'account-manager'],
+      paymentUrl: 'https://buy.stripe.com/basic-seller'
+    },
+    premium: {
+      name: 'Premium Plan',
+      price: 779,
+      currency: '₱',
+      billingCycle: 'month',
+      maxListings: Infinity,
+      features: [
+        'Unlimited active listings',
+        'Featured homepage placement',
+        'Top search ranking',
+        'Advanced analytics & insights',
+        'Buyer behavior tracking',
+        '24/7 priority support',
+        'Dedicated account manager'
+      ],
+      lockedFeatures: [],
+      paymentUrl: 'https://buy.stripe.com/premium-seller'
+    }
+  },
+  buyer: {
+    free: {
+      name: 'Free Browser',
+      price: 0,
+      currency: '₱',
+      billingCycle: 'forever',
+      features: [
+        'Full marketplace access',
+        'Basic listing information',
+        'Contact sellers directly',
+        'Secure escrow protection'
+      ],
+      lockedFeatures: ['analytics', 'reports', 'calculator', 'alerts', 'priority-support'],
+      paymentUrl: null
+    },
+    pro: {
+      name: 'Pro Buyer',
+      price: 299,
+      currency: '₱',
+      billingCycle: 'month',
+      features: [
+        'Everything in Free, plus:',
+        'Full analytics on all listings',
+        'Revenue verification reports',
+        'Traffic source breakdown',
+        'ROI calculator & projections',
+        'Saved searches & alerts',
+        'Priority buyer support'
+      ],
+      lockedFeatures: ['api', 'account-manager', 'early-access'],
+      paymentUrl: 'https://buy.stripe.com/pro-buyer'
+    },
+    enterprise: {
+      name: 'Enterprise',
+      price: 'Custom',
+      currency: '₱',
+      billingCycle: 'contact',
+      features: [
+        'Everything in Pro, plus:',
+        'Early access to new listings',
+        'Custom due diligence reports',
+        'Portfolio management tools',
+        'API access',
+        'Dedicated account manager',
+        'Volume purchase discounts'
+      ],
+      lockedFeatures: [],
+      paymentUrl: 'contact'
+    }
+  }
+};
+
+// ============================================
+// AUTH STATE OBSERVER
+// ============================================
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  try {
+    const userDocRef = doc(db, 'users', user.uid);
+    const userDoc = await getDoc(userDocRef);
+    
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+      userData = {
+        id: user.uid,
+        email: user.email,
+        name: data.name || user.displayName || user.email.split('@')[0],
+        role: data.role || 'seller',
+        subscriptionPlan: data.subscriptionPlan || 'free',
+        listings: data.listings || { active: 0, total: 0 },
+        stats: data.stats || { totalViews: 0, inquiries: 0, sales: 0, savedSearches: 0, alerts: 0 }
+      };
+      
+      if (!data.role || !data.subscriptionPlan) {
+        await updateDoc(userDocRef, {
+          role: userData.role,
+          subscriptionPlan: userData.subscriptionPlan
+        });
+      }
+    } else {
+      userData = {
+        id: user.uid,
+        email: user.email,
+        name: user.displayName || user.email.split('@')[0],
+        role: 'seller',
+        subscriptionPlan: 'free',
+        listings: { active: 0, total: 0 },
+        stats: { totalViews: 0, inquiries: 0, sales: 0, savedSearches: 0, alerts: 0 }
+      };
+      
+      await setDoc(userDocRef, {
+        name: userData.name,
+        email: userData.email,
+        role: userData.role,
+        subscriptionPlan: userData.subscriptionPlan,
+        listings: userData.listings,
+        stats: userData.stats,
+        createdAt: new Date().toISOString()
+      });
+    }
+    
+    if (!['seller', 'buyer'].includes(userData.role)) {
+      console.warn('Invalid role detected, defaulting to seller');
+      userData.role = 'seller';
+      await updateDoc(userDocRef, { role: 'seller' });
+    }
+    
+    const validPlans = Object.keys(PLANS[userData.role]);
+    if (!validPlans.includes(userData.subscriptionPlan)) {
+      console.warn('Invalid subscription plan, defaulting to free');
+      userData.subscriptionPlan = 'free';
+      await updateDoc(userDocRef, { subscriptionPlan: 'free' });
+    }
+    
+    // Load user listings
+    await loadUserListings();
+    
+    console.log('✅ User data loaded:', userData);
+    console.log('✅ User listings loaded:', userListings);
+    initializeDashboard();
+  } catch (error) {
+    console.error('Error loading user data:', error);
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.body.classList.add('loaded');
+    alert('Failed to load dashboard. Please refresh the page.');
+  }
+});
+
+// ============================================
+// LOAD USER LISTINGS
+// ============================================
+
+async function loadUserListings() {
+  try {
+    const listingsRef = collection(db, 'listings');
+    const q = query(
+      listingsRef, 
+      where('userId', '==', userData.id)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    userListings = [];
+    
+    querySnapshot.forEach((doc) => {
+      userListings.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    
+    // Sort by createdAt locally (to avoid needing Firestore index)
+    userListings.sort((a, b) => {
+      const dateA = a.createdAt?.toDate?.() || new Date(0);
+      const dateB = b.createdAt?.toDate?.() || new Date(0);
+      return dateB - dateA; // Newest first
+    });
+    
+    // Update listing counts - count ALL non-closed listings as active
+    const activeStatuses = ['draft', 'pending', 'active', 'approved'];
+    const activeListings = userListings.filter(l => activeStatuses.includes(l.status)).length;
+    userData.listings.active = activeListings;
+    userData.listings.total = userListings.length;
+    
+    // Update user document with correct counts
+    const userDocRef = doc(db, 'users', userData.id);
+    await updateDoc(userDocRef, {
+      'listings.active': activeListings,
+      'listings.total': userListings.length
+    });
+    
+    console.log('✅ Loaded', userListings.length, 'listings');
+    
+  } catch (error) {
+    console.error('Error loading user listings:', error);
+    userListings = [];
+  }
+}
+
+// ============================================
+// INITIALIZE DASHBOARD
+// ============================================
+
+function initializeDashboard() {
+  document.getElementById('loadingScreen').classList.add('hidden');
+  document.body.classList.add('loaded');
+  
+  updateUserProfile();
+  updateSubscriptionBanner();
+  renderSidebar(); // ADD THIS LINE
+  renderDashboardContent();
+}
+
+function updateUserProfile() {
+  const initials = userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  
+  // Update sidebar elements
+  document.getElementById('sidebarAvatar').textContent = initials;
+  document.getElementById('sidebarName').textContent = userData.name;
+  document.getElementById('sidebarEmail').textContent = userData.email;
+  document.getElementById('sidebarRole').textContent = userData.role === 'seller' ? 'Seller' : 'Buyer';
+  
+  // ADD THIS - Update plan badge
+  const planBadge = document.getElementById('planBadge');
+  const userPlan = userData.subscriptionPlan || 'free';
+  planBadge.textContent = userPlan.charAt(0).toUpperCase() + userPlan.slice(1);
+  planBadge.className = `plan-badge ${userPlan}`;
+}
+
+function renderSidebar() {
+  const nav = document.getElementById('sidebarNav');
+  const plan = PLANS[userData.role][userData.subscriptionPlan] || PLANS[userData.role]['free'];
+  
+  if (userData.role === 'seller') {
+    nav.innerHTML = `
+      <div class="nav-section">
+        <div class="nav-section-title">Overview</div>
+        <div class="nav-item active" onclick="navigateTo('dashboard')">
+          <i class="fa-solid fa-house"></i>
+          <span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('listings')">
+          <i class="fa-solid fa-list"></i>
+          <span>My Listings</span>
+        </div>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Insights</div>
+        <div class="nav-item ${plan.lockedFeatures.includes('analytics') ? 'locked' : ''}" onclick="navigateTo('analytics')">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Analytics</span>
+          ${plan.lockedFeatures.includes('analytics') ? '<i class="fa-solid fa-lock lock-icon"></i>' : ''}
+        </div>
+        <div class="nav-item" onclick="navigateTo('messages')">
+          <i class="fa-solid fa-envelope"></i>
+          <span>Messages</span>
+        </div>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Account</div>
+        <div class="nav-item" onclick="navigateTo('subscription')">
+          <i class="fa-solid fa-crown"></i>
+          <span>Subscription</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('settings')">
+          <i class="fa-solid fa-gear"></i>
+          <span>Settings</span>
+        </div>
+      </div>
+    `;
+  } else {
+    nav.innerHTML = `
+      <div class="nav-section">
+        <div class="nav-section-title">Overview</div>
+        <div class="nav-item active" onclick="navigateTo('dashboard')">
+          <i class="fa-solid fa-house"></i>
+          <span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('saved')">
+          <i class="fa-solid fa-heart"></i>
+          <span>Saved Listings</span>
+        </div>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Tools</div>
+        <div class="nav-item ${plan.lockedFeatures.includes('analytics') ? 'locked' : ''}" onclick="navigateTo('analytics')">
+          <i class="fa-solid fa-chart-bar"></i>
+          <span>Analytics</span>
+          ${plan.lockedFeatures.includes('analytics') ? '<i class="fa-solid fa-lock lock-icon"></i>' : ''}
+        </div>
+        <div class="nav-item ${plan.lockedFeatures.includes('calculator') ? 'locked' : ''}" onclick="navigateTo('calculator')">
+          <i class="fa-solid fa-calculator"></i>
+          <span>ROI Calculator</span>
+          ${plan.lockedFeatures.includes('calculator') ? '<i class="fa-solid fa-lock lock-icon"></i>' : ''}
+        </div>
+        <div class="nav-item ${plan.lockedFeatures.includes('alerts') ? 'locked' : ''}" onclick="navigateTo('alerts')">
+          <i class="fa-solid fa-bell"></i>
+          <span>Alerts</span>
+          ${plan.lockedFeatures.includes('alerts') ? '<i class="fa-solid fa-lock lock-icon"></i>' : ''}
+        </div>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Account</div>
+        <div class="nav-item" onclick="navigateTo('subscription')">
+          <i class="fa-solid fa-crown"></i>
+          <span>Subscription</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('settings')">
+          <i class="fa-solid fa-gear"></i>
+          <span>Settings</span>
+        </div>
+      </div>
+    `;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function updateSubscriptionBanner() {
+  if (!userData || !userData.role || !PLANS[userData.role]) {
+    console.error('Invalid userData:', userData);
+    return;
+  }
+  
+  const plan = PLANS[userData.role][userData.subscriptionPlan];
+  
+  if (!plan) {
+    console.error('Invalid plan:', userData.subscriptionPlan);
+    userData.subscriptionPlan = 'free';
+    plan = PLANS[userData.role]['free'];
+  }
+  
+  document.getElementById('planTitle').textContent = plan.name;
+  document.getElementById('planDescription').textContent = 
+    userData.role === 'seller' 
+      ? `Perfect for ${userData.subscriptionPlan === 'free' ? 'trying out' : 'growing'} your business`
+      : `Great for ${userData.subscriptionPlan === 'free' ? 'browsing' : 'serious'} buyers`;
+  
+  if (userData.role === 'seller') {
+    const maxListings = plan.maxListings === Infinity ? '∞' : plan.maxListings;
+    document.getElementById('planBadge').textContent = 
+      `${userData.listings?.active || 0}/${maxListings} Active Listings`;
+  } else {
+    document.getElementById('planBadge').textContent = 
+      `${plan.features.length} features available`;
+  }
+  
+  const isTopTier = (userData.role === 'seller' && userData.subscriptionPlan === 'premium') ||
+                    (userData.role === 'buyer' && userData.subscriptionPlan === 'enterprise');
+  
+  const upgradeBtn = document.getElementById('upgradeBtn');
+  if (upgradeBtn) {
+    upgradeBtn.style.display = isTopTier ? 'none' : 'inline-block';
+  }
+}
+
+
+function renderDashboardContent() {
+  const container = document.getElementById('tabContainer');
+  
+  if (userData.role === 'seller') {
+    container.innerHTML = renderSellerDashboard();
+  } else {
+    container.innerHTML = renderBuyerDashboard();
+  }
+}
+
+// ============================================
+// LISTING STATUS BADGE
+// ============================================
+
+function getStatusBadge(status) {
+  const badges = {
+    'pending': '<span style="background: var(--warning); color: white; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">⏳ Under Review</span>',
+    'active': '<span style="background: var(--success); color: white; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">✓ Active</span>',
+    'approved': '<span style="background: var(--success); color: white; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">✓ Approved</span>',
+    'draft': '<span style="background: var(--gray); color: white; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">📝 Draft</span>',
+    'sold': '<span style="background: var(--secondary); color: white; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">💰 Sold</span>',
+    'closed': '<span style="background: var(--error); color: white; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">🔒 Closed</span>'
+  };
+  return badges[status] || badges['draft'];
+}
+
+// ============================================
+// CAN EDIT/DELETE LISTING
+// ============================================
+
+function canEditListing(listing) {
+  // Can edit if: draft, pending, active, or approved
+  return ['draft', 'pending', 'active', 'approved'].includes(listing.status);
+}
+
+function canDeleteListing(listing) {
+  // Can delete if draft, pending, or approved/active with no inquiries
+  if (listing.status === 'draft' || listing.status === 'pending') return true;
+  if ((listing.status === 'active' || listing.status === 'approved') && (listing.inquiries || 0) === 0) return true;
+  return false;
+}
+
+// ============================================
+// SELLER DASHBOARD CONTENT
+// ============================================
+
+function renderSellerDashboard() {
+  const plan = PLANS.seller[userData.subscriptionPlan];
+  
+  return `
+    <!-- DASHBOARD TAB -->
+    <div id="tab-dashboard" class="tab-content active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <div class="stat-value">${userData.listings.active}</div>
+              <div class="stat-label">Active Listings</div>
+            </div>
+            <div class="stat-icon primary">
+              <i class="fa-solid fa-list"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <div class="stat-value">${userData.stats.totalViews}</div>
+              <div class="stat-label">Total Views</div>
+            </div>
+            <div class="stat-icon secondary">
+              <i class="fa-solid fa-eye"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <div class="stat-value">${userData.stats.inquiries}</div>
+              <div class="stat-label">Inquiries</div>
+            </div>
+            <div class="stat-icon accent">
+              <i class="fa-solid fa-envelope"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <div class="stat-value">${userData.stats.sales}</div>
+              <div class="stat-label">Sales Made</div>
+            </div>
+            <div class="stat-icon success">
+              <i class="fa-solid fa-dollar-sign"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="content-card">
+        <div class="card-header">
+          <h3>Quick Actions</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <button class="btn-primary" onclick="handleCreateListing()">
+            <i class="fa-solid fa-plus"></i> Create Listing
+          </button>
+         <button class="btn-primary" onclick="navigateTo('listings')">
+  <i class="fa-solid fa-list"></i> View My Listings
+</button>
+<button class="btn-primary" onclick="navigateTo('messages')">
+  <i class="fa-solid fa-envelope"></i> Check Messages
+</button>
+        </div>
+      </div>
+      
+      ${renderRecentListings()}
+    </div>
+    
+    <!-- LISTINGS TAB -->
+    <div id="tab-listings" class="tab-content">
+      ${renderListingsTab()}
+    </div>
+    
+    <!-- ANALYTICS TAB -->
+    <div id="tab-analytics" class="tab-content">
+      ${plan.lockedFeatures.includes('analytics') ? `
+        <div class="content-card locked-feature">
+          <div class="locked-overlay">
+            <i class="fa-solid fa-lock"></i>
+            <p>Analytics Dashboard</p>
+            <p style="font-weight: 400; font-size: 0.9rem;">Available on Basic and Premium plans</p>
+            <button class="unlock-btn" onclick="showUpgradeModal()">Upgrade to Unlock</button>
+          </div>
+          <div class="card-header">
+            <h3>Analytics Dashboard</h3>
+          </div>
+          <div style="height: 300px; background: var(--gray-light); border-radius: 10px;"></div>
+        </div>
+      ` : `
+        <div class="content-card">
+          <div class="card-header">
+            <h3>Analytics Dashboard</h3>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value">${userData.stats.totalViews}</div>
+              <div class="stat-label">Total Views</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">${Math.round(userData.stats.totalViews / (userData.listings.active || 1))}</div>
+              <div class="stat-label">Avg. Views per Listing</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">${userData.stats.inquiries}</div>
+              <div class="stat-label">Total Inquiries</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">${Math.round((userData.stats.inquiries / (userData.stats.totalViews || 1)) * 100)}%</div>
+              <div class="stat-label">Conversion Rate</div>
+            </div>
+          </div>
+        </div>
+      `}
+    </div>
+    
+    <!-- MESSAGES TAB -->
+    <div id="tab-messages" class="tab-content">
+      <div class="content-card">
+        <div class="card-header">
+          <h3>Messages</h3>
+        </div>
+        <div class="empty-state">
+          <i class="fa-solid fa-envelope"></i>
+          <p>No messages yet</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- SUBSCRIPTION TAB -->
+    <div id="tab-subscription" class="tab-content">
+      ${renderSubscriptionTab()}
+    </div>
+    
+    <!-- SETTINGS TAB -->
+    <div id="tab-settings" class="tab-content">
+      ${renderSettingsTab()}
+    </div>
+  `;
+}
+
+// ============================================
+// RECENT LISTINGS PREVIEW
+// ============================================
+
+function renderRecentListings() {
+  if (userListings.length === 0) return '';
+  
+  const recentListings = userListings.slice(0, 3);
+  
+  return `
+    <div class="content-card">
+      <div class="card-header">
+        <h3>Recent Listings</h3>
+        <button class="card-action" onclick="navigateTo('listings')">View All</button>
+      </div>
+      <div style="display: grid; gap: 1rem;">
+        ${recentListings.map(listing => `
+          <div style="display: flex; gap: 1rem; padding: 1rem; background: var(--gray-light); border-radius: 10px; align-items: center;">
+            <img src="${listing.mainImage || 'https://via.placeholder.com/80'}" 
+                 alt="${listing.systemName}" 
+                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+            <div style="flex: 1;">
+              <h4 style="margin-bottom: 0.3rem;">${listing.systemName || 'Untitled'}</h4>
+              <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 0.5rem;">${listing.categoryName || listing.category}</p>
+              ${getStatusBadge(listing.status)}
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">₱${parseInt(listing.askingPrice || 0).toLocaleString()}</div>
+              <div style="font-size: 0.85rem; color: var(--gray);">${listing.views || 0} views</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================
+// LISTINGS TAB WITH EDIT/DELETE
+// ============================================
+
+function renderListingsTab() {
+  if (userListings.length === 0) {
+    return `
+      <div class="content-card">
+        <div class="card-header">
+          <h3>My Listings</h3>
+          <button class="card-action" onclick="handleCreateListing()">
+            <i class="fa-solid fa-plus"></i> Create New Listing
+          </button>
+        </div>
+        <div class="empty-state">
+          <i class="fa-solid fa-inbox"></i>
+          <p>You haven't created any listings yet</p>
+          <br>
+          <button class="btn-primary" onclick="handleCreateListing()">
+            <i class="fa-solid fa-plus"></i> Create Your First Listing
+          </button>
+        </div>
+      </div>
+    `;
+  }
+  
+  return `
+    <div class="content-card">
+      <div class="card-header">
+        <h3>My Listings (${userListings.length})</h3>
+        <button class="card-action" onclick="handleCreateListing()">
+          <i class="fa-solid fa-plus"></i> Create New Listing
+        </button>
+      </div>
+      
+      <div style="display: grid; gap: 1.5rem;">
+        ${userListings.map(listing => `
+          <div style="border: 2px solid var(--gray-light); border-radius: 15px; padding: 1.5rem; transition: all 0.3s;" 
+               onmouseenter="this.style.borderColor='var(--primary)'" 
+               onmouseleave="this.style.borderColor='var(--gray-light)'">
+            <div style="display: flex; gap: 1.5rem;">
+              <img src="${listing.mainImage || 'https://via.placeholder.com/150'}" 
+                   alt="${listing.systemName}" 
+                   style="width: 150px; height: 150px; object-fit: cover; border-radius: 12px; flex-shrink: 0;">
+              
+              <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
+                  <div>
+                    <h3 style="margin-bottom: 0.5rem;">${listing.systemName || 'Untitled Listing'}</h3>
+                    <p style="color: var(--gray); font-size: 0.95rem;">${listing.categoryName || listing.category}</p>
+                  </div>
+                  ${getStatusBadge(listing.status)}
+                </div>
+                
+                <p style="color: var(--gray); margin-bottom: 1rem; line-height: 1.6;">
+                  ${listing.shortDescription || 'No description available'}
+                </p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                  <div>
+                    <div style="font-size: 0.85rem; color: var(--gray);">Asking Price</div>
+                    <div style="font-size: 1.3rem; font-weight: 700; color: var(--primary);">₱${parseInt(listing.askingPrice || 0).toLocaleString()}</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 0.85rem; color: var(--gray);">Monthly Revenue</div>
+                    <div style="font-size: 1.1rem; font-weight: 600;">₱${parseInt(listing.monthlyRevenue || 0).toLocaleString()}</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 0.85rem; color: var(--gray);">Views</div>
+                    <div style="font-size: 1.1rem; font-weight: 600;">${listing.views || 0}</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 0.85rem; color: var(--gray);">Inquiries</div>
+                    <div style="font-size: 1.1rem; font-weight: 600;">${listing.inquiries || 0}</div>
+                  </div>
+                </div>
+                
+                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                  ${canEditListing(listing) ? `
+                    <button class="btn-primary" onclick="handleEditListing('${listing.id}')" 
+                            style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">
+                      <i class="fa-solid fa-edit"></i> Edit Listing
+                    </button>
+                  ` : ''}
+                  
+                  ${canDeleteListing(listing) ? `
+                    <button onclick="handleDeleteListing('${listing.id}', '${listing.systemName}')" 
+                            style="padding: 0.7rem 1.5rem; font-size: 0.95rem; background: var(--error); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: 'Sarabun', sans-serif;">
+                      <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                  ` : ''}
+                  
+                  ${listing.status === 'active' ? `
+                    <button onclick="viewListingPublic('${listing.id}')" 
+                            style="padding: 0.7rem 1.5rem; font-size: 0.95rem; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: 'Sarabun', sans-serif;">
+                      <i class="fa-solid fa-external-link"></i> View Public
+                    </button>
+                  ` : ''}
+                  
+                  ${!canEditListing(listing) && !canDeleteListing(listing) ? `
+                    <p style="color: var(--gray); font-size: 0.9rem; font-style: italic;">
+                      <i class="fa-solid fa-lock"></i> This listing is ${listing.status} and cannot be edited or deleted
+                    </p>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================
+// HANDLE EDIT LISTING
+// ============================================
+
+window.handleEditListing = function(listingId) {
+  const listing = userListings.find(l => l.id === listingId);
+  
+  if (!listing) {
+    alert('Listing not found');
+    return;
+  }
+  
+  if (!canEditListing(listing)) {
+    alert('This listing cannot be edited. It may be sold or closed.');
+    return;
+  }
+  
+  // Store listing data in sessionStorage for the edit page
+  sessionStorage.setItem('editingListingId', listingId);
+  sessionStorage.setItem('editingListingData', JSON.stringify(listing));
+  
+  // Redirect to sell page with edit mode
+  window.location.href = 'sell.html?edit=' + listingId;
+}
+
+// ============================================
+// HANDLE DELETE LISTING
+// ============================================
+
+window.handleDeleteListing = async function(listingId, listingName) {
+  const listing = userListings.find(l => l.id === listingId);
+  
+  if (!listing) {
+    alert('Listing not found');
+    return;
+  }
+  
+  if (!canDeleteListing(listing)) {
+    alert('This listing cannot be deleted. It may have active inquiries or offers. Please contact support for assistance.');
+    return;
+  }
+  
+  const confirmMessage = `Are you sure you want to permanently delete "${listingName}"?\n\nThis action cannot be undone.`;
+  
+  if (!confirm(confirmMessage)) {
+    return;
+  }
+  
+  // Double confirmation for safety
+  const finalConfirm = confirm('Final confirmation: Delete this listing permanently?');
+  
+  if (!finalConfirm) {
+    return;
+  }
+  
+  try {
+    // Show loading state
+    const deleteBtn = event.target;
+    const originalText = deleteBtn.innerHTML;
+    deleteBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
+    deleteBtn.disabled = true;
+    
+    // Delete from Firestore
+    await deleteDoc(doc(db, 'listings', listingId));
+    
+    // Update local array
+    userListings = userListings.filter(l => l.id !== listingId);
+    
+    // Update user stats
+    const activeListings = userListings.filter(l => l.status === 'active' || l.status === 'pending').length;
+    userData.listings.active = activeListings;
+    userData.listings.total = userListings.length;
+    
+    // Update Firestore user document
+    const userDocRef = doc(db, 'users', userData.id);
+    await updateDoc(userDocRef, {
+      'listings.active': activeListings,
+      'listings.total': userListings.length
+    });
+    
+    // Refresh the dashboard
+    updateSubscriptionBanner();
+    renderDashboardContent();
+    
+    alert('Listing deleted successfully!');
+    
+  } catch (error) {
+    console.error('Error deleting listing:', error);
+    alert('Failed to delete listing. Please try again or contact support.');
+    
+    // Restore button
+    deleteBtn.innerHTML = originalText;
+    deleteBtn.disabled = false;
+  }
+}
+
+// ============================================
+// VIEW LISTING PUBLIC
+// ============================================
+
+window.viewListingPublic = function(listingId) {
+  // This would redirect to the public listing detail page
+  window.open('listing-detail.html?id=' + listingId, '_blank');
+}
+
+window.navigateTo = function(page) {
+  const plan = PLANS[userData.role][userData.subscriptionPlan];
+  const lockedFeatures = plan.lockedFeatures || [];
+  
+  if (lockedFeatures.includes(page)) {
+    showUpgradeModal();
+    return;
+  }
+  
+  // Update sidebar navigation
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  event.target.closest('.nav-item')?.classList.add('active');
+  
+  // Update page title
+  const pageTitles = {
+    dashboard: 'Dashboard',
+    listings: 'My Listings',
+    saved: 'Saved Listings',
+    analytics: 'Analytics',
+    messages: 'Messages',
+    calculator: 'ROI Calculator',
+    alerts: 'Alerts',
+    subscription: 'Subscription',
+    settings: 'Settings'
+  };
+  
+  document.getElementById('pageTitle').textContent = pageTitles[page] || 'Dashboard';
+  
+  // Update top bar action button
+  const actionButton = document.getElementById('topBarAction');
+  if (userData.role === 'seller') {
+    actionButton.innerHTML = '<i class="fa-solid fa-plus"></i> Create Listing';
+    actionButton.onclick = handleMainAction;
+  } else {
+    actionButton.innerHTML = '<i class="fa-solid fa-search"></i> Browse Listings';
+    actionButton.onclick = () => window.location.href = 'marketplace.html';
+  }
+  
+  // Show the correct tab content
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  
+  const selectedTab = document.getElementById(`tab-${page}`);
+  if (selectedTab) {
+    selectedTab.classList.add('active');
+  }
+}
+
+window.handleMainAction = function() {
+  if (userData.role === 'seller') {
+    handleCreateListing();
+  } else {
+    window.location.href = 'marketplace.html';
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ============================================
+// BUYER DASHBOARD CONTENT
+// ============================================
+
+function renderBuyerDashboard() {
+  const plan = PLANS.buyer[userData.subscriptionPlan];
+  
+  return `
+    <!-- DASHBOARD TAB -->
+    <div id="tab-dashboard" class="tab-content active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <div class="stat-value">${userData.stats.savedSearches || 0}</div>
+              <div class="stat-label">Saved Listings</div>
+            </div>
+            <div class="stat-icon primary">
+              <i class="fa-solid fa-heart"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <div class="stat-value">${userData.stats.totalViews || 0}</div>
+              <div class="stat-label">Listings Viewed</div>
+            </div>
+            <div class="stat-icon secondary">
+              <i class="fa-solid fa-eye"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <div class="stat-value">${userData.stats.inquiries || 0}</div>
+              <div class="stat-label">Inquiries Sent</div>
+            </div>
+            <div class="stat-icon accent">
+              <i class="fa-solid fa-paper-plane"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <div class="stat-value">${userData.stats.alerts || 0}</div>
+              <div class="stat-label">Active Alerts</div>
+            </div>
+            <div class="stat-icon success">
+              <i class="fa-solid fa-bell"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="content-card">
+        <div class="card-header">
+          <h3>Quick Actions</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <button class="btn-primary" onclick="window.location.href='marketplace.html'">
+            <i class="fa-solid fa-search"></i> Browse Marketplace
+          </button>
+          <button class="btn-primary" onclick="switchTab('saved')">
+            <i class="fa-solid fa-heart"></i> View Saved
+          </button>
+          <button class="btn-primary" onclick="switchTab('alerts')">
+            <i class="fa-solid fa-bell"></i> Manage Alerts
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- SAVED LISTINGS TAB -->
+    <div id="tab-saved" class="tab-content">
+      <div class="content-card">
+        <div class="card-header">
+          <h3>Saved Listings</h3>
+        </div>
+        <div class="empty-state">
+          <i class="fa-solid fa-heart"></i>
+          <p>No saved listings yet</p>
+          <br>
+          <button class="btn-primary" onclick="window.location.href='marketplace.html'">
+            <i class="fa-solid fa-search"></i> Browse Marketplace
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ALERTS TAB -->
+    <div id="tab-alerts" class="tab-content">
+      ${plan.lockedFeatures.includes('alerts') ? `
+        <div class="content-card locked-feature">
+          <div class="locked-overlay">
+            <i class="fa-solid fa-lock"></i>
+            <p>Saved Searches & Alerts</p>
+            <p style="font-weight: 400; font-size: 0.9rem;">Available on Pro and Enterprise plans</p>
+            <button class="unlock-btn" onclick="showUpgradeModal()">Upgrade to Unlock</button>
+          </div>
+          <div class="card-header">
+            <h3>Saved Alerts</h3>
+          </div>
+          <div style="height: 200px;"></div>
+        </div>
+      ` : `
+        <div class="content-card">
+          <div class="card-header">
+            <h3>Saved Alerts</h3>
+            <button class="card-action"><i class="fa-solid fa-plus"></i> Create Alert</button>
+          </div>
+          <div class="empty-state">
+            <i class="fa-solid fa-bell"></i>
+            <p>No alerts set up yet</p>
+            <p style="font-size: 0.9rem;">Create alerts to get notified about specific listings</p>
+          </div>
+        </div>
+      `}
+    </div>
+    
+    <!-- ANALYTICS TAB -->
+    <div id="tab-analytics" class="tab-content">
+      ${plan.lockedFeatures.includes('analytics') ? `
+        <div class="content-card locked-feature">
+          <div class="locked-overlay">
+            <i class="fa-solid fa-lock"></i>
+            <p>Listing Analytics & Insights</p>
+            <p style="font-weight: 400; font-size: 0.9rem;">Available on Pro and Enterprise plans</p>
+            <button class="unlock-btn" onclick="showUpgradeModal()">Upgrade to Unlock</button>
+          </div>
+          <div class="card-header">
+            <h3>Analytics</h3>
+          </div>
+          <div style="height: 300px; background: var(--gray-light); border-radius: 10px;"></div>
+        </div>
+      ` : `
+        <div class="content-card">
+          <div class="card-header">
+            <h3>Listing Analytics</h3>
+          </div>
+          <p style="color: var(--gray); padding: 2rem;">
+            View detailed analytics and insights on listings you're interested in.
+          </p>
+        </div>
+      `}
+    </div>
+    
+    <!-- ROI CALCULATOR TAB -->
+    <div id="tab-calculator" class="tab-content">
+      ${plan.lockedFeatures.includes('calculator') ? `
+        <div class="content-card locked-feature">
+          <div class="locked-overlay">
+            <i class="fa-solid fa-lock"></i>
+            <p>ROI Calculator & Projections</p>
+            <p style="font-weight: 400; font-size: 0.9rem;">Available on Pro and Enterprise plans</p>
+            <button class="unlock-btn" onclick="showUpgradeModal()">Upgrade to Unlock</button>
+          </div>
+          <div class="card-header">
+            <h3>ROI Calculator</h3>
+          </div>
+          <div style="height: 300px; background: var(--gray-light); border-radius: 10px;"></div>
+        </div>
+      ` : `
+        <div class="content-card">
+          <div class="card-header">
+            <h3>ROI Calculator</h3>
+          </div>
+          <p style="color: var(--gray); padding: 2rem;">
+            Calculate potential return on investment for listings you're considering.
+          </p>
+        </div>
+      `}
+    </div>
+    
+    <!-- SUBSCRIPTION TAB -->
+    <div id="tab-subscription" class="tab-content">
+      ${renderSubscriptionTab()}
+    </div>
+    
+    <!-- SETTINGS TAB -->
+    <div id="tab-settings" class="tab-content">
+      ${renderSettingsTab()}
+    </div>
+  `;
+}
+
+// ============================================
+// SHARED TABS
+// ============================================
+
+function renderSubscriptionTab() {
+  const plan = PLANS[userData.role][userData.subscriptionPlan];
+  
+  return `
+    <div class="content-card">
+      <div class="card-header">
+        <h3>Current Subscription</h3>
+      </div>
+      <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="color: white;">${plan.name}</h3>
+          <span style="background: rgba(255,255,255,0.3); padding: 0.4rem 0.8rem; border-radius: 50px; font-size: 0.85rem;">Current Plan</span>
+        </div>
+        <div style="font-size: 2rem; font-weight: 900; margin-bottom: 1rem;">
+          ${plan.price === 'Custom' ? 'Custom' : plan.currency + plan.price}
+          <span style="font-size: 1rem; font-weight: 500; opacity: 0.9;">/${plan.billingCycle}</span>
+        </div>
+        <ul style="list-style: none; margin-bottom: 1.5rem;">
+          ${plan.features.map(f => `<li style="padding: 0.4rem 0;"><i class="fa-solid fa-check"></i> ${f}</li>`).join('')}
+        </ul>
+        ${getUpgradeButton()}
+      </div>
+    </div>
+  `;
+}
+
+function getUpgradeButton() {
+  if (userData.role === 'seller') {
+    if (userData.subscriptionPlan === 'free') {
+      return '<button class="btn-primary" style="background: white; color: var(--primary); width: 100%;" onclick="showUpgradeModal()">Upgrade to Basic or Premium</button>';
+    } else if (userData.subscriptionPlan === 'basic') {
+      return '<button class="btn-primary" style="background: white; color: var(--primary); width: 100%;" onclick="showUpgradeModal()">Upgrade to Premium</button>';
+    }
+  } else {
+    if (userData.subscriptionPlan === 'free') {
+      return '<button class="btn-primary" style="background: white; color: var(--primary); width: 100%;" onclick="showUpgradeModal()">Upgrade to Pro or Enterprise</button>';
+    } else if (userData.subscriptionPlan === 'pro') {
+      return '<button class="btn-primary" style="background: white; color: var(--primary); width: 100%;" onclick="showUpgradeModal()">Upgrade to Enterprise</button>';
+    }
+  }
+  return '';
+}
+
+function renderSettingsTab() {
+  return `
+    <div class="content-card">
+      <div class="card-header">
+        <h3>Account Settings</h3>
+      </div>
+      <div style="padding: 1rem;">
+        <div style="margin-bottom: 2rem;">
+          <h4 style="margin-bottom: 1rem;">Account Type</h4>
+          <p><strong>${userData.role === 'seller' ? 'Seller Account' : 'Buyer Account'}</strong></p>
+          <p style="color: var(--gray); font-size: 0.9rem;">Want to switch roles? Contact support.</p>
+        </div>
+        
+        <div style="margin-bottom: 2rem;">
+          <h4 style="margin-bottom: 1rem;">Email Notifications</h4>
+          <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;">
+            <input type="checkbox" checked> New messages and inquiries
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;">
+            <input type="checkbox" checked> Weekly performance summary
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox"> Marketing and promotions
+          </label>
+        </div>
+        
+        <button class="btn-primary">
+          <i class="fa-solid fa-save"></i> Save Settings
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================
+// TAB SWITCHING
+// ============================================
+
+// Redirect switchTab calls to navigateTo for backward compatibility
+window.switchTab = function(tabName) {
+  navigateTo(tabName);
+}
+
+// ============================================
+// CREATE LISTING WITH LIMIT CHECK
+// ============================================
+
+window.handleCreateListing = function() {
+  if (userData.role !== 'seller') {
+    alert('Only seller accounts can create listings.');
+    return;
+  }
+  
+  const plan = PLANS.seller[userData.subscriptionPlan];
+  
+  if (userData.listings.active >= plan.maxListings) {
+    alert(`You've reached your listing limit (${plan.maxListings}). Please upgrade your plan to create more listings.`);
+    showUpgradeModal();
+    return;
+  }
+  
+  window.location.href = 'sell.html';
+}
+
+// ============================================
+// UPGRADE MODAL
+// ============================================
+
+window.showUpgradeModal = function() {
+  const modal = document.getElementById('upgradeModal');
+  const currentPlan = PLANS[userData.role][userData.subscriptionPlan];
+  
+  document.getElementById('modalTitle').textContent = 'Upgrade Your Plan';
+  document.getElementById('modalMessage').textContent = 'Unlock more features and grow your business';
+  document.getElementById('modalCurrentPlan').innerHTML = `
+    <strong>${currentPlan.name}</strong> - ${currentPlan.currency}${currentPlan.price}/${currentPlan.billingCycle}
+  `;
+  
+  const upgradeOptions = document.getElementById('upgradeOptions');
+  upgradeOptions.innerHTML = '';
+  
+  const availablePlans = getAvailableUpgrades();
+  
+  availablePlans.forEach(([key, plan]) => {
+    const optionHTML = `
+      <div class="plan-option" onclick="handleUpgrade('${key}')">
+        <div class="plan-option-header">
+          <div class="plan-option-name">${plan.name}</div>
+          <div class="plan-option-price">${plan.currency}${plan.price}<span>/${plan.billingCycle}</span></div>
+        </div>
+        <ul class="plan-option-features">
+          ${plan.features.map(f => `<li><i class="fa-solid fa-check"></i> ${f}</li>`).join('')}
+        </ul>
+        <button class="plan-option-btn">Upgrade to ${plan.name}</button>
+      </div>
+    `;
+    upgradeOptions.innerHTML += optionHTML;
+  });
+  
+  modal.classList.add('active');
+}
+
+function getAvailableUpgrades() {
+  const plans = PLANS[userData.role];
+  const available = [];
+  
+  if (userData.role === 'seller') {
+    if (userData.subscriptionPlan === 'free') {
+      available.push(['basic', plans.basic], ['premium', plans.premium]);
+    } else if (userData.subscriptionPlan === 'basic') {
+      available.push(['premium', plans.premium]);
+    }
+  } else {
+    if (userData.subscriptionPlan === 'free') {
+      available.push(['pro', plans.pro], ['enterprise', plans.enterprise]);
+    } else if (userData.subscriptionPlan === 'pro') {
+      available.push(['enterprise', plans.enterprise]);
+    }
+  }
+  
+  return available;
+}
+
+window.closeUpgradeModal = function() {
+  document.getElementById('upgradeModal').classList.remove('active');
+}
+
+window.handleUpgrade = function(planKey) {
+  const plan = PLANS[userData.role][planKey];
+  
+  if (plan.paymentUrl === 'contact') {
+    alert('Please contact our sales team for Enterprise pricing.');
+    window.location.href = 'mailto:sales@systemly.com';
+  } else if (plan.paymentUrl) {
+    sessionStorage.setItem('pendingPlan', planKey);
+    sessionStorage.setItem('pendingRole', userData.role);
+    window.location.href = plan.paymentUrl;
+  } else {
+    alert('Payment integration coming soon!');
+  }
+}
+
+// ============================================
+// USER MENU
+// ============================================
+
+window.toggleUserMenu = function() {
+  document.getElementById('userDropdown').classList.toggle('show');
+}
+
+window.addEventListener('click', function(event) {
+  if (!event.target.closest('.user-menu')) {
+    document.getElementById('userDropdown')?.classList.remove('show');
+  }
+});
+
+// ============================================
+// LOGOUT
+// ============================================
+
+window.logout = async function() {
+  if (confirm('Are you sure you want to sign out?')) {
+    try {
+      await signOut(auth);
+      window.location.href = 'index.html';
+    } catch (error) {
+      console.error('Error signing out:', error);
+      alert('Failed to sign out. Please try again.');
+    }
+  }
+}
+
+console.log('🚀 Systemly Unified Dashboard initialized');
+</script>
+
+</body>
+</html>
