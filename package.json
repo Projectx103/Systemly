@@ -1,18 +1,36 @@
 {
-  "name": "file-exchange-system",
+  "name": "systemly-file-exchange",
   "version": "1.0.0",
   "description": "File exchange system with PostgreSQL",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "18.x"
   },
   "dependencies": {
     "express": "^4.18.2",
     "multer": "^1.4.5-lts.1",
-    "pg": "^8.11.3"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
+    "pg": "^8.11.3",
+    "cors": "^2.8.5"
   }
 }
+```
+
+5. Click **"Commit changes"**
+
+### **Step 2: Redeploy on Render**
+
+1. Go to your Render dashboard
+2. Find your service
+3. Click **"Manual Deploy"** tab
+4. Click **"Clear build cache & deploy"**
+5. Wait and watch the logs
+
+You should now see:
+```
+✅ Build successful 🎉
+✅ Connected to Aiven PostgreSQL
+✅ Database tables initialized
+🚀 Server running on port 10000
