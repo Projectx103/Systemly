@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Exchange System</title>
+    <title>Systemly - File Exchange System</title>
     <style>
         * {
             margin: 0;
@@ -29,6 +29,30 @@
             margin-bottom: 30px;
             font-size: 2.5em;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .api-status {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .api-status.online {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .api-status.offline {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .api-status.checking {
+            background: #dbeafe;
+            color: #1e40af;
         }
 
         .role-selector {
@@ -106,12 +130,17 @@
             transition: all 0.3s;
         }
 
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .btn-primary {
             background: #667eea;
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: #5568d3;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
@@ -122,13 +151,8 @@
             color: white;
         }
 
-        .btn-success:hover {
+        .btn-success:hover:not(:disabled) {
             background: #059669;
-        }
-
-        .btn-danger {
-            background: #ef4444;
-            color: white;
         }
 
         .transactions {
@@ -206,6 +230,12 @@
             border: 1px solid #ef4444;
         }
 
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
         .stage-indicator {
             display: flex;
             justify-content: space-between;
@@ -249,11 +279,30 @@
             padding: 20px;
             color: #666;
         }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔄 File Exchange System</h1>
+        <h1>🔄 Systemly File Exchange</h1>
+
+        <div id="api-status" class="api-status checking">
+            🔵 Checking API connection...
+        </div>
 
         <div class="stage-indicator">
             <div class="stage active">
@@ -290,15 +339,15 @@
                     <input type="text" id="buyer-name" required placeholder="Enter buyer's name">
                 </div>
                 <div class="form-group">
-                    <label for="file-input">Select File</label>
+                    <label for="file-input">Select File (Max 5MB)</label>
                     <input type="file" id="file-input" required>
                 </div>
-                <button type="submit" class="btn btn-primary">📤 Upload File</button>
+                <button type="submit" class="btn btn-primary" id="upload-btn">📤 Upload File</button>
             </form>
 
             <div class="transactions">
                 <h3>My Transactions</h3>
-                <div id="seller-transactions" class="loading">Loading...</div>
+                <div id="seller-transactions" class="loading">Enter your name and upload a file to get started</div>
             </div>
         </div>
 
@@ -319,8 +368,47 @@
     </div>
 
     <script>
+        // ⚠️ IMPORTANT: Replace with your actual Render URL
+        const API_URL = 'https://systemly.onrender.com';
+        
         let currentRole = 'seller';
         let currentUser = '';
+        let apiOnline = false;
+
+        // Check API status on load
+        async function checkAPIStatus() {
+            const statusEl = document.getElementById('api-status');
+            statusEl.className = 'api-status checking';
+            statusEl.textContent = '🔵 Checking API connection...';
+            
+            try {
+                const response = await fetch(`${API_URL}/`, { 
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                const data = await response.json();
+                
+                if (data.status === 'running') {
+                    apiOnline = true;
+                    statusEl.className = 'api-status online';
+                    statusEl.textContent = '🟢 API Connected - System Ready';
+                    console.log('✅ API is online');
+                } else {
+                    throw new Error('API not ready');
+                }
+            } catch (error) {
+                apiOnline = false;
+                statusEl.className = 'api-status offline';
+                statusEl.textContent = '🔴 API Offline - Render may be spinning up (wait 50 seconds)';
+                console.log('❌ API check failed:', error);
+                
+                // Retry after 10 seconds
+                setTimeout(checkAPIStatus, 10000);
+            }
+        }
+
+        // Check API status immediately on load
+        checkAPIStatus();
 
         function switchRole(role) {
             currentRole = role;
@@ -331,7 +419,7 @@
             document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
             document.getElementById(`${role}-panel`).classList.add('active');
 
-            if (role === 'seller') {
+            if (role === 'seller' && currentUser) {
                 loadSellerTransactions();
             }
         }
@@ -350,13 +438,23 @@
         document.getElementById('upload-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            if (!apiOnline) {
+                showAlert('⚠️ API is offline. Please wait for the server to start.', 'error');
+                return;
+            }
+
+            const uploadBtn = document.getElementById('upload-btn');
+            const originalText = uploadBtn.textContent;
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = '⏳ Uploading...';
+            
             const formData = new FormData();
             formData.append('seller_name', document.getElementById('seller-name').value);
             formData.append('buyer_name', document.getElementById('buyer-name').value);
             formData.append('file', document.getElementById('file-input').files[0]);
 
             try {
-                const response = await fetch('/api/upload', {
+                const response = await fetch(`${API_URL}/api/upload`, {
                     method: 'POST',
                     body: formData
                 });
@@ -369,10 +467,14 @@
                     currentUser = document.getElementById('seller-name').value;
                     loadSellerTransactions();
                 } else {
-                    showAlert('❌ Upload failed. Please try again.', 'error');
+                    showAlert('❌ Upload failed: ' + (data.error || 'Unknown error'), 'error');
                 }
             } catch (error) {
-                showAlert('❌ Error uploading file.', 'error');
+                showAlert('❌ Error uploading file: ' + error.message, 'error');
+                console.error('Upload error:', error);
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = originalText;
             }
         });
 
@@ -383,12 +485,15 @@
                 return;
             }
 
+            document.getElementById('seller-transactions').innerHTML = '<div class="spinner"></div>';
+
             try {
-                const response = await fetch(`/api/seller/${sellerName}`);
+                const response = await fetch(`${API_URL}/api/seller/${encodeURIComponent(sellerName)}`);
                 const transactions = await response.json();
                 displaySellerTransactions(transactions);
             } catch (error) {
-                document.getElementById('seller-transactions').innerHTML = '<p class="alert alert-error">Error loading transactions</p>';
+                document.getElementById('seller-transactions').innerHTML = '<p class="alert alert-error">❌ Error loading transactions</p>';
+                console.error('Load seller transactions error:', error);
             }
         }
 
@@ -412,7 +517,7 @@
                     <div class="transaction-info">📅 Uploaded: ${new Date(t.uploaded_at).toLocaleString()}</div>
                     <div class="transaction-info">💾 Size: ${(t.file_size / 1024).toFixed(2)} KB</div>
                     ${t.confirmed_at ? `<div class="transaction-info">✅ Confirmed: ${new Date(t.confirmed_at).toLocaleString()}</div>` : ''}
-                    ${t.status === 'confirmed' ? '<div class="alert alert-success" style="margin-top: 10px;">✅ Transaction Complete!</div>' : ''}
+                    ${t.status === 'confirmed' ? '<div class="alert alert-success" style="margin-top: 10px;">✅ Transaction Complete!</div>' : '<div class="alert alert-info" style="margin-top: 10px;">⏳ Waiting for buyer confirmation...</div>'}
                 </div>
             `).join('');
         }
@@ -424,14 +529,15 @@
                 return;
             }
 
-            document.getElementById('buyer-transactions').innerHTML = '<p class="loading">Loading...</p>';
+            document.getElementById('buyer-transactions').innerHTML = '<div class="spinner"></div>';
 
             try {
-                const response = await fetch(`/api/buyer/${buyerName}`);
+                const response = await fetch(`${API_URL}/api/buyer/${encodeURIComponent(buyerName)}`);
                 const transactions = await response.json();
                 displayBuyerTransactions(transactions);
             } catch (error) {
-                document.getElementById('buyer-transactions').innerHTML = '<p class="alert alert-error">Error loading files</p>';
+                document.getElementById('buyer-transactions').innerHTML = '<p class="alert alert-error">❌ Error loading files</p>';
+                console.error('Load buyer transactions error:', error);
             }
         }
 
@@ -456,7 +562,7 @@
                     <div class="transaction-info">💾 Size: ${(t.file_size / 1024).toFixed(2)} KB</div>
                     ${t.confirmed_at ? `<div class="transaction-info">✅ Confirmed: ${new Date(t.confirmed_at).toLocaleString()}</div>` : ''}
                     <div class="transaction-actions">
-                        <button onclick="downloadFile(${t.id})" class="btn btn-primary">⬇️ Download</button>
+                        <button onclick="downloadFile(${t.id}, '${t.file_name}')" class="btn btn-primary">⬇️ Download</button>
                         ${t.status === 'pending' ? 
                             `<button onclick="confirmTransaction(${t.id})" class="btn btn-success">✅ Confirm OK</button>` : 
                             '<div class="alert alert-success">✅ Transaction Complete</div>'}
@@ -469,7 +575,10 @@
             if (!confirm('Confirm that you received the file and everything is OK?')) return;
 
             try {
-                const response = await fetch(`/api/confirm/${id}`, { method: 'POST' });
+                const response = await fetch(`${API_URL}/api/confirm/${id}`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
                 const data = await response.json();
                 
                 if (data.success) {
@@ -480,19 +589,43 @@
                 }
             } catch (error) {
                 showAlert('❌ Error confirming transaction', 'error');
+                console.error('Confirm error:', error);
             }
         }
 
-        function downloadFile(id) {
-            window.open(`/api/download/${id}`, '_blank');
+        async function downloadFile(id, filename) {
+            try {
+                showAlert('⏳ Preparing download...', 'info');
+                
+                const response = await fetch(`${API_URL}/api/download/${id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Download failed');
+                }
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                showAlert('✅ Download started!', 'success');
+            } catch (error) {
+                showAlert('❌ Download failed', 'error');
+                console.error('Download error:', error);
+            }
         }
 
-        // Auto-refresh for seller
+        // Auto-refresh for seller every 10 seconds if online
         setInterval(() => {
-            if (currentRole === 'seller' && currentUser) {
+            if (currentRole === 'seller' && currentUser && apiOnline) {
                 loadSellerTransactions();
             }
-        }, 5000);
+        }, 10000);
     </script>
 </body>
 </html>
