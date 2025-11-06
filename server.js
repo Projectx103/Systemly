@@ -2,18 +2,17 @@ const express = require('express');
 const multer = require('multer');
 const { Pool } = require('pg');
 const cors = require('cors');
-const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// CORS configuration - allow your GitHub Pages
+// CORS configuration
 app.use(cors({
   origin: ['https://projectx103.github.io', 'http://localhost:3000'],
   credentials: true
 }));
 
-// PostgreSQL connection with your Aiven credentials
+// PostgreSQL connection
 const pool = new Pool({
   user: 'avnadmin',
   host: 'pg-27b3b54a-molinajefferson001-3f19.e.aivencloud.com',
@@ -25,7 +24,7 @@ const pool = new Pool({
   }
 });
 
-// Test database connection
+// Test connection
 pool.connect((err, client, release) => {
   if (err) {
     console.error('Error connecting to database:', err.stack);
@@ -35,7 +34,7 @@ pool.connect((err, client, release) => {
   }
 });
 
-// Create tables if they don't exist
+// Create tables
 async function initDatabase() {
   const client = await pool.connect();
   try {
@@ -63,18 +62,18 @@ async function initDatabase() {
 
 initDatabase();
 
-// Configure multer for memory storage (no disk writes on Render)
+// Multer setup
 const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }
 });
 
 // Middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Health check endpoint
+// Health check
 app.get('/', (req, res) => {
   res.json({ 
     status: 'running', 
@@ -83,9 +82,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// API Routes
-
-// 1. Upload file (Seller) - Store file as base64 in database
+// Upload file
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
     const { seller_name, buyer_name } = req.body;
@@ -99,7 +96,6 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'Seller and buyer names are required' });
     }
 
-    // Convert file buffer to base64 string for database storage
     const fileBase64 = file.buffer.toString('base64');
 
     const result = await pool.query(
@@ -108,7 +104,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       [seller_name, buyer_name, file.originalname, fileBase64, file.mimetype, file.size]
     );
 
-    console.log(`✅ File uploaded: ${file.originalname} by ${seller_name} for ${buyer_name}`);
+    console.log(`✅ File uploaded: ${file.originalname}`);
 
     res.json({
       success: true,
@@ -121,12 +117,10 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// 2. Get transactions for buyer
+// Get buyer transactions
 app.get('/api/buyer/:buyer_name', async (req, res) => {
   try {
     const { buyer_name } = req.params;
-    
-    // Don't return file_data in list view to reduce payload size
     const result = await pool.query(
       `SELECT id, seller_name, buyer_name, file_name, file_type, file_size, status, uploaded_at, confirmed_at 
        FROM transactions 
@@ -134,20 +128,17 @@ app.get('/api/buyer/:buyer_name', async (req, res) => {
        ORDER BY uploaded_at DESC`,
       [buyer_name]
     );
-    
     res.json(result.rows);
   } catch (error) {
-    console.error('Fetch buyer transactions error:', error);
+    console.error('Fetch buyer error:', error);
     res.status(500).json({ error: 'Failed to fetch transactions' });
   }
 });
 
-// 3. Get transactions for seller
+// Get seller transactions
 app.get('/api/seller/:seller_name', async (req, res) => {
   try {
     const { seller_name } = req.params;
-    
-    // Don't return file_data in list view
     const result = await pool.query(
       `SELECT id, seller_name, buyer_name, file_name, file_type, file_size, status, uploaded_at, confirmed_at 
        FROM transactions 
@@ -155,15 +146,14 @@ app.get('/api/seller/:seller_name', async (req, res) => {
        ORDER BY uploaded_at DESC`,
       [seller_name]
     );
-    
     res.json(result.rows);
   } catch (error) {
-    console.error('Fetch seller transactions error:', error);
+    console.error('Fetch seller error:', error);
     res.status(500).json({ error: 'Failed to fetch transactions' });
   }
 });
 
-// 4. Confirm transaction (Buyer)
+// Confirm transaction
 app.post('/api/confirm/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -192,7 +182,7 @@ app.post('/api/confirm/:id', async (req, res) => {
   }
 });
 
-// 5. Download file - Return base64 file data
+// Download file
 app.get('/api/download/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -206,11 +196,8 @@ app.get('/api/download/:id', async (req, res) => {
     }
 
     const transaction = result.rows[0];
-    
-    // Convert base64 back to buffer
     const fileBuffer = Buffer.from(transaction.file_data, 'base64');
     
-    // Set headers for file download
     res.setHeader('Content-Disposition', `attachment; filename="${transaction.file_name}"`);
     res.setHeader('Content-Type', transaction.file_type || 'application/octet-stream');
     res.send(fileBuffer);
@@ -222,33 +209,6 @@ app.get('/api/download/:id', async (req, res) => {
   }
 });
 
-// 6. Get file info (without downloading)
-app.get('/api/file/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const result = await pool.query(
-      'SELECT id, seller_name, buyer_name, file_name, file_type, file_size, status, uploaded_at, confirmed_at FROM transactions WHERE id = $1',
-      [id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Transaction not found' });
-    }
-
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error('Get file info error:', error);
-    res.status(500).json({ error: 'Failed to get file info' });
-  }
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
