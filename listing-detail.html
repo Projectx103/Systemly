@@ -1673,16 +1673,25 @@ if (buyNowBtn) {
     }
   });
 }
-
 console.log('✅ Offers & Messages system initialized');
 
+// Load listing immediately (don't wait for auth)
+loadListingDetails();
+
+// Initialize user authentication in parallel
 console.log('🔍 Checking authentication status...');
 getCurrentUser().then(() => {
   console.log('👤 Current User:', currentUser ? currentUser.email : 'Not logged in');
   console.log('📋 User Data:', userData);
+  
+  // Enable offer/message buttons after auth check
+  if (userData) {
+    console.log('✅ User authenticated, buttons enabled');
+  } else {
+    console.log('ℹ️ No user - buttons will prompt for login');
+  }
 });
 
   </script>
 </body>
 </html>
-
