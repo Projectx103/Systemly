@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Digital Systems - Systemly Marketplace</title>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
     <style>
         * {
             margin: 0;
@@ -550,17 +551,17 @@
         }
 
         .listing-badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: var(--accent);
-            color: var(--white);
-            padding: 0.4rem 1rem;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            z-index: 10;
-        }
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: var(--accent);
+    color: var(--white);
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 10;
+}
 
         .listing-badge.verified {
             background: var(--accent);
@@ -608,6 +609,69 @@
     font-weight: 700;
     text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
 }
+
+/* Favorite Button */
+/* Favorite Button */
+.favorite-btn {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 20;
+    opacity: 0;
+}
+
+.listing-card:hover .favorite-btn {
+    opacity: 1;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.15);
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.favorite-btn.active {
+    background: var(--error);
+    color: white;
+    opacity: 1;
+}
+
+.favorite-btn.active:hover {
+    background: #DC2626;
+    transform: scale(1.15);
+}
+
+.favorite-btn i {
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.favorite-btn:hover i {
+    transform: scale(1.1);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 @keyframes gradient-shift {
     0% {
@@ -845,6 +909,73 @@
                 flex-direction: column;
             }
         }
+
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal.active {
+  display: flex !important;
+}
+
+.modal-content {
+  background: white;
+  padding: 3rem;
+  border-radius: 30px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.close-modal {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #6B7280;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.close-modal:hover {
+  background: #F3F4F6;
+  color: #1F2937;
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.modal-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+
+
+
+
+
+
+
     </style>
 </head>
 <body>
@@ -1084,6 +1215,88 @@
         </div>
     </footer>
 
+
+
+
+<!-- Make Offer Modal -->
+<div class="modal" id="makeOfferModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeMakeOfferModal()">×</button>
+    
+    <div class="modal-header">
+      <div class="modal-icon">💰</div>
+      <h2>Make an Offer</h2>
+      <p id="offerListingName" style="color: #6B7280;"></p>
+    </div>
+
+    <form id="offerForm" onsubmit="submitOffer(event)">
+      <input type="hidden" id="offerListingId">
+      <input type="hidden" id="offerSellerId">
+      <input type="hidden" id="offerSellerEmail">
+      
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label class="form-label">Your Offer Amount (₱) *</label>
+        <input type="number" id="offerAmount" class="form-input" required min="1000" step="100" placeholder="Enter your offer amount">
+        <small style="color: #6B7280; font-size: 0.85rem;">Current asking price: <span id="currentAskingPrice"></span></small>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label class="form-label">Message to Seller (Optional)</label>
+        <textarea id="offerMessage" class="form-textarea" rows="4" placeholder="Add a message to explain your offer..."></textarea>
+      </div>
+      
+      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button type="button" class="btn btn-secondary" onclick="closeMakeOfferModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa-solid fa-paper-plane"></i> Submit Offer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Message Seller Modal -->
+<div class="modal" id="messageSellerModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeMessageSellerModal()">×</button>
+    
+    <div class="modal-header">
+      <div class="modal-icon">✉️</div>
+      <h2>Message Seller</h2>
+      <p id="messageListingName" style="color: #6B7280;"></p>
+    </div>
+
+    <form id="messageForm" onsubmit="sendMessage(event)">
+      <input type="hidden" id="messageListingId">
+      <input type="hidden" id="messageSellerId">
+      <input type="hidden" id="messageSellerEmail">
+      
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label class="form-label">Subject *</label>
+        <input type="text" id="messageSubject" class="form-input" required placeholder="What would you like to ask?">
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label class="form-label">Your Message *</label>
+        <textarea id="messageText" class="form-textarea" rows="6" required placeholder="Type your message here..."></textarea>
+      </div>
+      
+      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button type="button" class="btn btn-secondary" onclick="closeMessageSellerModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa-solid fa-paper-plane"></i> Send Message
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+
+
+
+
     <!-- Firebase SDKs -->
     <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -1099,31 +1312,226 @@ import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/fi
             appId: "1:32599486733:web:16d34643c8f920a6fd8044"
         };
 
+
+        const API_URL = 'https://systemly.onrender.com';
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 	const auth = getAuth(app);
 
-	let currentUser = null;
-        let allListings = [];
-        let filteredListings = [];
-        let currentPage = 1;
-        const itemsPerPage = 12;
+let currentUser = null;
+let userData = null;
+let allListings = [];
+let filteredListings = [];
+let currentPage = 1;
+const itemsPerPage = 12;
+
+
+
+
+
+window.openMakeOfferModal = function(listingId, listingName, askingPrice, sellerId, sellerEmail) {
+  if (!currentUser) {
+    if (confirm('Sign in to make an offer!\n\nClick OK to go to login page.')) {
+      window.location.href = 'login.html';
+    }
+    return;
+  }
+
+  if (userData && userData.role !== 'buyer') {
+    alert('❌ Only Buyer accounts can make offers.');
+    return;
+  }
+
+  document.getElementById('offerListingId').value = listingId;
+  document.getElementById('offerListingName').textContent = listingName;
+  document.getElementById('currentAskingPrice').textContent = '₱' + parseInt(askingPrice).toLocaleString();
+  document.getElementById('offerSellerId').value = sellerId;
+  document.getElementById('offerSellerEmail').value = sellerEmail;
+  document.getElementById('offerAmount').value = '';
+  document.getElementById('offerMessage').value = '';
+  
+  document.getElementById('makeOfferModal').classList.add('active');
+}
+
+window.closeMakeOfferModal = function() {
+  document.getElementById('makeOfferModal').classList.remove('active');
+}
+
+window.submitOffer = async function(event) {
+  event.preventDefault();
+
+  const submitBtn = event.target.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+
+  try {
+    const response = await fetch(`${API_URL}/api/offers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        listingId: document.getElementById('offerListingId').value,
+        listingName: document.getElementById('offerListingName').textContent,
+        sellerId: document.getElementById('offerSellerId').value,
+        sellerEmail: document.getElementById('offerSellerEmail').value,
+        buyerId: userData.id,
+        buyerEmail: userData.email,
+        buyerName: userData.name,
+        offerAmount: parseFloat(document.getElementById('offerAmount').value),
+        message: document.getElementById('offerMessage').value
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      showToast('✓ Offer submitted successfully!', 'success');
+      closeMakeOfferModal();
+    } else {
+      throw new Error(data.error || 'Failed to submit offer');
+    }
+  } catch (error) {
+    console.error('❌ Error:', error);
+    showToast('Failed to submit offer', 'error');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Offer';
+  }
+}
+
+// ============================================
+// MESSAGE FUNCTIONS
+// ============================================
+
+window.openMessageSellerModal = function(listingId, listingName, sellerId, sellerEmail) {
+  if (!currentUser) {
+    if (confirm('Sign in to message the seller!\n\nClick OK to go to login page.')) {
+      window.location.href = 'login.html';
+    }
+    return;
+  }
+
+  document.getElementById('messageListingId').value = listingId;
+  document.getElementById('messageListingName').textContent = listingName;
+  document.getElementById('messageSellerId').value = sellerId;
+  document.getElementById('messageSellerEmail').value = sellerEmail;
+  document.getElementById('messageSubject').value = 'Inquiry about ' + listingName;
+  document.getElementById('messageText').value = '';
+  
+  document.getElementById('messageSellerModal').classList.add('active');
+}
+
+window.closeMessageSellerModal = function() {
+  document.getElementById('messageSellerModal').classList.remove('active');
+}
+
+window.sendMessage = async function(event) {
+  event.preventDefault();
+
+  const submitBtn = event.target.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+
+  try {
+    const response = await fetch(`${API_URL}/api/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        listingId: document.getElementById('messageListingId').value,
+        listingName: document.getElementById('messageListingName').textContent,
+        sellerId: document.getElementById('messageSellerId').value,
+        sellerEmail: document.getElementById('messageSellerEmail').value,
+        buyerId: userData.id,
+        buyerEmail: userData.email,
+        buyerName: userData.name,
+        subject: document.getElementById('messageSubject').value,
+        message: document.getElementById('messageText').value
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      showToast('✓ Message sent successfully!', 'success');
+      closeMessageSellerModal();
+    } else {
+      throw new Error(data.error || 'Failed to send message');
+    }
+  } catch (error) {
+    console.error('❌ Error:', error);
+    showToast('Failed to send message', 'error');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
+  }
+}
+
+console.log('✅ Offers & Messages system initialized');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 // Auth state observer
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
+        await loadUserData(user.uid);
         updateUIForLoggedInUser(user);
     } else {
         currentUser = null;
+        userData = null;
         updateUIForLoggedOutUser();
     }
 });
 
+// Load user data from Firestore (for logged-in users)
+async function loadUserData(userId) {
+    try {
+        const userDocRef = doc(db, 'users', userId);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+            const data = userDoc.data();
+            userData = {
+                id: userId,
+                email: currentUser.email,
+                name: data.name || currentUser.displayName || currentUser.email.split('@')[0],
+                role: data.role || 'buyer',
+                subscriptionPlan: data.subscriptionPlan || 'free',
+                savedListings: data.savedListings || [],
+                profile: data.profile || {}
+            };
+            
+            console.log('✅ User data loaded:', userData);
+            
+            // Re-render listings to show/hide favorite buttons
+            if (filteredListings.length > 0) {
+                renderListings();
+            }
+        } else {
+            console.log('⚠️ User document not found');
+            userData = null;
+        }
+    } catch (error) {
+        console.error('❌ Error loading user data:', error);
+        userData = null;
+    }
+}
 
 
 // Update UI for logged in user
@@ -1223,8 +1631,179 @@ window.handleSignOut = handleSignOut;
 
 
 
-// Load approved listings with user plan info
-// ✅ REPLACE - Load approved listings with user plan info
+
+
+
+
+// Check if user can save listings (buyer with pro plan)
+// Check if user can save listings (ONLY buyers with "pro" plan)
+// ✅ Check if user can save listings (ONLY buyers with "pro buyer" plan)
+function canSaveListings() {
+    if (!currentUser || !userData) {
+        console.log('❌ Cannot save: Not logged in');
+        return false;
+    }
+    
+    const role = (userData.role || '').toLowerCase().trim();
+    const plan = (userData.subscriptionPlan || '').toLowerCase().trim();
+    
+    console.log('🔍 Checking save permissions:', { 
+        role, 
+        plan,
+        rawRole: userData.role,
+        rawPlan: userData.subscriptionPlan 
+    });
+    
+    // Check if buyer
+    const isBuyer = role === 'buyer';
+    
+    // Check if has pro plan (any variation)
+    const isProPlan = plan.includes('pro');
+    
+    const result = isBuyer && isProPlan;
+    
+    console.log(`✅ Result: Can save = ${result} (buyer: ${isBuyer}, pro: ${isProPlan})`);
+    
+    return result;
+}
+
+// Check if listing is saved
+function isSaved(listingId) {
+    if (!userData || !userData.savedListings) return false;
+    return userData.savedListings.includes(listingId);
+}
+
+// Toggle save listing
+window.toggleSave = async function(listingId) {
+    // Not logged in
+    if (!currentUser) {
+        if (confirm('Sign in to save listings and track your favorites!\n\nClick OK to go to login page.')) {
+            window.location.href = 'login.html';
+        }
+        return;
+    }
+    
+    // Logged in but not authorized
+    if (!canSaveListings()) {
+        const role = userData?.role || 'unknown';
+        const plan = userData?.subscriptionPlan || 'free';
+        
+        if (role !== 'buyer') {
+            alert(`⚠️ Only Buyer accounts can save listings.\n\nYour account type: ${role.toUpperCase()}\n\nTo save listings, please create a Buyer account or switch your account role.`);
+        } else if (plan !== 'pro' && plan !== 'pro buyer' && plan !== 'pro-buyer') {
+            if (confirm(`🔒 Saved Listings is a Pro Buyer feature!\n\nYour current plan: ${plan.toUpperCase()}\n\nUpgrade to Pro Buyer to:\n• Save unlimited listings\n• Full analytics access\n• ROI calculator & projections\n• Priority support\n\nClick OK to view pricing.`)) {
+                window.location.href = 'pricing.html#buyer-pricing';
+            }
+        }
+        return;
+    }
+    
+    // User is authorized - proceed with save/unsave
+    try {
+        const { updateDoc, doc, serverTimestamp, arrayUnion, arrayRemove } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+        
+        const userRef = doc(db, 'users', userData.id);
+        
+        if (isSaved(listingId)) {
+            // Remove from saved
+            await updateDoc(userRef, {
+                savedListings: arrayRemove(listingId),
+                updatedAt: serverTimestamp()
+            });
+            
+            userData.savedListings = userData.savedListings.filter(id => id !== listingId);
+            showToast('Removed from saved listings', 'info');
+        } else {
+            // Add to saved
+            await updateDoc(userRef, {
+                savedListings: arrayUnion(listingId),
+                updatedAt: serverTimestamp()
+            });
+            
+            userData.savedListings = userData.savedListings || [];
+            userData.savedListings.push(listingId);
+            showToast('✓ Saved! View in your Buyer Dashboard', 'success');
+        }
+        
+        // Re-render to update heart icons
+        renderListings();
+        
+    } catch (error) {
+        console.error('❌ Error toggling save:', error);
+        showToast('Failed to save. Please try again.', 'error');
+    }
+}
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    // Remove existing toasts
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: white;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        z-index: 10000;
+        animation: slideIn 0.3s ease-out;
+        border-left: 4px solid ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : '#3B82F6'};
+    `;
+    
+    const icon = type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ';
+    
+    toast.innerHTML = `
+        <div style="font-size: 1.5rem;">${icon}</div>
+        <div>
+            <strong style="text-transform: capitalize;">${type}</strong>
+            <div style="font-size: 0.9rem; color: #6B7280;">${message}</div>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Add animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-out forwards';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// Add slideOut animation
+const slideOutStyle = document.createElement('style');
+slideOutStyle.textContent = `
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(400px); opacity: 0; }
+    }
+`;
+document.head.appendChild(slideOutStyle);
+
+
+
+
+
+
+
+
+
 // Load approved listings with user plan info
 async function loadListings() {
     document.getElementById('loadingState').style.display = 'block';
@@ -1455,7 +2034,42 @@ function updateCategoryCounts() {
             applyFilters();
         }
 
-        // Render listings
+
+
+
+
+
+
+
+
+// Render favorite button (only for pro buyers)
+// Render favorite button (only for pro buyers)
+function renderFavoriteButton(listingId) {
+    const canSave = canSaveListings();
+    
+    console.log(`💝 Rendering favorite for ${listingId}: canSave=${canSave}`);
+    
+    if (!canSave) {
+        return ''; // No button
+    }
+    
+    const isActive = isSaved(listingId);
+    const iconType = isActive ? 'solid' : 'regular';
+    
+    return `
+        <button class="favorite-btn ${isActive ? 'active' : ''}" 
+                onclick="event.stopPropagation(); toggleSave('${listingId}')"
+                title="${isActive ? 'Remove from saved' : 'Save listing'}"
+                style="display: flex !important;">
+            <i class="fa-${iconType} fa-heart"></i>
+        </button>
+    `;
+}
+
+
+
+
+
 // Render listings
 function renderListings() {
     const grid = document.getElementById('listingsGrid');
@@ -1486,6 +2100,17 @@ function renderListings() {
     document.getElementById('resultsCount').textContent = 
         `${filteredListings.length} system${filteredListings.length !== 1 ? 's' : ''}`;
     
+    // Debug: Check if canSaveListings is working
+    console.log('🔍 Can save listings:', canSaveListings());
+    console.log('🔍 User data:', userData);
+    
+// Extra debug for first listing
+if (currentListings.length > 0) {
+    console.log('🎯 Testing favorite button for first listing:', currentListings[0].id);
+    console.log('🎯 Button HTML:', renderFavoriteButton(currentListings[0].id));
+}
+
+
     // Render listing cards
     grid.innerHTML = currentListings.map(listing => {
         const mainImage = listing.images && listing.images.length > 0 ? listing.images[0] : null;
@@ -1495,18 +2120,17 @@ function renderListings() {
         let badgeHTML = '';
         const userPlan = (listing.userPlan || 'free').toLowerCase();
         
-        console.log(`🎨 Rendering ${listing.systemName} with plan: ${userPlan}`);
-        
         if (userPlan === 'premium') {
-    badgeHTML = '<span class="listing-badge premium-seller"><span style="filter: grayscale(1) brightness(0);">⭐</span> PREMIUM</span>';
-} else if (userPlan === 'basic') {
-    badgeHTML = '<span class="listing-badge basic-seller"><span style="filter: grayscale(1) brightness(0);">💎</span> BASIC</span>';
-} else {
-    badgeHTML = '<span class="listing-badge free-seller"><span style="filter: grayscale(1) brightness(0);">🔷</span> FREE</span>';
-}
+            badgeHTML = '<span class="listing-badge premium-seller"><span style="filter: grayscale(1) brightness(0);">⭐</span> PREMIUM</span>';
+        } else if (userPlan === 'basic') {
+            badgeHTML = '<span class="listing-badge basic-seller"><span style="filter: grayscale(1) brightness(0);">💎</span> BASIC</span>';
+        } else {
+            badgeHTML = '<span class="listing-badge free-seller"><span style="filter: grayscale(1) brightness(0);">🔷</span> FREE</span>';
+        }
         
         return `
-            <div class="listing-card" onclick="viewListing('${listing.id}')">
+            <div class="listing-card" onclick="viewListing('${listing.id}')" style="position: relative;">
+                ${renderFavoriteButton(listing.id)}
                 <div class="listing-image">
                     ${mainImage ? 
                         `<img src="${mainImage}" alt="${listing.systemName}" onerror="this.parentElement.innerHTML='<div class=\\'listing-image-placeholder\\'>📊</div>'">` :
