@@ -1225,6 +1225,13 @@ import {
   Timestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
+
+const API_URL = 'https://systemly.onrender.com';
+
+
+
+
+
 const firebaseConfig = {
   apiKey: "AIzaSyD3PQ5oWrzAXOHnb7wrmpRhL9DWIB7w9rE",
   authDomain: "systemly-db.firebaseapp.com",
@@ -1234,7 +1241,6 @@ const firebaseConfig = {
   appId: "1:32599486733:web:16d34643c8f920a6fd8044"
 };
 
-const API_URL = 'https://systemly.onrender.com'; // ⚠️ UPDATE with your Render URL
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -1244,6 +1250,9 @@ let userListings = [];
 let listingsUnsubscribe = null;
 let currentChart = null;
 let deleteListingId = null;
+let sellerOffers = [];
+let sellerMessages = [];
+
 
 // ============================================
 // PLAN CONFIGURATION
@@ -1476,22 +1485,30 @@ async function loadUserListings() {
 // INITIALIZE DASHBOARD
 // ============================================
 
+// ============================================
+// UPDATE initializeDashboard FUNCTION - ADD INITIAL LOAD
+// ============================================
+
+// FIND initializeDashboard() and ADD these lines at the END:
 function initializeDashboard() {
-  console.log('🎯 Initializing dashboard...');
-  console.log('👤 User data:', userData);
-  console.log('📋 User listings:', userListings.length);
-  
-  document.getElementById('loadingScreen').classList.add('hidden');
-  document.body.classList.add('loaded');
-  
-  updateUserProfile();
-  updateSubscriptionBanner();
-  renderSidebar();
-  renderDashboardContent();
-  
-  console.log('✅ Dashboard initialized successfully');
+    console.log('🎯 Initializing dashboard...');
+    
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.body.classList.add('loaded');
+    
+    updateUserProfile();
+    updateSubscriptionBanner();
+    renderSidebar();
+    renderDashboardContent();
+    
+    // ✅ ADD THESE LINES - Load offers and messages in background
+    loadSellerOffers().catch(err => console.warn('Initial offers load failed:', err));
+    loadSellerMessages().catch(err => console.warn('Initial messages load failed:', err));
+    
+    console.log('✅ Dashboard initialized successfully');
 }
 
+console.log('✅ Offers & Messages system loaded');
 // ============================================
 // ADD: Debug Helper Function
 // ============================================
@@ -1557,7 +1574,6 @@ function updateDashboardStats() {
 // ============================================
 // RENDER SIDEBAR
 // ============================================
-
 function renderSidebar() {
   const nav = document.getElementById('sidebarNav');
   const plan = PLAN_LIMITS[userData.subscriptionPlan];
@@ -1573,6 +1589,11 @@ function renderSidebar() {
         <i class="fa-solid fa-list"></i>
         <span>My Listings</span>
       </div>
+      <div class="nav-item" onclick="navigateTo('offers')">
+        <i class="fa-solid fa-hand-holding-dollar"></i>
+        <span>Offers</span>
+        <span id="offersCountBadge" style="margin-left: auto; background: var(--error); color: white; padding: 0.2rem 0.6rem; border-radius: 50%; font-size: 0.75rem; display: none;"></span>
+      </div>
     </div>
     
     <div class="nav-section">
@@ -1585,6 +1606,7 @@ function renderSidebar() {
       <div class="nav-item" onclick="navigateTo('messages')">
         <i class="fa-solid fa-envelope"></i>
         <span>Messages</span>
+        <span id="messagesCountBadge" style="margin-left: auto; background: var(--error); color: white; padding: 0.2rem 0.6rem; border-radius: 50%; font-size: 0.75rem; display: none;"></span>
       </div>
     </div>
     
@@ -2003,44 +2025,48 @@ function renderAnalyticsTab() {
   `;
 }
 
+
 // ============================================
-// MESSAGES TAB
+// UPDATE renderMessagesTab FUNCTION
 // ============================================
 
 function renderMessagesTab() {
-  const plan = PLAN_LIMITS[userData.subscriptionPlan];
-  
-  if (!plan.canReceiveInquiries) {
+    const plan = PLAN_LIMITS[userData.subscriptionPlan];
+    
+    if (!plan.canReceiveInquiries) {
+        return `
+            <div class="content-card locked-feature">
+                <div class="locked-overlay">
+                    <i class="fa-solid fa-lock"></i>
+                    <p>Messages & Inquiries</p>
+                    <p style="font-weight: 400; font-size: 0.9rem;">Available on Basic and Premium plans</p>
+                    <button class="unlock-btn" onclick="openUpgradeModal()">Upgrade to Unlock</button>
+                </div>
+                <div class="card-header">
+                    <h3>Messages</h3>
+                </div>
+                <div style="height: 200px;"></div>
+            </div>
+        `;
+    }
+    
     return `
-      <div class="content-card locked-feature">
-        <div class="locked-overlay">
-          <i class="fa-solid fa-lock"></i>
-          <p>Messages & Inquiries</p>
-          <p style="font-weight: 400; font-size: 0.9rem;">Available on Basic and Premium plans</p>
-          <button class="unlock-btn" onclick="openUpgradeModal()">Upgrade to Unlock</button>
+        <div class="content-card">
+            <div class="card-header">
+                <h3>Messages & Inquiries</h3>
+                <button class="btn btn-secondary" onclick="loadSellerMessages()">
+                    <i class="fa-solid fa-sync"></i> Refresh
+                </button>
+            </div>
+            <div id="messagesContent">
+                <div style="text-align: center; padding: 3rem;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
+                    <p style="margin-top: 1rem;">Loading messages...</p>
+                </div>
+            </div>
         </div>
-        <div class="card-header">
-          <h3>Messages</h3>
-        </div>
-        <div style="height: 200px;"></div>
-      </div>
     `;
-  }
-  
-  return `
-    <div class="content-card">
-      <div class="card-header">
-        <h3>Messages & Inquiries</h3>
-      </div>
-      <div class="empty-state">
-        <i class="fa-solid fa-envelope"></i>
-        <p>No messages yet</p>
-        <p style="font-size: 0.9rem; color: var(--gray);">You'll receive notifications when buyers contact you</p>
-      </div>
-    </div>
-  `;
 }
-
 // ============================================
 // SUBSCRIPTION TAB
 // ============================================
@@ -2204,48 +2230,54 @@ function canMarkSold(listing) {
 }
 
 // ============================================
-// NAVIGATION
+// UPDATE navigateTo FUNCTION - ADD DATA LOADING
 // ============================================
 
+// FIND the navigateTo function and UPDATE it to include data loading:
 window.navigateTo = function(page) {
-  const plan = PLAN_LIMITS[userData.subscriptionPlan];
-  
-  // Check if feature is locked
-  if (page === 'analytics' && plan.analytics === 'none') {
-    openUpgradeModal();
-    return;
-  }
-  
-  // Update sidebar navigation
-  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-  event?.target.closest('.nav-item')?.classList.add('active');
-  
-  // Update page title
-  const pageTitles = {
-    dashboard: 'Dashboard',
-    listings: 'My Listings',
-    analytics: 'Analytics',
-    messages: 'Messages',
-    subscription: 'Subscription',
-    settings: 'Settings'
-  };
-  
-  document.getElementById('pageTitle').textContent = pageTitles[page] || 'Dashboard';
-  
-  // Show the correct tab content
-  document.querySelectorAll('.tab-content').forEach(tab => {
-    tab.classList.remove('active');
-  });
-  
-  const selectedTab = document.getElementById(`tab-${page}`);
-  if (selectedTab) {
-    selectedTab.classList.add('active');
+    const plan = PLAN_LIMITS[userData.subscriptionPlan];
     
-    // Initialize chart if analytics tab
-    if (page === 'analytics' && plan.analytics !== 'none') {
-      setTimeout(() => initializeAnalyticsChart(), 100);
+    // Check if feature is locked
+    if (page === 'analytics' && plan.analytics === 'none') {
+        openUpgradeModal();
+        return;
     }
-  }
+    
+    // Update sidebar navigation
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    event?.target.closest('.nav-item')?.classList.add('active');
+    
+    // Update page title
+    const pageTitles = {
+        dashboard: 'Dashboard',
+        listings: 'My Listings',
+        offers: 'Offers',
+        analytics: 'Analytics',
+        messages: 'Messages',
+        subscription: 'Subscription',
+        settings: 'Settings'
+    };
+    
+    document.getElementById('pageTitle').textContent = pageTitles[page] || 'Dashboard';
+    
+    // Show the correct tab content
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    const selectedTab = document.getElementById(`tab-${page}`);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+        
+        // Load data for specific tabs
+        if (page === 'analytics' && plan.analytics !== 'none') {
+            setTimeout(() => initializeAnalyticsChart(), 100);
+        } else if (page === 'offers') {
+            setTimeout(() => loadSellerOffers(), 100);
+        } else if (page === 'messages') {
+            setTimeout(() => loadSellerMessages(), 100);
+        }
+    }
 }
 
 // ============================================
@@ -3083,26 +3115,24 @@ window.addEventListener('beforeunload', () => {
 
 
 
-// ============================================
-// OFFERS TAB
-// ============================================
 
 // ============================================
-// OFFERS TAB CONTENT RENDERER (ADD THIS)
+// UPDATE renderOffersTab FUNCTION
 // ============================================
 
 function renderOffersTab() {
     return `
-        <div id="tab-offers" class="tab-content">
-            <div class="content-card">
-                <div class="card-header">
-                    <h3>Listing Offers</h3>
-                    <button class="btn btn-secondary" onclick="loadSellerOffers()">
-                        <i class="fa-solid fa-sync"></i> Refresh
-                    </button>
-                </div>
-                <div id="offersContent">
-                    <div class="loading">Loading offers...</div>
+        <div class="content-card">
+            <div class="card-header">
+                <h3>Listing Offers</h3>
+                <button class="btn btn-secondary" onclick="loadSellerOffers()">
+                    <i class="fa-solid fa-sync"></i> Refresh
+                </button>
+            </div>
+            <div id="offersContent">
+                <div style="text-align: center; padding: 3rem;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
+                    <p style="margin-top: 1rem;">Loading offers...</p>
                 </div>
             </div>
         </div>
@@ -3110,18 +3140,21 @@ function renderOffersTab() {
 }
 
 
-
 // ============================================
 // MESSAGES TAB
 // ============================================
 
-// Function to generate the HTML for the messages table
+// ============================================
+// RENDER MESSAGES TABLE HTML
+// ============================================
+
 function renderMessagesTableHTML(messages) {
     if (messages.length === 0) {
         return `
             <div class="empty-state">
-                <i class="fa-solid fa-inbox"></i>
+                <i class="fa-solid fa-envelope-open"></i>
                 <p>No messages received yet.</p>
+                <p style="font-size: 0.9rem; color: var(--gray);">Buyer inquiries will appear here</p>
             </div>
         `;
     }
@@ -3130,13 +3163,13 @@ function renderMessagesTableHTML(messages) {
         const readStatus = message.isRead ? 'Read' : 'New';
         const readStatusClass = message.isRead ? 'status-draft' : 'status-pending';
         
-        const messageDate = message.createdAt?.seconds ? new Date(message.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
+        const messageDate = message.createdAt ? new Date(message.createdAt).toLocaleDateString() : 'N/A';
 
         return `
             <tr>
-                <td><a href="listing-detail.html?id=${message.listingId}" target="_blank">${message.listingName || 'General Inquiry'}</a></td>
-                <td>${message.senderName || 'Anonymous'}</td>
-                <td><strong>${message.subject}</strong></td>
+                <td><strong>${message.listingName || 'General Inquiry'}</strong></td>
+                <td>${message.buyerName || 'Anonymous'}</td>
+                <td>${message.subject || 'No subject'}</td>
                 <td>${messageDate}</td>
                 <td><span class="status-badge ${readStatusClass}">${readStatus}</span></td>
                 <td>
@@ -3154,7 +3187,7 @@ function renderMessagesTableHTML(messages) {
                 <thead>
                     <tr>
                         <th>Listing</th>
-                        <th>Sender</th>
+                        <th>Buyer</th>
                         <th>Subject</th>
                         <th>Date</th>
                         <th>Status</th>
@@ -3171,11 +3204,21 @@ function renderMessagesTableHTML(messages) {
 
 
 // Messages Data Loader (ADD THIS)
+// ============================================
+// LOAD SELLER MESSAGES (ADD THIS COMPLETE FUNCTION)
+// ============================================
+
 window.loadSellerMessages = async function() {
+    console.log('📥 Loading messages for seller:', userData.id);
+    
     const messagesContent = document.getElementById('messagesContent');
-    if (!messagesContent) return;
+    if (!messagesContent) {
+        console.warn('⚠️ messagesContent element not found');
+        return;
+    }
+    
     messagesContent.innerHTML = `
-        <div class="loading-state" style="text-align: center; padding: 3rem;">
+        <div style="text-align: center; padding: 3rem;">
             <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
             <p style="margin-top: 1rem;">Loading messages...</p>
         </div>
@@ -3183,85 +3226,115 @@ window.loadSellerMessages = async function() {
 
     try {
         const response = await fetch(`${API_URL}/api/messages/seller/${userData.id}`);
-        const messages = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        sellerMessages = Array.isArray(data) ? data : (data.messages || []);
+
+        console.log('✅ Loaded', sellerMessages.length, 'messages');
 
         // Sort by creation date (newest first)
-        messages.sort((a, b) => {
-             const dateA = a.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(0);
-             const dateB = b.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(0);
-             return dateB - dateA;
+        sellerMessages.sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+            const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+            return dateB - dateA;
         });
 
-        messagesContent.innerHTML = renderMessagesTableHTML(messages);
+        // Render messages table
+        messagesContent.innerHTML = renderMessagesTableHTML(sellerMessages);
 
-        // Update messages count badge
-        const unreadMessages = messages.filter(m => !m.isRead).length;
+        // Update badge count
+        const unreadMessages = sellerMessages.filter(m => !m.isRead).length;
         const badge = document.getElementById('messagesCountBadge');
-        if (unreadMessages > 0) {
-            badge.textContent = unreadMessages;
-            badge.style.display = 'inline';
-        } else {
-            badge.style.display = 'none';
+        if (badge) {
+            if (unreadMessages > 0) {
+                badge.textContent = unreadMessages;
+                badge.style.display = 'inline';
+            } else {
+                badge.style.display = 'none';
+            }
         }
 
     } catch (error) {
-        console.error('Error loading seller messages:', error);
-        messagesContent.innerHTML = '<p class="alert alert-error">Failed to load messages. Please try again.</p>';
+        console.error('❌ Error loading seller messages:', error);
+        messagesContent.innerHTML = `
+            <div class="empty-state">
+                <i class="fa-solid fa-exclamation-triangle" style="color: var(--error);"></i>
+                <p>Failed to load messages</p>
+                <p style="font-size: 0.9rem; color: var(--gray);">${error.message}</p>
+                <button class="btn btn-primary" onclick="loadSellerMessages()" style="margin-top: 1rem;">
+                    <i class="fa-solid fa-refresh"></i> Retry
+                </button>
+            </div>
+        `;
         showToast('Failed to load messages', 'error');
     }
 }
 
-// Message Modal Logic (ADD THIS)
-window.openMessageDetailModal = async function(messageId) {
-    const messageModal = document.getElementById('messageDetailModal');
-    const content = document.getElementById('messageDetailModalContent');
-    content.innerHTML = `
-        <div class="loading-state" style="text-align: center; padding: 3rem;">
-            <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
-            <p style="margin-top: 1rem;">Loading message details...</p>
-        </div>
-    `;
-    messageModal.classList.add('active');
-
-    let message = null;
-    try {
-        const response = await fetch(`${API_URL}/api/messages/${messageId}`);
-        if (!response.ok) throw new Error('Failed to fetch message details');
-        message = await response.json();
-    } catch (error) {
-        console.error('Error fetching message details:', error);
-        content.innerHTML = '<p class="alert alert-error">Failed to load message details.</p>';
-        showToast('Failed to load message details.', 'error');
+window.openOfferDetailModal = async function(offerId) {
+    const offer = sellerOffers.find(o => o.id === offerId);
+    
+    if (!offer) {
+        showToast('Offer not found', 'error');
         return;
     }
-
+    
+    const modal = document.getElementById('offerDetailModal');
+    const content = document.getElementById('offerDetailModalContent');
+    
+    // FIX: Handle different date formats
+    const offerDate = offer.createdAt 
+        ? (typeof offer.createdAt === 'object' && offer.createdAt.seconds 
+            ? new Date(offer.createdAt.seconds * 1000) 
+            : new Date(offer.createdAt))
+        : new Date();
+    
+    const statusBadges = {
+        'pending': '<span class="status-badge status-pending">⏳ Pending</span>',
+        'accepted': '<span class="status-badge status-approved">✓ Accepted</span>',
+        'rejected': '<span class="status-badge status-closed">✗ Rejected</span>'
+    };
+    
     content.innerHTML = `
-        <p><strong>From:</strong> ${message.senderName || 'Anonymous'}</p>
-        <p><strong>Listing:</strong> <a href="listing-detail.html?id=${message.listingId}" target="_blank">${message.listingName || 'N/A'}</a></p>
-        <p><strong>Date:</strong> ${new Date(message.createdAt?.seconds * 1000).toLocaleString()}</p>
-        <hr style="margin: 1rem 0; border: none; border-top: 1px solid var(--gray-light);">
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">${offer.listingName || 'N/A'}</h3>
+            <p style="color: var(--gray);">From: <strong>${offer.buyerName || 'Anonymous'}</strong></p>
+            <p style="color: var(--gray);">Email: ${offer.buyerEmail || 'N/A'}</p>
+            <p style="margin-top: 0.5rem;">Status: ${statusBadges[offer.status]}</p>
+        </div>
         
-        <h4 style="margin-bottom: 0.5rem;">Subject: ${message.subject}</h4>
-        <div style="background: var(--gray-light); padding: 1rem; border-radius: 10px; white-space: pre-wrap; min-height: 100px;">
-            ${message.message}
+        <div style="background: var(--bg); padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem;">
+            <h3 style="font-size: 2rem; color: var(--primary); margin: 0;">₱${parseInt(offer.offerAmount || 0).toLocaleString()}</h3>
+            <p style="color: var(--gray); margin-top: 0.3rem;">Offer Amount</p>
         </div>
-
-        <div style="display: flex; justify-content: flex-end; margin-top: 2rem;">
-            <button class="btn btn-primary" onclick="markMessageAsReadAndClose('${message.id}')">
-                <i class="fa-solid fa-check"></i> Mark As Read & Close
-            </button>
-        </div>
+        
+        ${offer.message ? `
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem;">Buyer's Message:</h4>
+                <div style="background: var(--gray-light); padding: 1rem; border-radius: 10px; white-space: pre-wrap;">
+                    ${offer.message}
+                </div>
+            </div>
+        ` : ''}
+        
+        <p style="color: var(--gray); font-size: 0.9rem;">Received: ${offerDate.toLocaleString()}</p>
+        
+        ${offer.status === 'pending' ? `
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                <button class="btn btn-danger" onclick="rejectOffer('${offer.id}'); closeOfferDetailModal();">
+                    <i class="fa-solid fa-times"></i> Reject Offer
+                </button>
+                <button class="btn btn-success" onclick="acceptOffer('${offer.id}'); closeOfferDetailModal();">
+                    <i class="fa-solid fa-check"></i> Accept Offer
+                </button>
+            </div>
+        ` : ''}
     `;
-
-    // Automatically mark as read if it's currently unread
-    if (!message.isRead) {
-        await markMessageAsRead(messageId);
-    }
-}
-
-window.closeMessageDetailModal = function() {
-    document.getElementById('messageDetailModal').classList.remove('active');
-    loadSellerMessages(); // Refresh the list to update status badges
+    
+    modal.classList.add('active');
 }
 
 async function markMessageAsRead(messageId) {
@@ -3280,112 +3353,43 @@ async function markMessageAsRead(messageId) {
     }
 }
 
-window.markMessageAsReadAndClose = async function(messageId) {
-    await markMessageAsRead(messageId);
-    showToast('Message marked as read.', 'info');
-    closeMessageDetailModal();
+
+
+
+window.closeMessageDetailModal = function() {
+    document.getElementById('messageDetailModal').classList.remove('active');
+    loadSellerMessages(); // Refresh list
 }
 
+// ============================================
+// MESSAGE ACTIONS
+// ============================================
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-// ADD THIS new function to your <script> tag
-
-async function loadSellerMessages() {
-    const messagesContent = document.getElementById('messagesContent');
-    const messagesCountBadge = document.getElementById('messagesCountBadge');
-    const totalMessagesCount = document.getElementById('totalMessagesCount');
-    
-    messagesContent.innerHTML = `
-        <div class="loading-state">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            <p>Loading messages...</p>
-        </div>
-    `;
-
+window.markMessageAsRead = async function(messageId, showNotification = true) {
     try {
-        // Fetch the messages directed to this seller's user ID
-        // Assuming your backend has an endpoint for messages/seller/:id
-        const response = await fetch(`${API_URL}/api/messages/seller/${userData.id}`);
-        if (!response.ok) throw new Error('Failed to fetch messages');
-        const messages = await response.json();
+        const response = await fetch(`${API_URL}/api/messages/${messageId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isRead: true })
+        });
 
-        // Count for the badge
-        totalMessagesCount.textContent = messages.length;
-        
-        // Count unread messages (assuming a boolean `read` field in the message data)
-        const unreadCount = messages.filter(msg => !msg.read).length;
-        if (unreadCount > 0) {
-            messagesCountBadge.style.display = 'inline';
-            messagesCountBadge.textContent = unreadCount;
-        } else {
-            messagesCountBadge.style.display = 'none';
+        if (response.ok && showNotification) {
+            showToast('Message marked as read', 'info');
+            loadSellerMessages();
         }
-
-
-        if (messages.length === 0) {
-            messagesContent.innerHTML = `
-                <div class="empty-state">
-                    <i class="fa-solid fa-envelope-open"></i>
-                    <p>No buyer inquiries have been received yet.</p>
-                </div>
-            `;
-        } else {
-            // Render the messages list
-            const messagesHTML = `
-                <div class="messages-list">
-                    ${messages.map(msg => {
-                        const messageTime = new Date(msg.createdAt._seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        const messageDate = new Date(msg.createdAt._seconds * 1000).toLocaleDateString();
-                        
-                        // Use a short, descriptive snippet of the message
-                        const snippet = msg.message.substring(0, 70) + (msg.message.length > 70 ? '...' : '');
-
-                        return `
-                            <div class="message-item ${msg.read ? '' : 'unread'}" onclick="openMessageDetailModal('${msg.id}')">
-                                <div class="message-avatar">${msg.buyerEmail[0].toUpperCase()}</div>
-                                <div class="message-details">
-                                    <div class="message-header">
-                                        <span class="message-sender">${msg.buyerEmail}</span>
-                                        <span class="message-time">${messageDate} ${messageTime}</span>
-                                    </div>
-                                    <div class="message-snippet">
-                                        <span style="font-weight: 400; color: var(--gray);">Listing: ${msg.listingName} &bull;</span> ${snippet}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            `;
-            messagesContent.innerHTML = messagesHTML;
-        }
-
     } catch (error) {
-        console.error('Error loading seller messages:', error);
-        messagesContent.innerHTML = '<p class="alert alert-error">Failed to load messages</p>';
+        console.error('Error marking message as read:', error);
     }
 }
 
-// Placeholder for the message detail modal function
-// You'll need to create this modal (MessageDetailModal) and function to show the full conversation.
-window.openMessageDetailModal = function(messageId) {
-    showToast(`Opening message detail for ID: ${messageId}`, 'info');
-    // For a full fix, you would add a new modal here to display the complete message body.
+
+
+window.replyToMessage = function(buyerEmail, buyerName, listingName) {
+    const subject = encodeURIComponent(`Re: Inquiry about ${listingName}`);
+    const body = encodeURIComponent(`Hi ${buyerName},\n\nThank you for your interest in ${listingName}.\n\n`);
+    window.location.href = `mailto:${buyerEmail}?subject=${subject}&body=${body}`;
 }
-
-
 
 
 
@@ -3410,34 +3414,49 @@ function getOfferStatusBadge(status) {
 }
 
 // Function to generate the HTML for the offers table
+// ============================================
+// RENDER OFFERS TABLE HTML
+// ============================================
+
 function renderOffersTableHTML(offers) {
     if (offers.length === 0) {
         return `
             <div class="empty-state">
                 <i class="fa-solid fa-money-bill-transfer"></i>
                 <p>No offers received yet.</p>
+                <p style="font-size: 0.9rem; color: var(--gray);">Offers from buyers will appear here</p>
             </div>
         `;
     }
 
     const rows = offers.map(offer => {
-        const statusBadge = getOfferStatusBadge(offer.status);
+        const statusBadges = {
+            'pending': '<span class="status-badge status-pending">⏳ Pending</span>',
+            'accepted': '<span class="status-badge status-approved">✓ Accepted</span>',
+            'rejected': '<span class="status-badge status-closed">✗ Rejected</span>'
+        };
+        const statusBadge = statusBadges[offer.status] || statusBadges['pending'];
+        
         const actionButtons = offer.status === 'pending' ? `
-            <button class="btn btn-success" onclick="acceptOffer('${offer.id}')">Accept</button>
-            <button class="btn btn-danger" onclick="rejectOffer('${offer.id}')">Reject</button>
+            <button class="btn btn-success" onclick="acceptOffer('${offer.id}')" title="Accept Offer">
+                <i class="fa-solid fa-check"></i>
+            </button>
+            <button class="btn btn-danger" onclick="rejectOffer('${offer.id}')" title="Reject Offer">
+                <i class="fa-solid fa-times"></i>
+            </button>
         ` : '';
         
-        const offerDate = offer.createdAt?.seconds ? new Date(offer.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
+        const offerDate = offer.createdAt ? new Date(offer.createdAt).toLocaleDateString() : 'N/A';
 
         return `
             <tr>
-                <td><a href="listing-detail.html?id=${offer.listingId}" target="_blank">${offer.listingName || 'N/A'}</a></td>
+                <td><strong>${offer.listingName || 'N/A'}</strong></td>
                 <td>${offer.buyerName || 'Anonymous'}</td>
-                <td>₱${parseInt(offer.amount || 0).toLocaleString()}</td>
+                <td><strong style="color: var(--primary);">₱${parseInt(offer.offerAmount || 0).toLocaleString()}</strong></td>
                 <td>${statusBadge}</td>
                 <td>${offerDate}</td>
                 <td>
-                    <div style="display: flex; gap: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         ${actionButtons}
                         <button class="btn btn-secondary" onclick="openOfferDetailModal('${offer.id}')" title="View Details">
                             <i class="fa-solid fa-eye"></i>
@@ -3468,13 +3487,21 @@ function renderOffersTableHTML(offers) {
         </div>
     `;
 }
+// ============================================
+// LOAD SELLER OFFERS (ADD THIS COMPLETE FUNCTION)
+// ============================================
 
-// REPLACE the entire existing loadSellerOffers function with this complete version:
 window.loadSellerOffers = async function() {
+    console.log('📥 Loading offers for seller:', userData.id);
+    
     const offersContent = document.getElementById('offersContent');
-    if (!offersContent) return;
+    if (!offersContent) {
+        console.warn('⚠️ offersContent element not found');
+        return;
+    }
+    
     offersContent.innerHTML = `
-        <div class="loading-state" style="text-align: center; padding: 3rem;">
+        <div style="text-align: center; padding: 3rem;">
             <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
             <p style="margin-top: 1rem;">Loading offers...</p>
         </div>
@@ -3482,147 +3509,167 @@ window.loadSellerOffers = async function() {
 
     try {
         const response = await fetch(`${API_URL}/api/offers/seller/${userData.id}`);
-        const offers = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        sellerOffers = Array.isArray(data) ? data : (data.offers || []);
+
+        console.log('✅ Loaded', sellerOffers.length, 'offers');
 
         // Sort by creation date (newest first)
-        offers.sort((a, b) => {
-             const dateA = a.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(0);
-             const dateB = b.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(0);
-             return dateB - dateA;
+        sellerOffers.sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+            const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+            return dateB - dateA;
         });
 
-        offersContent.innerHTML = renderOffersTableHTML(offers);
+        // Render offers table
+        offersContent.innerHTML = renderOffersTableHTML(sellerOffers);
 
-        // Update offers count badge
-        const pendingOffers = offers.filter(o => o.status === 'pending').length;
+        // Update badge count
+        const pendingOffers = sellerOffers.filter(o => o.status === 'pending').length;
         const badge = document.getElementById('offersCountBadge');
-        if (pendingOffers > 0) {
-            badge.textContent = pendingOffers;
-            badge.style.display = 'inline';
-        } else {
-            badge.style.display = 'none';
+        if (badge) {
+            if (pendingOffers > 0) {
+                badge.textContent = pendingOffers;
+                badge.style.display = 'inline';
+            } else {
+                badge.style.display = 'none';
+            }
         }
 
     } catch (error) {
-        console.error('Error loading seller offers:', error);
-        offersContent.innerHTML = '<p class="alert alert-error">Failed to load offers. Please try again.</p>';
+        console.error('❌ Error loading seller offers:', error);
+        offersContent.innerHTML = `
+            <div class="empty-state">
+                <i class="fa-solid fa-exclamation-triangle" style="color: var(--error);"></i>
+                <p>Failed to load offers</p>
+                <p style="font-size: 0.9rem; color: var(--gray);">${error.message}</p>
+                <button class="btn btn-primary" onclick="loadSellerOffers()" style="margin-top: 1rem;">
+                    <i class="fa-solid fa-refresh"></i> Retry
+                </button>
+            </div>
+        `;
         showToast('Failed to load offers', 'error');
     }
 }
 
 // Offer Modal Logic (ADD THIS)
+// ============================================
+// OFFER DETAIL MODAL
+// ============================================
+
 window.openOfferDetailModal = async function(offerId) {
-    const offerModal = document.getElementById('offerDetailModal');
-    const content = document.getElementById('offerDetailModalContent');
-    content.innerHTML = `
-        <div class="loading-state" style="text-align: center; padding: 3rem;">
-            <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
-            <p style="margin-top: 1rem;">Loading offer details...</p>
-        </div>
-    `;
-    offerModal.classList.add('active');
-
-    try {
-        const response = await fetch(`${API_URL}/api/offers/${offerId}`);
-        const offer = await response.json();
-
-        content.innerHTML = `
-            <div style="margin-bottom: 1.5rem;">
-                <p style="font-size: 1.1rem; color: var(--gray);">Listing: <a href="listing-detail.html?id=${offer.listingId}" target="_blank">${offer.listingName || 'N/A'}</a></p>
-                <h3 style="font-size: 2rem; color: var(--primary); margin-top: 0.5rem;">Offer: ₱${parseInt(offer.amount || 0).toLocaleString()}</h3>
-                <p style="font-weight: 600;">From: ${offer.buyerName || 'Anonymous'}</p>
-                <p>Status: ${getOfferStatusBadge(offer.status)}</p>
-                <p>Date: ${new Date(offer.createdAt?.seconds * 1000).toLocaleString()}</p>
-            </div>
-            
-            <hr style="border-top: 1px solid var(--gray-light);">
-            
-            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Buyer Message:</h4>
-            <div style="background: var(--gray-light); padding: 1rem; border-radius: 10px; white-space: pre-wrap; min-height: 50px;">
-                ${offer.message || 'No message provided.'}
-            </div>
-
-            ${offer.status === 'pending' ? `
-                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
-                    <button class="btn btn-danger" onclick="rejectOffer('${offer.id}'); closeOfferDetailModal();">Reject Offer</button>
-                    <button class="btn btn-success" onclick="acceptOffer('${offer.id}'); closeOfferDetailModal();">Accept Offer</button>
-                </div>
-            ` : ''}
-        `;
-
-    } catch (error) {
-        content.innerHTML = '<p class="alert alert-error">Failed to load offer details.</p>';
-        showToast('Failed to load offer details.', 'error');
+    const offer = sellerOffers.find(o => o.id === offerId);
+    
+    if (!offer) {
+        showToast('Offer not found', 'error');
+        return;
     }
+    
+    const modal = document.getElementById('offerDetailModal');
+    const content = document.getElementById('offerDetailModalContent');
+    
+    const statusBadges = {
+        'pending': '<span class="status-badge status-pending">⏳ Pending</span>',
+        'accepted': '<span class="status-badge status-approved">✓ Accepted</span>',
+        'rejected': '<span class="status-badge status-closed">✗ Rejected</span>'
+    };
+    
+    content.innerHTML = `
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">${offer.listingName || 'N/A'}</h3>
+            <p style="color: var(--gray);">From: <strong>${offer.buyerName || 'Anonymous'}</strong></p>
+            <p style="color: var(--gray);">Email: ${offer.buyerEmail || 'N/A'}</p>
+            <p style="margin-top: 0.5rem;">Status: ${statusBadges[offer.status]}</p>
+        </div>
+        
+        <div style="background: var(--bg); padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem;">
+            <h3 style="font-size: 2rem; color: var(--primary); margin: 0;">₱${parseInt(offer.offerAmount || 0).toLocaleString()}</h3>
+            <p style="color: var(--gray); margin-top: 0.3rem;">Offer Amount</p>
+        </div>
+        
+        ${offer.message ? `
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem;">Buyer's Message:</h4>
+                <div style="background: var(--gray-light); padding: 1rem; border-radius: 10px; white-space: pre-wrap;">
+                    ${offer.message}
+                </div>
+            </div>
+        ` : ''}
+        
+        <p style="color: var(--gray); font-size: 0.9rem;">Received: ${new Date(offer.createdAt).toLocaleString()}</p>
+        
+        ${offer.status === 'pending' ? `
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                <button class="btn btn-danger" onclick="rejectOffer('${offer.id}'); closeOfferDetailModal();">
+                    <i class="fa-solid fa-times"></i> Reject Offer
+                </button>
+                <button class="btn btn-success" onclick="acceptOffer('${offer.id}'); closeOfferDetailModal();">
+                    <i class="fa-solid fa-check"></i> Accept Offer
+                </button>
+            </div>
+        ` : ''}
+    `;
+    
+    modal.classList.add('active');
 }
 
 window.closeOfferDetailModal = function() {
     document.getElementById('offerDetailModal').classList.remove('active');
 }
+
+// ============================================
+// OFFER ACTIONS
+// ============================================
+
 window.acceptOffer = async function(offerId) {
-  if (!confirm('Accept this offer?')) return;
+    if (!confirm('Accept this offer?')) return;
 
-  try {
-    const response = await fetch(`${API_URL}/api/offers/${offerId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'accepted' })
-    });
+    try {
+        const response = await fetch(`${API_URL}/api/offers/${offerId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'accepted' })
+        });
 
-    if (response.ok) {
-      showToast('✓ Offer accepted!', 'success');
-      loadSellerOffers();
+        if (response.ok) {
+            showToast('✓ Offer accepted!', 'success');
+            loadSellerOffers();
+        } else {
+            throw new Error('Failed to accept offer');
+        }
+    } catch (error) {
+        console.error('Error accepting offer:', error);
+        showToast('Failed to accept offer', 'error');
     }
-  } catch (error) {
-    showToast('Failed to accept offer', 'error');
-  }
 }
 
 window.rejectOffer = async function(offerId) {
-  if (!confirm('Reject this offer?')) return;
+    if (!confirm('Reject this offer?')) return;
 
-  try {
-    const response = await fetch(`${API_URL}/api/offers/${offerId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'rejected' })
-    });
+    try {
+        const response = await fetch(`${API_URL}/api/offers/${offerId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'rejected' })
+        });
 
-    if (response.ok) {
-      showToast('Offer rejected', 'info');
-      loadSellerOffers();
+        if (response.ok) {
+            showToast('Offer rejected', 'info');
+            loadSellerOffers();
+        } else {
+            throw new Error('Failed to reject offer');
+        }
+    } catch (error) {
+        console.error('Error rejecting offer:', error);
+        showToast('Failed to reject offer', 'error');
     }
-  } catch (error) {
-    showToast('Failed to reject offer', 'error');
-  }
 }
 
-// INSIDE the 'window.navigateTo = function(page) { ... }' block, REPLACE the switch (page) block:
-    switch (page) {
-        case 'dashboard':
-            tabContent = renderSellerDashboard();
-            break;
-        case 'listings':
-            tabContent = renderListingsTab();
-            break;
-        case 'offers': // ADDED: Offers Tab Logic
-            tabContent = renderOffersTab();
-            break;
-        case 'analytics':
-            tabContent = renderAnalyticsTab();
-            break;
-        case 'messages':
-            tabContent = renderMessagesTab(); // ENSURE renderMessagesTab() is called
-            break;
-        case 'subscription':
-            tabContent = renderSubscriptionTab();
-            break;
-        case 'settings':
-            tabContent = renderSettingsTab();
-            break;
-        default:
-            tabContent = renderSellerDashboard();
-    }
 
     tabContainer.innerHTML = tabContent;
     document.getElementById(`tab-${page}`).classList.add('active');
