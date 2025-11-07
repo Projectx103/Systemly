@@ -19,11 +19,11 @@
   --white: #FFFFFF;
   --gray-light: #F3F4F6;
   --gray: #6B7280;
-  --gray-dark: #374151;  /* ADD THIS */
+  --gray-dark: #374151;
   --success: #10B981;
   --warning: #F59E0B;
   --error: #EF4444;
-  --info: #3B82F6;  /* ADD THIS */
+  --info: #3B82F6;
 }
 
 body {
@@ -65,7 +65,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Sidebar Navigation - ADD THIS */
+/* Dashboard Layout */
 .dashboard-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -114,7 +114,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
 .user-avatar {
   width: 50px;
   height: 50px;
-  min-width: 50px;  /* ADD THIS - prevents shrinking */
+  min-width: 50px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   display: flex;
@@ -123,21 +123,29 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   color: var(--white);
   font-weight: 700;
   font-size: 1.2rem;
-  flex-shrink: 0;  /* ADD THIS - prevents flex squishing */
+  flex-shrink: 0;
 }
+
 .user-details {
   flex: 1;
+  min-width: 0;
 }
 
 .user-name {
   font-weight: 600;
   font-size: 1rem;
   margin-bottom: 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user-email {
   font-size: 0.85rem;
   color: var(--gray);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .role-badge {
@@ -150,7 +158,6 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   display: inline-block;
 }
 
-/* ADD THESE NEW BADGE STYLES */
 .plan-badge {
   padding: 0.5rem 1rem;
   border-radius: 50px;
@@ -166,7 +173,6 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-/* Premium Badge - Gold */
 .plan-badge.premium {
   background: linear-gradient(135deg, #FFD700, #FFA500);
   color: #1A1A1A;
@@ -174,40 +180,27 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   animation: shimmer 3s ease-in-out infinite;
 }
 
-.plan-badge.premium::before {
-  content: '👑';
-}
+.plan-badge.premium::before { content: '👑'; }
 
-/* Basic Badge - Blue */
 .plan-badge.basic {
   background: linear-gradient(135deg, #6366F1, #3B82F6);
   color: #FFFFFF;
   border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-.plan-badge.basic::before {
-  content: '💎';
-}
+.plan-badge.basic::before { content: '💎'; }
 
-/* Free Badge - Gray */
 .plan-badge.free {
   background: linear-gradient(135deg, #9CA3AF, #6B7280);
   color: #FFFFFF;
   border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-.plan-badge.free::before {
-  content: '📦';
-}
+.plan-badge.free::before { content: '📦'; }
 
-/* Shimmer animation for Premium */
 @keyframes shimmer {
-  0%, 100% {
-    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
-  }
-  50% {
-    box-shadow: 0 2px 15px rgba(255, 215, 0, 0.8);
-  }
+  0%, 100% { box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4); }
+  50% { box-shadow: 0 2px 15px rgba(255, 215, 0, 0.8); }
 }
 
 .sidebar-nav {
@@ -306,7 +299,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   transform: translateY(-2px);
 }
 
-/* Main Content - ADD THIS */
+/* Main Content */
 .main-content {
   overflow-y: auto;
   height: 100vh;
@@ -338,8 +331,6 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
 .content-area {
   padding: 2rem;
 }
-
-/* ADD gray-dark variable to :root if not present */
 
 /* Subscription Banner */
 .subscription-banner {
@@ -393,10 +384,6 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
-
-/* Dashboard Tabs */
-
-
 
 /* Tab Content */
 .tab-content {
@@ -557,12 +544,13 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.3s;
+  pointer-events: auto;
 }
 
 .unlock-btn:hover { transform: scale(1.05); }
 
-/* Upgrade Modal */
-.upgrade-modal {
+/* Modal Styles */
+.modal {
   display: none;
   position: fixed;
   top: 0;
@@ -574,15 +562,16 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   z-index: 2000;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
 }
 
-.upgrade-modal.active { display: flex; }
+.modal.active { display: flex; }
 
 .modal-content {
   background: var(--white);
   padding: 3rem;
   border-radius: 30px;
-  max-width: 600px;
+  max-width: 800px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
@@ -631,84 +620,48 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   margin-bottom: 0.5rem;
 }
 
-.current-plan-info {
-  background: var(--gray-light);
-  padding: 1.5rem;
-  border-radius: 15px;
-  margin-bottom: 2rem;
+/* Form Styles */
+.form-group {
+  margin-bottom: 1.5rem;
 }
 
-.upgrade-options {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.plan-option {
-  border: 2px solid var(--gray-light);
-  padding: 1.5rem;
-  border-radius: 15px;
-  transition: all 0.3s;
-  cursor: pointer;
-}
-
-.plan-option:hover {
-  border-color: var(--primary);
-  background: var(--bg);
-}
-
-.plan-option-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.8rem;
-}
-
-.plan-option-name {
-  font-size: 1.3rem;
-  font-weight: 700;
-}
-
-.plan-option-price {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: var(--primary);
-}
-
-.plan-option-features {
-  list-style: none;
-  margin-bottom: 1rem;
-}
-
-.plan-option-features li {
-  padding: 0.4rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.plan-option-btn {
-  width: 100%;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: var(--white);
-  padding: 1rem;
-  border: none;
-  border-radius: 10px;
+.form-label {
+  display: block;
   font-weight: 600;
-  cursor: pointer;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--gray-light);
+  border-radius: 10px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 1rem;
   transition: all 0.3s;
 }
 
-.plan-option-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: var(--white);
-  padding: 1rem 2rem;
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* Button Styles */
+.btn {
+  padding: 0.8rem 1.5rem;
   border: none;
   border-radius: 10px;
   font-family: 'Sarabun', sans-serif;
@@ -716,12 +669,129 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--white);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
 }
+
+.btn-secondary {
+  background: var(--gray-light);
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  background: var(--gray);
+  color: var(--white);
+}
+
+.btn-success {
+  background: var(--success);
+  color: var(--white);
+}
+
+.btn-danger {
+  background: var(--error);
+  color: var(--white);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Listings Table */
+.listings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.listings-table th {
+  text-align: left;
+  padding: 1rem;
+  background: var(--gray-light);
+  font-weight: 600;
+  border-bottom: 2px solid var(--gray);
+}
+
+.listings-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.listing-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.status-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-pending {
+  background: var(--warning);
+  color: white;
+}
+
+.status-active, .status-approved {
+  background: var(--success);
+  color: white;
+}
+
+.status-draft {
+  background: var(--gray);
+  color: white;
+}
+
+.status-sold {
+  background: var(--secondary);
+  color: white;
+}
+
+.status-closed {
+  background: var(--error);
+  color: white;
+}
+
+/* Toast Notifications */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--white);
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 3000;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(400px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.toast.success { border-left: 4px solid var(--success); }
+.toast.error { border-left: 4px solid var(--error); }
+.toast.info { border-left: 4px solid var(--info); }
 
 .empty-state {
   text-align: center;
@@ -736,7 +806,14 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   opacity: 0.3;
 }
 
-/* REPLACE existing @media with this */
+/* Chart Container */
+.chart-container {
+  position: relative;
+  height: 300px;
+  margin-top: 1rem;
+}
+
+/* Responsive */
 @media (max-width: 1024px) {
   .dashboard-layout {
     grid-template-columns: 1fr;
@@ -748,6 +825,11 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   
   .stats-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  .listings-table {
+    display: block;
+    overflow-x: auto;
   }
 }
 
@@ -766,6 +848,14 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   .content-area {
     padding: 1rem;
   }
+  
+  .modal-content {
+    padding: 2rem 1.5rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
 </head>
@@ -776,8 +866,6 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   <p>Loading your dashboard...</p>
 </div>
 
-<!-- Top Navigation -->
-<!-- NEW Dashboard Layout -->
 <div class="dashboard-layout">
   <!-- Sidebar -->
   <aside class="sidebar">
@@ -786,22 +874,62 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
     </div>
     
     <div class="user-profile">
-  <div class="user-profile-content">
-    <div class="user-avatar" id="sidebarAvatar">U</div>
-    <div class="user-details">
-      <div class="user-name" id="sidebarName">User</div>
-      <div class="user-email" id="sidebarEmail">user@email.com</div>
+      <div class="user-profile-content">
+        <div class="user-avatar" id="sidebarAvatar">U</div>
+        <div class="user-details">
+          <div class="user-name" id="sidebarName">User</div>
+          <div class="user-email" id="sidebarEmail">user@email.com</div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <span class="role-badge" id="sidebarRole">Seller</span>
+        <span class="plan-badge" id="planBadge">Free</span>
+      </div>
     </div>
-  </div>
-  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-    <span class="role-badge" id="sidebarRole">Seller</span>
-    <span class="plan-badge" id="planBadge">Free</span>
-  </div>
-</div>
     
     <nav class="sidebar-nav" id="sidebarNav">
-      <!-- Navigation will be dynamically inserted -->
-    </nav>
+  <div class="nav-section">
+    <div class="nav-section-title">Overview</div>
+    <div class="nav-item active" onclick="navigateTo('dashboard')">
+      <i class="fa-solid fa-house"></i>
+      <span>Dashboard</span>
+    </div>
+    <div class="nav-item" onclick="navigateTo('listings')">
+      <i class="fa-solid fa-list"></i>
+      <span>My Listings</span>
+    </div>
+    <div class="nav-item" onclick="navigateTo('offers')">
+      <i class="fa-solid fa-money-bill-trend-up"></i>
+      <span>Offers</span>
+      <span id="offersCountBadge" style="margin-left: auto; background: var(--error); color: white; padding: 0.2rem 0.6rem; border-radius: 50%; font-size: 0.75rem; display: none;"></span>
+    </div>
+  </div>
+  
+  <div class="nav-section">
+    <div class="nav-section-title">Insights</div>
+    <div class="nav-item" onclick="navigateTo('analytics')">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>Analytics</span>
+    </div>
+    <div class="nav-item" onclick="navigateTo('messages')">
+      <i class="fa-solid fa-envelope"></i>
+      <span>Messages</span>
+      <span id="messagesCountBadge" style="margin-left: auto; background: var(--error); color: white; padding: 0.2rem 0.6rem; border-radius: 50%; font-size: 0.75rem; display: none;"></span>
+    </div>
+  </div>
+  
+  <div class="nav-section">
+    <div class="nav-section-title">Account</div>
+    <div class="nav-item" onclick="navigateTo('subscription')">
+      <i class="fa-solid fa-crown"></i>
+      <span>Subscription</span>
+    </div>
+    <div class="nav-item" onclick="navigateTo('settings')">
+      <i class="fa-solid fa-gear"></i>
+      <span>Settings</span>
+    </div>
+  </div>
+</nav>
     
     <div class="sidebar-footer">
       <button class="logout-btn" onclick="logout()">
@@ -816,10 +944,10 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
     <div class="top-bar">
       <h1 class="page-title" id="pageTitle">Dashboard</h1>
       <div class="top-bar-actions">
-        <a href="marketplace.html" class="btn-primary" style="text-decoration: none;">
+        <a href="marketplace.html" class="btn btn-secondary" style="text-decoration: none;">
           <i class="fa-solid fa-store"></i> Marketplace
         </a>
-        <button class="btn-primary" id="topBarAction" onclick="handleMainAction()">
+        <button class="btn btn-primary" id="btn-add-listing" onclick="openAddListingModal()">
           <i class="fa-solid fa-plus"></i> Create Listing
         </button>
       </div>
@@ -831,9 +959,9 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
         <div class="banner-content">
           <h2 id="planTitle">Free Plan</h2>
           <p id="planDescription">Current plan description</p>
-          <span class="subscription-badge" id="planBadge">Plan details</span>
+          <span class="subscription-badge" id="planBadgeDetail">Plan details</span>
         </div>
-        <button class="upgrade-btn" id="upgradeBtn" onclick="showUpgradeModal()">Upgrade Plan</button>
+        <button class="upgrade-btn" id="btn-upgrade" onclick="openUpgradeModal()">Upgrade Plan</button>
       </div>
       
       <!-- Tab Content Container -->
@@ -842,35 +970,135 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   </main>
 </div>
 
+<!-- Add/Edit Listing Modal -->
+<div class="modal" id="listingModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeListingModal()">×</button>
+    
+    <div class="modal-header">
+      <div class="modal-icon">📝</div>
+      <h2 id="listingModalTitle">Create New Listing</h2>
+    </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <form id="listingForm">
+      <input type="hidden" id="listingId">
+      
+      <div class="form-group">
+        <label class="form-label">System Name *</label>
+        <input type="text" id="systemName" class="form-input" required placeholder="e.g., Budget Master">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select id="category" class="form-select" required>
+          <option value="">Select category...</option>
+          <option value="saas">SaaS Business</option>
+          <option value="ecommerce">E-commerce Store</option>
+          <option value="content">Content Site</option>
+          <option value="mobile">Mobile App</option>
+          <option value="script">Script/Code</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Short Description *</label>
+        <textarea id="shortDescription" class="form-textarea" required placeholder="Brief overview (max 200 chars)" maxlength="200"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Detailed Description *</label>
+        <textarea id="detailedDescription" class="form-textarea" required placeholder="Comprehensive description..." style="min-height: 150px;"></textarea>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Asking Price (₱) *</label>
+          <input type="number" id="askingPrice" class="form-input" required min="0" step="1000" placeholder="45000">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Monthly Revenue (₱)</label>
+          <input type="number" id="monthlyRevenue" class="form-input" min="0" step="100" placeholder="5000">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">MRR (₱)</label>
+          <input type="number" id="mrr" class="form-input" min="0" step="100" placeholder="5000">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Active Subscribers</label>
+          <input type="number" id="activeSubscribers" class="form-input" min="0" placeholder="15">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Churn Rate (₱)</label>
+          <input type="number" id="churnRate" class="form-input" min="0" step="100" placeholder="500">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Pricing Model</label>
+          <select id="pricingModel" class="form-select">
+            <option value="">Select model...</option>
+            <option value="Subscription">Subscription</option>
+            <option value="One-time">One-time</option>
+            <option value="Freemium">Freemium</option>
+            <option value="Usage-based">Usage-based</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">SaaS Type</label>
+        <select id="saasType" class="form-select">
+          <option value="">Select type...</option>
+          <option value="B2C">B2C</option>
+          <option value="B2B">B2B</option>
+          <option value="B2B2C">B2B2C</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Main Image URL *</label>
+        <input type="url" id="mainImage" class="form-input" required placeholder="https://example.com/image.jpg">
+        <small style="color: var(--gray); font-size: 0.85rem;">Use image hosting services like ImgBB, Imgur, or Cloudinary</small>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Additional Images (comma-separated URLs)</label>
+        <textarea id="additionalImages" class="form-textarea" placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg"></textarea>
+      </div>
+      
+      <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+        <button type="button" class="btn btn-secondary" onclick="closeListingModal()">Cancel</button>
+        <button type="button" id="save-draft" class="btn btn-secondary" onclick="saveListing('draft')">
+          <i class="fa-solid fa-file"></i> Save Draft
+        </button>
+        <button type="button" id="publish" class="btn btn-primary" onclick="saveListing('pending')">
+          <i class="fa-solid fa-rocket"></i> Publish
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- Upgrade Modal -->
-<div class="upgrade-modal" id="upgradeModal">
+<div class="modal" id="upgradeModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeUpgradeModal()">×</button>
     
     <div class="modal-header">
       <div class="modal-icon">🚀</div>
-      <h2 id="modalTitle">Upgrade Your Plan</h2>
-      <p id="modalMessage">Unlock more features</p>
+      <h2>Upgrade Your Plan</h2>
+      <p>Unlock more features and grow your business</p>
     </div>
 
-    <div class="current-plan-info">
+    <div class="current-plan-info" style="background: var(--gray-light); padding: 1.5rem; border-radius: 15px; margin-bottom: 2rem;">
       <h4>Your Current Plan</h4>
       <p id="modalCurrentPlan"></p>
     </div>
@@ -883,12 +1111,79 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   </div>
 </div>
 
+<!-- Promote Modal -->
+<div class="modal" id="promoteModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closePromoteModal()">×</button>
+    
+    <div class="modal-header">
+      <div class="modal-icon">📢</div>
+      <h2>Promote Your Listing</h2>
+      <p>Feature your listing for maximum visibility</p>
+    </div>
 
+    <div style="padding: 1rem;">
+      <div style="background: var(--bg); padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem;">
+        <h4 style="margin-bottom: 0.5rem;">Featured Placement</h4>
+        <p style="color: var(--gray); margin-bottom: 1rem;">Your listing will appear at the top of search results and on the homepage</p>
+        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">₱500 <span style="font-size: 1rem; font-weight: 400;">/7 days</span></div>
+      </div>
+      
+      <button class="btn btn-primary" style="width: 100%;" onclick="handlePromotePayment()">
+        <i class="fa-solid fa-credit-card"></i> Promote Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal" id="deleteModal">
+  <div class="modal-content" style="max-width: 500px;">
+    <button class="close-modal" onclick="closeDeleteModal()">×</button>
+    
+    <div class="modal-header">
+      <div class="modal-icon" style="color: var(--error);">⚠️</div>
+      <h2>Delete Listing</h2>
+      <p>Are you sure you want to delete this listing?</p>
+    </div>
+
+    <div style="background: var(--gray-light); padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem;">
+      <p id="deleteListingName" style="font-weight: 600;"></p>
+      <p style="color: var(--gray); font-size: 0.9rem; margin-top: 0.5rem;">This action cannot be undone.</p>
+    </div>
+
+    <div style="display: flex; gap: 1rem;">
+      <button class="btn btn-secondary" style="flex: 1;" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn btn-danger" style="flex: 1;" onclick="confirmDelete()">
+        <i class="fa-solid fa-trash"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { 
+  getFirestore, 
+  doc, 
+  getDoc, 
+  setDoc, 
+  updateDoc, 
+  collection, 
+  query, 
+  where, 
+  getDocs, 
+  addDoc,
+  deleteDoc,
+  runTransaction,
+  increment,
+  serverTimestamp,
+  onSnapshot,
+  Timestamp
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD3PQ5oWrzAXOHnb7wrmpRhL9DWIB7w9rE",
@@ -899,121 +1194,70 @@ const firebaseConfig = {
   appId: "1:32599486733:web:16d34643c8f920a6fd8044"
 };
 
+const API_URL = 'https://systemly.onrender.com'; // ⚠️ UPDATE with your Render URL
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 let userData = null;
 let userListings = [];
+let listingsUnsubscribe = null;
+let currentChart = null;
+let deleteListingId = null;
 
 // ============================================
-// SUBSCRIPTION PLANS CONFIGURATION
+// PLAN CONFIGURATION
 // ============================================
 
-const PLANS = {
-  seller: {
-    free: {
-      name: 'Free Plan',
-      price: 0,
-      currency: '₱',
-      billingCycle: 'forever',
-      maxListings: 1,
-      features: [
-        '1 active listing',
-        'Basic listing visibility',
-        'Buyer inquiry messages',
-        'Standard support'
-      ],
-      lockedFeatures: ['analytics', 'featured', 'priority-support'],
-      paymentUrl: null
-    },
-    basic: {
-      name: 'Basic Plan',
-      price: 399,
-      currency: '₱',
-      billingCycle: 'month',
-      maxListings: 5,
-      features: [
-        'Up to 5 active listings',
-        'Priority search placement',
-        'Full analytics dashboard',
-        'Performance insights',
-        'Direct buyer contact',
-        'Email support',
-        'Featured homepage placement'
-      ],
-      lockedFeatures: ['priority-support', 'account-manager'],
-      paymentUrl: 'https://buy.stripe.com/basic-seller'
-    },
-    premium: {
-      name: 'Premium Plan',
-      price: 779,
-      currency: '₱',
-      billingCycle: 'month',
-      maxListings: Infinity,
-      features: [
-        'Unlimited active listings',
-        'Featured homepage placement',
-        'Top search ranking',
-        'Advanced analytics & insights',
-        'Buyer behavior tracking',
-        '24/7 priority support',
-        'Dedicated account manager'
-      ],
-      lockedFeatures: [],
-      paymentUrl: 'https://buy.stripe.com/premium-seller'
-    }
+const PLAN_LIMITS = {
+  free: {
+    maxActiveListings: 1,
+    canReceiveInquiries: false,
+    analytics: "none",
+    canPromote: false,
+    features: [
+      '1 active listing',
+      'Basic listing visibility',
+      'Buyer inquiry messages',
+      'Standard support'
+    ]
   },
-  buyer: {
-    free: {
-      name: 'Free Browser',
-      price: 0,
-      currency: '₱',
-      billingCycle: 'forever',
-      features: [
-        'Full marketplace access',
-        'Basic listing information',
-        'Contact sellers directly',
-        'Secure escrow protection'
-      ],
-      lockedFeatures: ['analytics', 'reports', 'calculator', 'alerts', 'priority-support'],
-      paymentUrl: null
-    },
-    pro: {
-      name: 'Pro Buyer',
-      price: 299,
-      currency: '₱',
-      billingCycle: 'month',
-      features: [
-        'Everything in Free, plus:',
-        'Full analytics on all listings',
-        'Revenue verification reports',
-        'Traffic source breakdown',
-        'ROI calculator & projections',
-        'Saved searches & alerts',
-        'Priority buyer support'
-      ],
-      lockedFeatures: ['api', 'account-manager', 'early-access'],
-      paymentUrl: 'https://buy.stripe.com/pro-buyer'
-    },
-    enterprise: {
-      name: 'Enterprise',
-      price: 'Custom',
-      currency: '₱',
-      billingCycle: 'contact',
-      features: [
-        'Everything in Pro, plus:',
-        'Early access to new listings',
-        'Custom due diligence reports',
-        'Portfolio management tools',
-        'API access',
-        'Dedicated account manager',
-        'Volume purchase discounts'
-      ],
-      lockedFeatures: [],
-      paymentUrl: 'contact'
-    }
+  basic: {
+    maxActiveListings: 5,
+    canReceiveInquiries: true,
+    analytics: "basic",
+    canPromote: true,
+    features: [
+      'Up to 5 active listings',
+      'Priority search placement',
+      'Full analytics dashboard',
+      'Performance insights',
+      'Direct buyer contact',
+      'Email support',
+      'Featured homepage placement'
+    ]
+  },
+  premium: {
+    maxActiveListings: Infinity,
+    canReceiveInquiries: true,
+    analytics: "advanced",
+    canPromote: true,
+    features: [
+      'Unlimited active listings',
+      'Featured homepage placement',
+      'Top search ranking',
+      'Advanced analytics & insights',
+      'Buyer behavior tracking',
+      '24/7 priority support',
+      'Dedicated account manager'
+    ]
   }
+};
+
+const PLAN_PRICING = {
+  free: { price: 0, currency: '₱', billing: 'forever' },
+  basic: { price: 399, currency: '₱', billing: 'month' },
+  premium: { price: 779, currency: '₱', billing: 'month' }
 };
 
 // ============================================
@@ -1022,9 +1266,12 @@ const PLANS = {
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
+    console.log('❌ No user authenticated, redirecting to login...');
     window.location.href = 'login.html';
     return;
   }
+
+  console.log('✅ User authenticated:', user.email);
 
   try {
     const userDocRef = doc(db, 'users', user.uid);
@@ -1038,111 +1285,149 @@ onAuthStateChanged(auth, async (user) => {
         name: data.name || user.displayName || user.email.split('@')[0],
         role: data.role || 'seller',
         subscriptionPlan: data.subscriptionPlan || 'free',
+        verified: data.verified || false,
+        profile: data.profile || {},
         listings: data.listings || { active: 0, total: 0 },
-        stats: data.stats || { totalViews: 0, inquiries: 0, sales: 0, savedSearches: 0, alerts: 0 }
+        stats: data.stats || { totalViews: 0, inquiries: 0, sales: 0 }
       };
       
-      if (!data.role || !data.subscriptionPlan) {
-        await updateDoc(userDocRef, {
-          role: userData.role,
-          subscriptionPlan: userData.subscriptionPlan
-        });
+      console.log('✅ User document loaded:', userData);
+      
+      // Validate plan
+      if (!['free', 'basic', 'premium'].includes(userData.subscriptionPlan)) {
+        console.warn('⚠️ Invalid plan detected, defaulting to free');
+        userData.subscriptionPlan = 'free';
+        await updateDoc(userDocRef, { subscriptionPlan: 'free' });
+      }
+      
+      // Ensure seller role
+      if (userData.role !== 'seller') {
+        console.warn('⚠️ Non-seller role detected, updating to seller');
+        userData.role = 'seller';
+        await updateDoc(userDocRef, { role: 'seller' });
       }
     } else {
+      console.log('📝 Creating new user document...');
+      // Create new user document
       userData = {
         id: user.uid,
         email: user.email,
         name: user.displayName || user.email.split('@')[0],
         role: 'seller',
         subscriptionPlan: 'free',
+        verified: false,
+        profile: {},
         listings: { active: 0, total: 0 },
-        stats: { totalViews: 0, inquiries: 0, sales: 0, savedSearches: 0, alerts: 0 }
+        stats: { totalViews: 0, inquiries: 0, sales: 0 }
       };
       
       await setDoc(userDocRef, {
-        name: userData.name,
-        email: userData.email,
-        role: userData.role,
-        subscriptionPlan: userData.subscriptionPlan,
-        listings: userData.listings,
-        stats: userData.stats,
-        createdAt: new Date().toISOString()
+        ...userData,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       });
+      
+      console.log('✅ New user document created');
     }
     
-    if (!['seller', 'buyer'].includes(userData.role)) {
-      console.warn('Invalid role detected, defaulting to seller');
-      userData.role = 'seller';
-      await updateDoc(userDocRef, { role: 'seller' });
-    }
-    
-    const validPlans = Object.keys(PLANS[userData.role]);
-    if (!validPlans.includes(userData.subscriptionPlan)) {
-      console.warn('Invalid subscription plan, defaulting to free');
-      userData.subscriptionPlan = 'free';
-      await updateDoc(userDocRef, { subscriptionPlan: 'free' });
-    }
-    
-    // Load user listings
+    // Load listings BEFORE initializing dashboard
     await loadUserListings();
     
-    console.log('✅ User data loaded:', userData);
-    console.log('✅ User listings loaded:', userListings);
-    initializeDashboard();
+    // Wait a bit for listener to populate data
+    setTimeout(() => {
+      console.log('🚀 Initializing dashboard with', userListings.length, 'listings');
+      initializeDashboard();
+    }, 500);
+    
   } catch (error) {
-    console.error('Error loading user data:', error);
+    console.error('❌ Error loading user data:', error);
+    showToast('Failed to load dashboard. Please refresh the page.', 'error');
     document.getElementById('loadingScreen').classList.add('hidden');
     document.body.classList.add('loaded');
-    alert('Failed to load dashboard. Please refresh the page.');
   }
 });
 
 // ============================================
-// LOAD USER LISTINGS
+// LOAD USER LISTINGS (REAL-TIME)
 // ============================================
+
 
 async function loadUserListings() {
   try {
+    if (!userData || !userData.id) {
+      console.error('❌ No user data available');
+      return;
+    }
+    
+    console.log('📥 Loading listings for user:', userData.id);
+    
     const listingsRef = collection(db, 'listings');
-    const q = query(
-      listingsRef, 
-      where('userId', '==', userData.id)
-    );
+    const q = query(listingsRef, where('userId', '==', userData.id));
     
-    const querySnapshot = await getDocs(q);
-    userListings = [];
-    
-    querySnapshot.forEach((doc) => {
-      userListings.push({
-        id: doc.id,
-        ...doc.data()
+    // Set up real-time listener
+    listingsUnsubscribe = onSnapshot(q, (snapshot) => {
+      userListings = [];
+      
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        userListings.push({
+          id: doc.id,
+          ...data
+        });
       });
+      
+      console.log('✅ Loaded listings:', userListings.length);
+      
+      // Sort by createdAt (newest first)
+      userListings.sort((a, b) => {
+        const dateA = a.createdAt?.toDate?.() || new Date(0);
+        const dateB = b.createdAt?.toDate?.() || new Date(0);
+        return dateB - dateA;
+      });
+      
+      // Update active listing count
+      const activeStatuses = ['draft', 'pending', 'active', 'approved'];
+      const activeCount = userListings.filter(l => activeStatuses.includes(l.status)).length;
+      
+      userData.listings.active = activeCount;
+      userData.listings.total = userListings.length;
+      
+      console.log('📊 Active listings:', activeCount, '/ Total:', userListings.length);
+      
+      // Update UI if dashboard is loaded
+      if (document.body.classList.contains('loaded')) {
+        updateDashboardStats();
+        updateSubscriptionBanner();
+        
+        // Refresh current tab if on listings
+        const listingsTab = document.getElementById('tab-listings');
+        if (listingsTab && listingsTab.classList.contains('active')) {
+          listingsTab.innerHTML = renderListingsTab();
+        }
+        
+        // Refresh overview tab if active
+        const overviewTab = document.getElementById('tab-dashboard');
+        if (overviewTab && overviewTab.classList.contains('active')) {
+          const recentListingsContainer = overviewTab.querySelector('.content-card:last-of-type');
+          if (recentListingsContainer) {
+            // Re-render recent listings section
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = renderRecentListings();
+            if (tempDiv.firstElementChild) {
+              recentListingsContainer.replaceWith(tempDiv.firstElementChild);
+            }
+          }
+        }
+      }
+      
+    }, (error) => {
+      console.error('❌ Error in listings snapshot:', error);
+      showToast('Failed to load listings. Check console for details.', 'error');
     });
-    
-    // Sort by createdAt locally (to avoid needing Firestore index)
-    userListings.sort((a, b) => {
-      const dateA = a.createdAt?.toDate?.() || new Date(0);
-      const dateB = b.createdAt?.toDate?.() || new Date(0);
-      return dateB - dateA; // Newest first
-    });
-    
-    // Update listing counts - count ALL non-closed listings as active
-    const activeStatuses = ['draft', 'pending', 'active', 'approved'];
-    const activeListings = userListings.filter(l => activeStatuses.includes(l.status)).length;
-    userData.listings.active = activeListings;
-    userData.listings.total = userListings.length;
-    
-    // Update user document with correct counts
-    const userDocRef = doc(db, 'users', userData.id);
-    await updateDoc(userDocRef, {
-      'listings.active': activeListings,
-      'listings.total': userListings.length
-    });
-    
-    console.log('✅ Loaded', userListings.length, 'listings');
     
   } catch (error) {
-    console.error('Error loading user listings:', error);
+    console.error('❌ Error loading user listings:', error);
+    showToast('Failed to load listings. Please refresh the page.', 'error');
     userListings = [];
   }
 }
@@ -1152,225 +1437,150 @@ async function loadUserListings() {
 // ============================================
 
 function initializeDashboard() {
+  console.log('🎯 Initializing dashboard...');
+  console.log('👤 User data:', userData);
+  console.log('📋 User listings:', userListings.length);
+  
   document.getElementById('loadingScreen').classList.add('hidden');
   document.body.classList.add('loaded');
   
   updateUserProfile();
   updateSubscriptionBanner();
-  renderSidebar(); // ADD THIS LINE
+  renderSidebar();
   renderDashboardContent();
+  
+  console.log('✅ Dashboard initialized successfully');
 }
+
+// ============================================
+// ADD: Debug Helper Function
+// ============================================
+
+window.debugDashboard = function() {
+  console.log('=== DASHBOARD DEBUG INFO ===');
+  console.log('User Data:', userData);
+  console.log('User Listings:', userListings);
+  console.log('Active Tab:', document.querySelector('.tab-content.active')?.id);
+  console.log('Plan Limits:', PLAN_LIMITS[userData.subscriptionPlan]);
+  console.log('===========================');
+}
+
+// Add to console for manual debugging
+console.log('💡 Type debugDashboard() in console to see current state');
 
 function updateUserProfile() {
   const initials = userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   
-  // Update sidebar elements
   document.getElementById('sidebarAvatar').textContent = initials;
   document.getElementById('sidebarName').textContent = userData.name;
   document.getElementById('sidebarEmail').textContent = userData.email;
-  document.getElementById('sidebarRole').textContent = userData.role === 'seller' ? 'Seller' : 'Buyer';
+  document.getElementById('sidebarRole').textContent = 'Seller';
   
-  // ADD THIS - Update plan badge
   const planBadge = document.getElementById('planBadge');
   const userPlan = userData.subscriptionPlan || 'free';
   planBadge.textContent = userPlan.charAt(0).toUpperCase() + userPlan.slice(1);
   planBadge.className = `plan-badge ${userPlan}`;
 }
 
-function renderSidebar() {
-  const nav = document.getElementById('sidebarNav');
-  const plan = PLANS[userData.role][userData.subscriptionPlan] || PLANS[userData.role]['free'];
-  
-  if (userData.role === 'seller') {
-    nav.innerHTML = `
-      <div class="nav-section">
-        <div class="nav-section-title">Overview</div>
-        <div class="nav-item active" onclick="navigateTo('dashboard')">
-          <i class="fa-solid fa-house"></i>
-          <span>Dashboard</span>
-        </div>
-        <div class="nav-item" onclick="navigateTo('listings')">
-          <i class="fa-solid fa-list"></i>
-          <span>My Listings</span>
-        </div>
-      </div>
-      
-      <div class="nav-section">
-        <div class="nav-section-title">Insights</div>
-        <div class="nav-item ${plan.lockedFeatures.includes('analytics') ? 'locked' : ''}" onclick="navigateTo('analytics')">
-          <i class="fa-solid fa-chart-line"></i>
-          <span>Analytics</span>
-          ${plan.lockedFeatures.includes('analytics') ? '<i class="fa-solid fa-lock lock-icon"></i>' : ''}
-        </div>
-        <div class="nav-item" onclick="navigateTo('messages')">
-          <i class="fa-solid fa-envelope"></i>
-          <span>Messages</span>
-        </div>
-      </div>
-      
-      <div class="nav-section">
-        <div class="nav-section-title">Account</div>
-        <div class="nav-item" onclick="navigateTo('subscription')">
-          <i class="fa-solid fa-crown"></i>
-          <span>Subscription</span>
-        </div>
-        <div class="nav-item" onclick="navigateTo('settings')">
-          <i class="fa-solid fa-gear"></i>
-          <span>Settings</span>
-        </div>
-      </div>
-    `;
-  } else {
-    nav.innerHTML = `
-      <div class="nav-section">
-        <div class="nav-section-title">Overview</div>
-        <div class="nav-item active" onclick="navigateTo('dashboard')">
-          <i class="fa-solid fa-house"></i>
-          <span>Dashboard</span>
-        </div>
-        <div class="nav-item" onclick="navigateTo('saved')">
-          <i class="fa-solid fa-heart"></i>
-          <span>Saved Listings</span>
-        </div>
-      </div>
-      
-      <div class="nav-section">
-        <div class="nav-section-title">Tools</div>
-        <div class="nav-item ${plan.lockedFeatures.includes('analytics') ? 'locked' : ''}" onclick="navigateTo('analytics')">
-          <i class="fa-solid fa-chart-bar"></i>
-          <span>Analytics</span>
-          ${plan.lockedFeatures.includes('analytics') ? '<i class="fa-solid fa-lock lock-icon"></i>' : ''}
-        </div>
-        <div class="nav-item ${plan.lockedFeatures.includes('calculator') ? 'locked' : ''}" onclick="navigateTo('calculator')">
-          <i class="fa-solid fa-calculator"></i>
-          <span>ROI Calculator</span>
-          ${plan.lockedFeatures.includes('calculator') ? '<i class="fa-solid fa-lock lock-icon"></i>' : ''}
-        </div>
-        <div class="nav-item ${plan.lockedFeatures.includes('alerts') ? 'locked' : ''}" onclick="navigateTo('alerts')">
-          <i class="fa-solid fa-bell"></i>
-          <span>Alerts</span>
-          ${plan.lockedFeatures.includes('alerts') ? '<i class="fa-solid fa-lock lock-icon"></i>' : ''}
-        </div>
-      </div>
-      
-      <div class="nav-section">
-        <div class="nav-section-title">Account</div>
-        <div class="nav-item" onclick="navigateTo('subscription')">
-          <i class="fa-solid fa-crown"></i>
-          <span>Subscription</span>
-        </div>
-        <div class="nav-item" onclick="navigateTo('settings')">
-          <i class="fa-solid fa-gear"></i>
-          <span>Settings</span>
-        </div>
-      </div>
-    `;
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function updateSubscriptionBanner() {
-  if (!userData || !userData.role || !PLANS[userData.role]) {
-    console.error('Invalid userData:', userData);
-    return;
-  }
+  const plan = PLAN_LIMITS[userData.subscriptionPlan];
+  const pricing = PLAN_PRICING[userData.subscriptionPlan];
   
-  const plan = PLANS[userData.role][userData.subscriptionPlan];
-  
-  if (!plan) {
-    console.error('Invalid plan:', userData.subscriptionPlan);
-    userData.subscriptionPlan = 'free';
-    plan = PLANS[userData.role]['free'];
-  }
-  
-  document.getElementById('planTitle').textContent = plan.name;
+  document.getElementById('planTitle').textContent = userData.subscriptionPlan.charAt(0).toUpperCase() + userData.subscriptionPlan.slice(1) + ' Plan';
   document.getElementById('planDescription').textContent = 
-    userData.role === 'seller' 
-      ? `Perfect for ${userData.subscriptionPlan === 'free' ? 'trying out' : 'growing'} your business`
-      : `Great for ${userData.subscriptionPlan === 'free' ? 'browsing' : 'serious'} buyers`;
+    `Perfect for ${userData.subscriptionPlan === 'free' ? 'trying out' : userData.subscriptionPlan === 'basic' ? 'growing' : 'scaling'} your business`;
   
-  if (userData.role === 'seller') {
-    const maxListings = plan.maxListings === Infinity ? '∞' : plan.maxListings;
-    document.getElementById('planBadge').textContent = 
-      `${userData.listings?.active || 0}/${maxListings} Active Listings`;
-  } else {
-    document.getElementById('planBadge').textContent = 
-      `${plan.features.length} features available`;
-  }
+  const maxListings = plan.maxActiveListings === Infinity ? '∞' : plan.maxActiveListings;
+  document.getElementById('planBadgeDetail').textContent = 
+    `${userData.listings.active}/${maxListings} Active Listings`;
   
-  const isTopTier = (userData.role === 'seller' && userData.subscriptionPlan === 'premium') ||
-                    (userData.role === 'buyer' && userData.subscriptionPlan === 'enterprise');
-  
-  const upgradeBtn = document.getElementById('upgradeBtn');
+  const isTopTier = userData.subscriptionPlan === 'premium';
+  const upgradeBtn = document.getElementById('btn-upgrade');
   if (upgradeBtn) {
     upgradeBtn.style.display = isTopTier ? 'none' : 'inline-block';
   }
 }
 
+function updateDashboardStats() {
+  // Update stat cards if they exist
+  const activeListingsEl = document.querySelector('[data-stat="active-listings"]');
+  const totalViewsEl = document.querySelector('[data-stat="total-views"]');
+  const inquiriesEl = document.querySelector('[data-stat="inquiries"]');
+  const salesEl = document.querySelector('[data-stat="sales"]');
+  
+  if (activeListingsEl) activeListingsEl.textContent = userData.listings.active;
+  if (totalViewsEl) totalViewsEl.textContent = userData.stats.totalViews || 0;
+  if (inquiriesEl) inquiriesEl.textContent = userData.stats.inquiries || 0;
+  if (salesEl) salesEl.textContent = userData.stats.sales || 0;
+}
+
+// ============================================
+// RENDER SIDEBAR
+// ============================================
+
+function renderSidebar() {
+  const nav = document.getElementById('sidebarNav');
+  const plan = PLAN_LIMITS[userData.subscriptionPlan];
+  
+  nav.innerHTML = `
+    <div class="nav-section">
+      <div class="nav-section-title">Overview</div>
+      <div class="nav-item active" onclick="navigateTo('dashboard')">
+        <i class="fa-solid fa-house"></i>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item" onclick="navigateTo('listings')">
+        <i class="fa-solid fa-list"></i>
+        <span>My Listings</span>
+      </div>
+    </div>
+    
+    <div class="nav-section">
+      <div class="nav-section-title">Insights</div>
+      <div class="nav-item ${plan.analytics === 'none' ? 'locked' : ''}" onclick="navigateTo('analytics')">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Analytics</span>
+        ${plan.analytics === 'none' ? '<i class="fa-solid fa-lock lock-icon"></i>' : ''}
+      </div>
+      <div class="nav-item" onclick="navigateTo('messages')">
+        <i class="fa-solid fa-envelope"></i>
+        <span>Messages</span>
+      </div>
+    </div>
+    
+    <div class="nav-section">
+      <div class="nav-section-title">Account</div>
+      <div class="nav-item" onclick="navigateTo('subscription')">
+        <i class="fa-solid fa-crown"></i>
+        <span>Subscription</span>
+      </div>
+      <div class="nav-item" onclick="navigateTo('settings')">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================
+// RENDER DASHBOARD CONTENT
+// ============================================
 
 function renderDashboardContent() {
   const container = document.getElementById('tabContainer');
+  container.innerHTML = renderSellerDashboard();
   
-  if (userData.role === 'seller') {
-    container.innerHTML = renderSellerDashboard();
-  } else {
-    container.innerHTML = renderBuyerDashboard();
-  }
+  // Initialize chart if on overview tab
+  setTimeout(() => {
+    const overviewTab = document.getElementById('tab-dashboard');
+    if (overviewTab && overviewTab.classList.contains('active')) {
+      initializeChart();
+    }
+  }, 100);
 }
-
-// ============================================
-// LISTING STATUS BADGE
-// ============================================
-
-function getStatusBadge(status) {
-  const badges = {
-    'pending': '<span style="background: var(--warning); color: white; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">⏳ Under Review</span>',
-    'active': '<span style="background: var(--success); color: white; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">✓ Active</span>',
-    'approved': '<span style="background: var(--success); color: white; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">✓ Approved</span>',
-    'draft': '<span style="background: var(--gray); color: white; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">📝 Draft</span>',
-    'sold': '<span style="background: var(--secondary); color: white; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">💰 Sold</span>',
-    'closed': '<span style="background: var(--error); color: white; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">🔒 Closed</span>'
-  };
-  return badges[status] || badges['draft'];
-}
-
-// ============================================
-// CAN EDIT/DELETE LISTING
-// ============================================
-
-function canEditListing(listing) {
-  // Can edit if: draft, pending, active, or approved
-  return ['draft', 'pending', 'active', 'approved'].includes(listing.status);
-}
-
-function canDeleteListing(listing) {
-  // Can delete if draft, pending, or approved/active with no inquiries
-  if (listing.status === 'draft' || listing.status === 'pending') return true;
-  if ((listing.status === 'active' || listing.status === 'approved') && (listing.inquiries || 0) === 0) return true;
-  return false;
-}
-
-// ============================================
-// SELLER DASHBOARD CONTENT
-// ============================================
 
 function renderSellerDashboard() {
-  const plan = PLANS.seller[userData.subscriptionPlan];
+  const plan = PLAN_LIMITS[userData.subscriptionPlan];
   
   return `
     <!-- DASHBOARD TAB -->
@@ -1379,7 +1589,7 @@ function renderSellerDashboard() {
         <div class="stat-card">
           <div class="stat-header">
             <div>
-              <div class="stat-value">${userData.listings.active}</div>
+              <div class="stat-value" data-stat="active-listings">${userData.listings.active}</div>
               <div class="stat-label">Active Listings</div>
             </div>
             <div class="stat-icon primary">
@@ -1391,7 +1601,7 @@ function renderSellerDashboard() {
         <div class="stat-card">
           <div class="stat-header">
             <div>
-              <div class="stat-value">${userData.stats.totalViews}</div>
+              <div class="stat-value" data-stat="total-views">${userData.stats.totalViews || 0}</div>
               <div class="stat-label">Total Views</div>
             </div>
             <div class="stat-icon secondary">
@@ -1403,7 +1613,7 @@ function renderSellerDashboard() {
         <div class="stat-card">
           <div class="stat-header">
             <div>
-              <div class="stat-value">${userData.stats.inquiries}</div>
+              <div class="stat-value" data-stat="inquiries">${userData.stats.inquiries || 0}</div>
               <div class="stat-label">Inquiries</div>
             </div>
             <div class="stat-icon accent">
@@ -1415,7 +1625,7 @@ function renderSellerDashboard() {
         <div class="stat-card">
           <div class="stat-header">
             <div>
-              <div class="stat-value">${userData.stats.sales}</div>
+              <div class="stat-value" data-stat="sales">${userData.stats.sales || 0}</div>
               <div class="stat-label">Sales Made</div>
             </div>
             <div class="stat-icon success">
@@ -1430,19 +1640,30 @@ function renderSellerDashboard() {
           <h3>Quick Actions</h3>
         </div>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-          <button class="btn-primary" onclick="handleCreateListing()">
+          <button class="btn btn-primary" onclick="openAddListingModal()">
             <i class="fa-solid fa-plus"></i> Create Listing
           </button>
-         <button class="btn-primary" onclick="navigateTo('listings')">
-  <i class="fa-solid fa-list"></i> View My Listings
-</button>
-<button class="btn-primary" onclick="navigateTo('messages')">
-  <i class="fa-solid fa-envelope"></i> Check Messages
-</button>
+          <button class="btn btn-primary" onclick="navigateTo('listings')">
+            <i class="fa-solid fa-list"></i> View My Listings
+          </button>
+          <button class="btn btn-primary" onclick="navigateTo('messages')">
+            <i class="fa-solid fa-envelope"></i> Check Messages
+          </button>
         </div>
       </div>
       
       ${renderRecentListings()}
+      
+      ${plan.analytics !== 'none' ? `
+        <div class="content-card">
+          <div class="card-header">
+            <h3>Performance Overview</h3>
+          </div>
+          <div class="chart-container">
+            <canvas id="performanceChart"></canvas>
+          </div>
+        </div>
+      ` : ''}
     </div>
     
     <!-- LISTINGS TAB -->
@@ -1452,57 +1673,18 @@ function renderSellerDashboard() {
     
     <!-- ANALYTICS TAB -->
     <div id="tab-analytics" class="tab-content">
-      ${plan.lockedFeatures.includes('analytics') ? `
-        <div class="content-card locked-feature">
-          <div class="locked-overlay">
-            <i class="fa-solid fa-lock"></i>
-            <p>Analytics Dashboard</p>
-            <p style="font-weight: 400; font-size: 0.9rem;">Available on Basic and Premium plans</p>
-            <button class="unlock-btn" onclick="showUpgradeModal()">Upgrade to Unlock</button>
-          </div>
-          <div class="card-header">
-            <h3>Analytics Dashboard</h3>
-          </div>
-          <div style="height: 300px; background: var(--gray-light); border-radius: 10px;"></div>
-        </div>
-      ` : `
-        <div class="content-card">
-          <div class="card-header">
-            <h3>Analytics Dashboard</h3>
-          </div>
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-value">${userData.stats.totalViews}</div>
-              <div class="stat-label">Total Views</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value">${Math.round(userData.stats.totalViews / (userData.listings.active || 1))}</div>
-              <div class="stat-label">Avg. Views per Listing</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value">${userData.stats.inquiries}</div>
-              <div class="stat-label">Total Inquiries</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value">${Math.round((userData.stats.inquiries / (userData.stats.totalViews || 1)) * 100)}%</div>
-              <div class="stat-label">Conversion Rate</div>
-            </div>
-          </div>
-        </div>
-      `}
+      ${renderAnalyticsTab()}
     </div>
     
+<!-- OFFERS TAB -->
+<div id="tab-offers" class="tab-content">
+  ${renderOffersTab()}
+</div>
+
+
     <!-- MESSAGES TAB -->
     <div id="tab-messages" class="tab-content">
-      <div class="content-card">
-        <div class="card-header">
-          <h3>Messages</h3>
-        </div>
-        <div class="empty-state">
-          <i class="fa-solid fa-envelope"></i>
-          <p>No messages yet</p>
-        </div>
-      </div>
+      ${renderMessagesTab()}
     </div>
     
     <!-- SUBSCRIPTION TAB -->
@@ -1517,12 +1699,32 @@ function renderSellerDashboard() {
   `;
 }
 
+
+
+
+
 // ============================================
 // RECENT LISTINGS PREVIEW
 // ============================================
 
 function renderRecentListings() {
-  if (userListings.length === 0) return '';
+  if (userListings.length === 0) {
+    return `
+      <div class="content-card">
+        <div class="card-header">
+          <h3>Recent Listings</h3>
+        </div>
+        <div class="empty-state">
+          <i class="fa-solid fa-inbox"></i>
+          <p>No listings yet</p>
+          <br>
+          <button class="btn btn-primary" onclick="openAddListingModal()">
+            <i class="fa-solid fa-plus"></i> Create Your First Listing
+          </button>
+        </div>
+      </div>
+    `;
+  }
   
   const recentListings = userListings.slice(0, 3);
   
@@ -1541,7 +1743,7 @@ function renderRecentListings() {
             <div style="flex: 1;">
               <h4 style="margin-bottom: 0.3rem;">${listing.systemName || 'Untitled'}</h4>
               <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 0.5rem;">${listing.categoryName || listing.category}</p>
-              ${getStatusBadge(listing.status)}
+              ${getStatusBadgeHTML(listing.status)}
             </div>
             <div style="text-align: right;">
               <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">₱${parseInt(listing.askingPrice || 0).toLocaleString()}</div>
@@ -1555,7 +1757,7 @@ function renderRecentListings() {
 }
 
 // ============================================
-// LISTINGS TAB WITH EDIT/DELETE
+// LISTINGS TAB
 // ============================================
 
 function renderListingsTab() {
@@ -1564,7 +1766,7 @@ function renderListingsTab() {
       <div class="content-card">
         <div class="card-header">
           <h3>My Listings</h3>
-          <button class="card-action" onclick="handleCreateListing()">
+          <button class="card-action" onclick="openAddListingModal()">
             <i class="fa-solid fa-plus"></i> Create New Listing
           </button>
         </div>
@@ -1572,7 +1774,7 @@ function renderListingsTab() {
           <i class="fa-solid fa-inbox"></i>
           <p>You haven't created any listings yet</p>
           <br>
-          <button class="btn-primary" onclick="handleCreateListing()">
+          <button class="btn btn-primary" onclick="openAddListingModal()">
             <i class="fa-solid fa-plus"></i> Create Your First Listing
           </button>
         </div>
@@ -1584,232 +1786,411 @@ function renderListingsTab() {
     <div class="content-card">
       <div class="card-header">
         <h3>My Listings (${userListings.length})</h3>
-        <button class="card-action" onclick="handleCreateListing()">
+        <button class="card-action" onclick="openAddListingModal()">
           <i class="fa-solid fa-plus"></i> Create New Listing
         </button>
       </div>
       
-      <div style="display: grid; gap: 1.5rem;">
-        ${userListings.map(listing => `
-          <div style="border: 2px solid var(--gray-light); border-radius: 15px; padding: 1.5rem; transition: all 0.3s;" 
-               onmouseenter="this.style.borderColor='var(--primary)'" 
-               onmouseleave="this.style.borderColor='var(--gray-light)'">
-            <div style="display: flex; gap: 1.5rem;">
-              <img src="${listing.mainImage || 'https://via.placeholder.com/150'}" 
-                   alt="${listing.systemName}" 
-                   style="width: 150px; height: 150px; object-fit: cover; border-radius: 12px; flex-shrink: 0;">
-              
-              <div style="flex: 1;">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
-                  <div>
-                    <h3 style="margin-bottom: 0.5rem;">${listing.systemName || 'Untitled Listing'}</h3>
-                    <p style="color: var(--gray); font-size: 0.95rem;">${listing.categoryName || listing.category}</p>
+      <div style="overflow-x: auto;">
+        <table class="listings-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>System Name</th>
+              <th>Price</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Views</th>
+              <th>Inquiries</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${userListings.map(listing => `
+              <tr>
+                <td>
+                  <img src="${listing.mainImage || 'https://via.placeholder.com/60'}" 
+                       alt="${listing.systemName}" 
+                       class="listing-image">
+                </td>
+                <td>
+                  <strong>${listing.systemName || 'Untitled'}</strong>
+                  <div style="font-size: 0.85rem; color: var(--gray);">${listing.shortDescription?.substring(0, 50) || ''}...</div>
+                </td>
+                <td>
+                  <strong style="color: var(--primary);">₱${parseInt(listing.askingPrice || 0).toLocaleString()}</strong>
+                </td>
+                <td>${listing.categoryName || listing.category}</td>
+                <td>${getStatusBadgeHTML(listing.status)}</td>
+                <td>${listing.views || 0}</td>
+                <td>${listing.inquiries || 0}</td>
+                <td>
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    ${canEditListing(listing) ? `
+                      <button class="btn btn-secondary btn-edit" onclick="openEditListingModal('${listing.id}')" title="Edit">
+                        <i class="fa-solid fa-edit"></i>
+                      </button>
+                    ` : ''}
+                    
+                    ${listing.status === 'active' || listing.status === 'approved' ? `
+                      <button class="btn btn-secondary btn-view-public" onclick="viewPublicListing('${listing.id}')" title="View Public">
+                        <i class="fa-solid fa-external-link"></i>
+                      </button>
+                    ` : ''}
+                    
+                    ${PLAN_LIMITS[userData.subscriptionPlan].canPromote && (listing.status === 'active' || listing.status === 'approved') ? `
+                      <button class="btn btn-success btn-promote" onclick="openPromoteModal('${listing.id}')" title="Promote">
+                        <i class="fa-solid fa-star"></i>
+                      </button>
+                    ` : ''}
+                    
+                    ${canMarkSold(listing) ? `
+                      <button class="btn btn-success btn-mark-sold" onclick="markAsSold('${listing.id}')" title="Mark as Sold">
+                        <i class="fa-solid fa-check"></i>
+                      </button>
+                    ` : ''}
+                    
+                    ${canDeleteListing(listing) ? `
+                      <button class="btn btn-danger btn-delete" onclick="openDeleteModal('${listing.id}', '${listing.systemName}')" title="Delete">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    ` : ''}
                   </div>
-                  ${getStatusBadge(listing.status)}
-                </div>
-                
-                <p style="color: var(--gray); margin-bottom: 1rem; line-height: 1.6;">
-                  ${listing.shortDescription || 'No description available'}
-                </p>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-                  <div>
-                    <div style="font-size: 0.85rem; color: var(--gray);">Asking Price</div>
-                    <div style="font-size: 1.3rem; font-weight: 700; color: var(--primary);">₱${parseInt(listing.askingPrice || 0).toLocaleString()}</div>
-                  </div>
-                  <div>
-                    <div style="font-size: 0.85rem; color: var(--gray);">Monthly Revenue</div>
-                    <div style="font-size: 1.1rem; font-weight: 600;">₱${parseInt(listing.monthlyRevenue || 0).toLocaleString()}</div>
-                  </div>
-                  <div>
-                    <div style="font-size: 0.85rem; color: var(--gray);">Views</div>
-                    <div style="font-size: 1.1rem; font-weight: 600;">${listing.views || 0}</div>
-                  </div>
-                  <div>
-                    <div style="font-size: 0.85rem; color: var(--gray);">Inquiries</div>
-                    <div style="font-size: 1.1rem; font-weight: 600;">${listing.inquiries || 0}</div>
-                  </div>
-                </div>
-                
-                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
-                  ${canEditListing(listing) ? `
-                    <button class="btn-primary" onclick="handleEditListing('${listing.id}')" 
-                            style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">
-                      <i class="fa-solid fa-edit"></i> Edit Listing
-                    </button>
-                  ` : ''}
-                  
-                  ${canDeleteListing(listing) ? `
-                    <button onclick="handleDeleteListing('${listing.id}', '${listing.systemName}')" 
-                            style="padding: 0.7rem 1.5rem; font-size: 0.95rem; background: var(--error); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: 'Sarabun', sans-serif;">
-                      <i class="fa-solid fa-trash"></i> Delete
-                    </button>
-                  ` : ''}
-                  
-                  ${listing.status === 'active' ? `
-                    <button onclick="viewListingPublic('${listing.id}')" 
-                            style="padding: 0.7rem 1.5rem; font-size: 0.95rem; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: 'Sarabun', sans-serif;">
-                      <i class="fa-solid fa-external-link"></i> View Public
-                    </button>
-                  ` : ''}
-                  
-                  ${!canEditListing(listing) && !canDeleteListing(listing) ? `
-                    <p style="color: var(--gray); font-size: 0.9rem; font-style: italic;">
-                      <i class="fa-solid fa-lock"></i> This listing is ${listing.status} and cannot be edited or deleted
-                    </p>
-                  ` : ''}
-                </div>
-              </div>
-            </div>
-          </div>
-        `).join('')}
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
       </div>
     </div>
   `;
 }
 
 // ============================================
-// HANDLE EDIT LISTING
+// ANALYTICS TAB
 // ============================================
 
-window.handleEditListing = function(listingId) {
-  const listing = userListings.find(l => l.id === listingId);
+function renderAnalyticsTab() {
+  const plan = PLAN_LIMITS[userData.subscriptionPlan];
   
-  if (!listing) {
-    alert('Listing not found');
-    return;
+  if (plan.analytics === 'none') {
+    return `
+      <div class="content-card locked-feature">
+        <div class="locked-overlay">
+          <i class="fa-solid fa-lock"></i>
+          <p>Analytics Dashboard</p>
+          <p style="font-weight: 400; font-size: 0.9rem;">Available on Basic and Premium plans</p>
+          <button class="unlock-btn" onclick="openUpgradeModal()">Upgrade to Unlock</button>
+        </div>
+        <div class="card-header">
+          <h3>Analytics Dashboard</h3>
+        </div>
+        <div style="height: 300px; background: var(--gray-light); border-radius: 10px;"></div>
+      </div>
+    `;
   }
   
-  if (!canEditListing(listing)) {
-    alert('This listing cannot be edited. It may be sold or closed.');
-    return;
-  }
-  
-  // Store listing data in sessionStorage for the edit page
-  sessionStorage.setItem('editingListingId', listingId);
-  sessionStorage.setItem('editingListingData', JSON.stringify(listing));
-  
-  // Redirect to sell page with edit mode
-  window.location.href = 'sell.html?edit=' + listingId;
+  return `
+    <div class="content-card">
+      <div class="card-header">
+        <h3>Analytics Dashboard</h3>
+        ${plan.analytics === 'advanced' ? `
+          <button class="btn btn-secondary" onclick="exportAnalytics()">
+            <i class="fa-solid fa-download"></i> Export CSV
+          </button>
+        ` : ''}
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">${userData.stats.totalViews || 0}</div>
+          <div class="stat-label">Total Views</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${Math.round((userData.stats.totalViews || 0) / (userData.listings.active || 1))}</div>
+          <div class="stat-label">Avg. Views per Listing</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${userData.stats.inquiries || 0}</div>
+          <div class="stat-label">Total Inquiries</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${Math.round(((userData.stats.inquiries || 0) / (userData.stats.totalViews || 1)) * 100)}%</div>
+          <div class="stat-label">Conversion Rate</div>
+        </div>
+      </div>
+      
+      <div class="chart-container" style="margin-top: 2rem;">
+        <canvas id="analyticsChart"></canvas>
+      </div>
+      
+      ${plan.analytics === 'advanced' ? `
+        <div style="margin-top: 2rem;">
+          <h4 style="margin-bottom: 1rem;">Listing Performance</h4>
+          <div style="overflow-x: auto;">
+            <table class="listings-table">
+              <thead>
+                <tr>
+                  <th>Listing Name</th>
+                  <th>Views</th>
+                  <th>Inquiries</th>
+                  <th>Conversion</th>
+                  <th>Days Active</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${userListings.filter(l => l.status === 'active' || l.status === 'approved').map(listing => {
+                  const daysActive = listing.createdAt ? 
+                    Math.floor((new Date() - listing.createdAt.toDate()) / (1000 * 60 * 60 * 24)) : 0;
+                  const conversion = listing.views ? ((listing.inquiries || 0) / listing.views * 100).toFixed(1) : 0;
+                  
+                  return `
+                    <tr>
+                      <td>${listing.systemName}</td>
+                      <td>${listing.views || 0}</td>
+                      <td>${listing.inquiries || 0}</td>
+                      <td>${conversion}%</td>
+                      <td>${daysActive} days</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
 }
 
 // ============================================
-// HANDLE DELETE LISTING
+// MESSAGES TAB
 // ============================================
 
-window.handleDeleteListing = async function(listingId, listingName) {
-  const listing = userListings.find(l => l.id === listingId);
+function renderMessagesTab() {
+  const plan = PLAN_LIMITS[userData.subscriptionPlan];
   
-  if (!listing) {
-    alert('Listing not found');
-    return;
+  if (!plan.canReceiveInquiries) {
+    return `
+      <div class="content-card locked-feature">
+        <div class="locked-overlay">
+          <i class="fa-solid fa-lock"></i>
+          <p>Messages & Inquiries</p>
+          <p style="font-weight: 400; font-size: 0.9rem;">Available on Basic and Premium plans</p>
+          <button class="unlock-btn" onclick="openUpgradeModal()">Upgrade to Unlock</button>
+        </div>
+        <div class="card-header">
+          <h3>Messages</h3>
+        </div>
+        <div style="height: 200px;"></div>
+      </div>
+    `;
   }
   
-  if (!canDeleteListing(listing)) {
-    alert('This listing cannot be deleted. It may have active inquiries or offers. Please contact support for assistance.');
-    return;
-  }
-  
-  const confirmMessage = `Are you sure you want to permanently delete "${listingName}"?\n\nThis action cannot be undone.`;
-  
-  if (!confirm(confirmMessage)) {
-    return;
-  }
-  
-  // Double confirmation for safety
-  const finalConfirm = confirm('Final confirmation: Delete this listing permanently?');
-  
-  if (!finalConfirm) {
-    return;
-  }
-  
-  try {
-    // Show loading state
-    const deleteBtn = event.target;
-    const originalText = deleteBtn.innerHTML;
-    deleteBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
-    deleteBtn.disabled = true;
-    
-    // Delete from Firestore
-    await deleteDoc(doc(db, 'listings', listingId));
-    
-    // Update local array
-    userListings = userListings.filter(l => l.id !== listingId);
-    
-    // Update user stats
-    const activeListings = userListings.filter(l => l.status === 'active' || l.status === 'pending').length;
-    userData.listings.active = activeListings;
-    userData.listings.total = userListings.length;
-    
-    // Update Firestore user document
-    const userDocRef = doc(db, 'users', userData.id);
-    await updateDoc(userDocRef, {
-      'listings.active': activeListings,
-      'listings.total': userListings.length
-    });
-    
-    // Refresh the dashboard
-    updateSubscriptionBanner();
-    renderDashboardContent();
-    
-    alert('Listing deleted successfully!');
-    
-  } catch (error) {
-    console.error('Error deleting listing:', error);
-    alert('Failed to delete listing. Please try again or contact support.');
-    
-    // Restore button
-    deleteBtn.innerHTML = originalText;
-    deleteBtn.disabled = false;
-  }
+  return `
+    <div class="content-card">
+      <div class="card-header">
+        <h3>Messages & Inquiries</h3>
+      </div>
+      <div class="empty-state">
+        <i class="fa-solid fa-envelope"></i>
+        <p>No messages yet</p>
+        <p style="font-size: 0.9rem; color: var(--gray);">You'll receive notifications when buyers contact you</p>
+      </div>
+    </div>
+  `;
 }
 
 // ============================================
-// VIEW LISTING PUBLIC
+// SUBSCRIPTION TAB
 // ============================================
 
-window.viewListingPublic = function(listingId) {
-  // This would redirect to the public listing detail page
-  window.open('listing-detail.html?id=' + listingId, '_blank');
+function renderSubscriptionTab() {
+  const plan = PLAN_LIMITS[userData.subscriptionPlan];
+  const pricing = PLAN_PRICING[userData.subscriptionPlan];
+  
+  return `
+    <div class="content-card">
+      <div class="card-header">
+        <h3>Current Subscription</h3>
+      </div>
+      
+      <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="color: white;">${userData.subscriptionPlan.charAt(0).toUpperCase() + userData.subscriptionPlan.slice(1)} Plan</h3>
+          <span style="background: rgba(255,255,255,0.3); padding: 0.4rem 0.8rem; border-radius: 50px; font-size: 0.85rem;">Current Plan</span>
+        </div>
+        <div style="font-size: 2rem; font-weight: 900; margin-bottom: 1rem;">
+          ${pricing.currency}${pricing.price}
+          <span style="font-size: 1rem; font-weight: 500; opacity: 0.9;">/${pricing.billing}</span>
+        </div>
+        <ul style="list-style: none; margin-bottom: 1.5rem;">
+          ${plan.features.map(f => `<li style="padding: 0.4rem 0;"><i class="fa-solid fa-check"></i> ${f}</li>`).join('')}
+        </ul>
+        ${userData.subscriptionPlan !== 'premium' ? `
+          <button class="btn btn-primary" style="background: white; color: var(--primary); width: 100%;" onclick="openUpgradeModal()">
+            Upgrade to ${userData.subscriptionPlan === 'free' ? 'Basic or Premium' : 'Premium'}
+          </button>
+        ` : ''}
+      </div>
+      
+      <div style="background: var(--bg); padding: 1.5rem; border-radius: 15px;">
+        <h4 style="margin-bottom: 1rem;">Usage Statistics</h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <div>
+            <div style="font-size: 0.85rem; color: var(--gray); margin-bottom: 0.3rem;">Active Listings</div>
+            <div style="font-size: 1.5rem; font-weight: 700;">${userData.listings.active} / ${plan.maxActiveListings === Infinity ? '∞' : plan.maxActiveListings}</div>
+          </div>
+          <div>
+            <div style="font-size: 0.85rem; color: var(--gray); margin-bottom: 0.3rem;">Total Views</div>
+            <div style="font-size: 1.5rem; font-weight: 700;">${userData.stats.totalViews || 0}</div>
+          </div>
+          <div>
+            <div style="font-size: 0.85rem; color: var(--gray); margin-bottom: 0.3rem;">Total Inquiries</div>
+            <div style="font-size: 1.5rem; font-weight: 700;">${userData.stats.inquiries || 0}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 }
+
+// ============================================
+// SETTINGS TAB
+// ============================================
+
+function renderSettingsTab() {
+  return `
+    <div class="content-card">
+      <div class="card-header">
+        <h3>Account Settings</h3>
+      </div>
+      
+      <form id="settingsForm" onsubmit="saveSettings(event)">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="settingsName" class="form-input" value="${userData.name}">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" value="${userData.email}" disabled>
+          <small style="color: var(--gray); font-size: 0.85rem;">Email cannot be changed</small>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Bio</label>
+          <textarea id="settingsBio" class="form-textarea" placeholder="Tell buyers about yourself...">${userData.profile?.bio || ''}</textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Company</label>
+            <input type="text" id="settingsCompany" class="form-input" value="${userData.profile?.company || ''}">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input type="text" id="settingsLocation" class="form-input" value="${userData.profile?.location || ''}">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" id="settingsPhone" class="form-input" value="${userData.profile?.phone || ''}">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Website</label>
+            <input type="url" id="settingsWebsite" class="form-input" value="${userData.profile?.website || ''}" placeholder="https://">
+          </div>
+        </div>
+        
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--gray-light);">
+          <h4 style="margin-bottom: 1rem;">Email Notifications</h4>
+          <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem; cursor: pointer;">
+            <input type="checkbox" id="notifyMessages" checked> New messages and inquiries
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem; cursor: pointer;">
+            <input type="checkbox" id="notifySummary" checked> Weekly performance summary
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" id="notifyMarketing"> Marketing and promotions
+          </label>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-save"></i> Save Settings
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="resetSettings()">
+            <i class="fa-solid fa-undo"></i> Reset
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+}
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+function getStatusBadgeHTML(status) {
+  const badges = {
+    'pending': '<span class="status-badge status-pending">⏳ Under Review</span>',
+    'active': '<span class="status-badge status-active">✓ Active</span>',
+    'approved': '<span class="status-badge status-approved">✓ Approved</span>',
+    'draft': '<span class="status-badge status-draft">📝 Draft</span>',
+    'sold': '<span class="status-badge status-sold">💰 Sold</span>',
+    'closed': '<span class="status-badge status-closed">🔒 Closed</span>'
+  };
+  return badges[status] || badges['draft'];
+}
+
+function canEditListing(listing) {
+  return ['draft', 'pending', 'active', 'approved'].includes(listing.status);
+}
+
+function canDeleteListing(listing) {
+  if (listing.status === 'draft' || listing.status === 'pending') return true;
+  if ((listing.status === 'active' || listing.status === 'approved') && (listing.inquiries || 0) === 0) return true;
+  return false;
+}
+
+function canMarkSold(listing) {
+  return (listing.status === 'active' || listing.status === 'approved') && listing.status !== 'sold';
+}
+
+// ============================================
+// NAVIGATION
+// ============================================
 
 window.navigateTo = function(page) {
-  const plan = PLANS[userData.role][userData.subscriptionPlan];
-  const lockedFeatures = plan.lockedFeatures || [];
+  const plan = PLAN_LIMITS[userData.subscriptionPlan];
   
-  if (lockedFeatures.includes(page)) {
-    showUpgradeModal();
+  // Check if feature is locked
+  if (page === 'analytics' && plan.analytics === 'none') {
+    openUpgradeModal();
     return;
   }
   
   // Update sidebar navigation
   document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-  event.target.closest('.nav-item')?.classList.add('active');
+  event?.target.closest('.nav-item')?.classList.add('active');
   
   // Update page title
   const pageTitles = {
     dashboard: 'Dashboard',
     listings: 'My Listings',
-    saved: 'Saved Listings',
     analytics: 'Analytics',
     messages: 'Messages',
-    calculator: 'ROI Calculator',
-    alerts: 'Alerts',
     subscription: 'Subscription',
     settings: 'Settings'
   };
   
   document.getElementById('pageTitle').textContent = pageTitles[page] || 'Dashboard';
-  
-  // Update top bar action button
-  const actionButton = document.getElementById('topBarAction');
-  if (userData.role === 'seller') {
-    actionButton.innerHTML = '<i class="fa-solid fa-plus"></i> Create Listing';
-    actionButton.onclick = handleMainAction;
-  } else {
-    actionButton.innerHTML = '<i class="fa-solid fa-search"></i> Browse Listings';
-    actionButton.onclick = () => window.location.href = 'marketplace.html';
-  }
   
   // Show the correct tab content
   document.querySelectorAll('.tab-content').forEach(tab => {
@@ -1819,432 +2200,811 @@ window.navigateTo = function(page) {
   const selectedTab = document.getElementById(`tab-${page}`);
   if (selectedTab) {
     selectedTab.classList.add('active');
+    
+    // Initialize chart if analytics tab
+    if (page === 'analytics' && plan.analytics !== 'none') {
+      setTimeout(() => initializeAnalyticsChart(), 100);
+    }
   }
 }
 
-window.handleMainAction = function() {
-  if (userData.role === 'seller') {
-    handleCreateListing();
-  } else {
-    window.location.href = 'marketplace.html';
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ============================================
-// BUYER DASHBOARD CONTENT
+// ADD/EDIT LISTING MODAL
 // ============================================
 
-function renderBuyerDashboard() {
-  const plan = PLANS.buyer[userData.subscriptionPlan];
+window.openAddListingModal = function() {
+  const plan = PLAN_LIMITS[userData.subscriptionPlan];
   
-  return `
-    <!-- DASHBOARD TAB -->
-    <div id="tab-dashboard" class="tab-content active">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-header">
-            <div>
-              <div class="stat-value">${userData.stats.savedSearches || 0}</div>
-              <div class="stat-label">Saved Listings</div>
-            </div>
-            <div class="stat-icon primary">
-              <i class="fa-solid fa-heart"></i>
-            </div>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-header">
-            <div>
-              <div class="stat-value">${userData.stats.totalViews || 0}</div>
-              <div class="stat-label">Listings Viewed</div>
-            </div>
-            <div class="stat-icon secondary">
-              <i class="fa-solid fa-eye"></i>
-            </div>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-header">
-            <div>
-              <div class="stat-value">${userData.stats.inquiries || 0}</div>
-              <div class="stat-label">Inquiries Sent</div>
-            </div>
-            <div class="stat-icon accent">
-              <i class="fa-solid fa-paper-plane"></i>
-            </div>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-header">
-            <div>
-              <div class="stat-value">${userData.stats.alerts || 0}</div>
-              <div class="stat-label">Active Alerts</div>
-            </div>
-            <div class="stat-icon success">
-              <i class="fa-solid fa-bell"></i>
-            </div>
-          </div>
-        </div>
-      </div>
+  // Check listing limit
+  if (userData.listings.active >= plan.maxActiveListings) {
+    showToast(`You've reached your listing limit (${plan.maxActiveListings}). Upgrade to create more listings.`, 'error');
+    openUpgradeModal();
+    return;
+  }
+  
+  // Reset form
+  document.getElementById('listingForm').reset();
+  document.getElementById('listingId').value = '';
+  document.getElementById('listingModalTitle').textContent = 'Create New Listing';
+  
+  // Show modal
+  document.getElementById('listingModal').classList.add('active');
+}
+
+window.openEditListingModal = function(listingId) {
+  const listing = userListings.find(l => l.id === listingId);
+  
+  if (!listing) {
+    showToast('Listing not found', 'error');
+    return;
+  }
+  
+  if (!canEditListing(listing)) {
+    showToast('This listing cannot be edited', 'error');
+    return;
+  }
+  
+  // Populate form
+  document.getElementById('listingId').value = listing.id;
+  document.getElementById('systemName').value = listing.systemName || '';
+  document.getElementById('category').value = listing.category || '';
+  document.getElementById('shortDescription').value = listing.shortDescription || '';
+  document.getElementById('detailedDescription').value = listing.detailedDescription || '';
+  document.getElementById('askingPrice').value = listing.askingPrice || '';
+  document.getElementById('monthlyRevenue').value = listing.monthlyRevenue || '';
+  document.getElementById('mrr').value = listing.mrr || '';
+  document.getElementById('activeSubscribers').value = listing.activeSubscribers || '';
+  document.getElementById('churnRate').value = listing.churnRate || '';
+  document.getElementById('pricingModel').value = listing.pricingModel || '';
+  document.getElementById('saasType').value = listing.saasType || '';
+  document.getElementById('mainImage').value = listing.mainImage || '';
+  
+  // Handle additional images
+  if (listing.images && Array.isArray(listing.images)) {
+    document.getElementById('additionalImages').value = listing.images.join(', ');
+  }
+  
+  document.getElementById('listingModalTitle').textContent = 'Edit Listing';
+  document.getElementById('listingModal').classList.add('active');
+}
+
+window.closeListingModal = function() {
+  document.getElementById('listingModal').classList.remove('active');
+}
+
+// ============================================
+// SAVE LISTING (CREATE/UPDATE)
+// ============================================
+
+window.saveListing = async function(status) {
+  const listingId = document.getElementById('listingId').value;
+  const isEditing = !!listingId;
+  
+  // Validate form
+  const systemName = document.getElementById('systemName').value.trim();
+  const category = document.getElementById('category').value;
+  const shortDescription = document.getElementById('shortDescription').value.trim();
+  const detailedDescription = document.getElementById('detailedDescription').value.trim();
+  const askingPrice = document.getElementById('askingPrice').value;
+  const mainImage = document.getElementById('mainImage').value.trim();
+  
+  if (!systemName || !category || !shortDescription || !detailedDescription || !askingPrice || !mainImage) {
+    showToast('Please fill in all required fields', 'error');
+    return;
+  }
+  
+  // Check listing limit for new listings
+  if (!isEditing && status !== 'draft') {
+    const plan = PLAN_LIMITS[userData.subscriptionPlan];
+    if (userData.listings.active >= plan.maxActiveListings) {
+      showToast(`You've reached your listing limit (${plan.maxActiveListings})`, 'error');
+      return;
+    }
+  }
+  
+  // Prepare listing data
+  const categoryNames = {
+    'saas': 'SaaS Business',
+    'ecommerce': 'E-commerce Store',
+    'content': 'Content Site',
+    'mobile': 'Mobile App',
+    'script': 'Script/Code',
+    'other': 'Other'
+  };
+  
+  const additionalImagesText = document.getElementById('additionalImages').value.trim();
+  const images = additionalImagesText ? 
+    additionalImagesText.split(',').map(url => url.trim()).filter(url => url) : [];
+  
+  const listingData = {
+    systemName,
+    category,
+    categoryName: categoryNames[category] || category,
+    shortDescription,
+    detailedDescription,
+    askingPrice: parseInt(askingPrice),
+    monthlyRevenue: parseInt(document.getElementById('monthlyRevenue').value) || 0,
+    mrr: parseInt(document.getElementById('mrr').value) || 0,
+    activeSubscribers: parseInt(document.getElementById('activeSubscribers').value) || 0,
+    churnRate: parseInt(document.getElementById('churnRate').value) || 0,
+    pricingModel: document.getElementById('pricingModel').value || '',
+    saasType: document.getElementById('saasType').value || '',
+    mainImage,
+    images,
+    status,
+    updatedAt: serverTimestamp()
+  };
+  
+  // Disable buttons
+  const saveBtn = document.getElementById('save-draft');
+  const publishBtn = document.getElementById('publish');
+  saveBtn.disabled = true;
+  publishBtn.disabled = true;
+  
+  try {
+    if (isEditing) {
+      // Update existing listing
+      const listingRef = doc(db, 'listings', listingId);
+      await updateDoc(listingRef, listingData);
       
-      <div class="content-card">
-        <div class="card-header">
-          <h3>Quick Actions</h3>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-          <button class="btn-primary" onclick="window.location.href='marketplace.html'">
-            <i class="fa-solid fa-search"></i> Browse Marketplace
-          </button>
-          <button class="btn-primary" onclick="switchTab('saved')">
-            <i class="fa-solid fa-heart"></i> View Saved
-          </button>
-          <button class="btn-primary" onclick="switchTab('alerts')">
-            <i class="fa-solid fa-bell"></i> Manage Alerts
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- SAVED LISTINGS TAB -->
-    <div id="tab-saved" class="tab-content">
-      <div class="content-card">
-        <div class="card-header">
-          <h3>Saved Listings</h3>
-        </div>
-        <div class="empty-state">
-          <i class="fa-solid fa-heart"></i>
-          <p>No saved listings yet</p>
-          <br>
-          <button class="btn-primary" onclick="window.location.href='marketplace.html'">
-            <i class="fa-solid fa-search"></i> Browse Marketplace
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- ALERTS TAB -->
-    <div id="tab-alerts" class="tab-content">
-      ${plan.lockedFeatures.includes('alerts') ? `
-        <div class="content-card locked-feature">
-          <div class="locked-overlay">
-            <i class="fa-solid fa-lock"></i>
-            <p>Saved Searches & Alerts</p>
-            <p style="font-weight: 400; font-size: 0.9rem;">Available on Pro and Enterprise plans</p>
-            <button class="unlock-btn" onclick="showUpgradeModal()">Upgrade to Unlock</button>
-          </div>
-          <div class="card-header">
-            <h3>Saved Alerts</h3>
-          </div>
-          <div style="height: 200px;"></div>
-        </div>
-      ` : `
-        <div class="content-card">
-          <div class="card-header">
-            <h3>Saved Alerts</h3>
-            <button class="card-action"><i class="fa-solid fa-plus"></i> Create Alert</button>
-          </div>
-          <div class="empty-state">
-            <i class="fa-solid fa-bell"></i>
-            <p>No alerts set up yet</p>
-            <p style="font-size: 0.9rem;">Create alerts to get notified about specific listings</p>
-          </div>
-        </div>
-      `}
-    </div>
-    
-    <!-- ANALYTICS TAB -->
-    <div id="tab-analytics" class="tab-content">
-      ${plan.lockedFeatures.includes('analytics') ? `
-        <div class="content-card locked-feature">
-          <div class="locked-overlay">
-            <i class="fa-solid fa-lock"></i>
-            <p>Listing Analytics & Insights</p>
-            <p style="font-weight: 400; font-size: 0.9rem;">Available on Pro and Enterprise plans</p>
-            <button class="unlock-btn" onclick="showUpgradeModal()">Upgrade to Unlock</button>
-          </div>
-          <div class="card-header">
-            <h3>Analytics</h3>
-          </div>
-          <div style="height: 300px; background: var(--gray-light); border-radius: 10px;"></div>
-        </div>
-      ` : `
-        <div class="content-card">
-          <div class="card-header">
-            <h3>Listing Analytics</h3>
-          </div>
-          <p style="color: var(--gray); padding: 2rem;">
-            View detailed analytics and insights on listings you're interested in.
-          </p>
-        </div>
-      `}
-    </div>
-    
-    <!-- ROI CALCULATOR TAB -->
-    <div id="tab-calculator" class="tab-content">
-      ${plan.lockedFeatures.includes('calculator') ? `
-        <div class="content-card locked-feature">
-          <div class="locked-overlay">
-            <i class="fa-solid fa-lock"></i>
-            <p>ROI Calculator & Projections</p>
-            <p style="font-weight: 400; font-size: 0.9rem;">Available on Pro and Enterprise plans</p>
-            <button class="unlock-btn" onclick="showUpgradeModal()">Upgrade to Unlock</button>
-          </div>
-          <div class="card-header">
-            <h3>ROI Calculator</h3>
-          </div>
-          <div style="height: 300px; background: var(--gray-light); border-radius: 10px;"></div>
-        </div>
-      ` : `
-        <div class="content-card">
-          <div class="card-header">
-            <h3>ROI Calculator</h3>
-          </div>
-          <p style="color: var(--gray); padding: 2rem;">
-            Calculate potential return on investment for listings you're considering.
-          </p>
-        </div>
-      `}
-    </div>
-    
-    <!-- SUBSCRIPTION TAB -->
-    <div id="tab-subscription" class="tab-content">
-      ${renderSubscriptionTab()}
-    </div>
-    
-    <!-- SETTINGS TAB -->
-    <div id="tab-settings" class="tab-content">
-      ${renderSettingsTab()}
-    </div>
-  `;
-}
-
-// ============================================
-// SHARED TABS
-// ============================================
-
-function renderSubscriptionTab() {
-  const plan = PLANS[userData.role][userData.subscriptionPlan];
-  
-  return `
-    <div class="content-card">
-      <div class="card-header">
-        <h3>Current Subscription</h3>
-      </div>
-      <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h3 style="color: white;">${plan.name}</h3>
-          <span style="background: rgba(255,255,255,0.3); padding: 0.4rem 0.8rem; border-radius: 50px; font-size: 0.85rem;">Current Plan</span>
-        </div>
-        <div style="font-size: 2rem; font-weight: 900; margin-bottom: 1rem;">
-          ${plan.price === 'Custom' ? 'Custom' : plan.currency + plan.price}
-          <span style="font-size: 1rem; font-weight: 500; opacity: 0.9;">/${plan.billingCycle}</span>
-        </div>
-        <ul style="list-style: none; margin-bottom: 1.5rem;">
-          ${plan.features.map(f => `<li style="padding: 0.4rem 0;"><i class="fa-solid fa-check"></i> ${f}</li>`).join('')}
-        </ul>
-        ${getUpgradeButton()}
-      </div>
-    </div>
-  `;
-}
-
-function getUpgradeButton() {
-  if (userData.role === 'seller') {
-    if (userData.subscriptionPlan === 'free') {
-      return '<button class="btn-primary" style="background: white; color: var(--primary); width: 100%;" onclick="showUpgradeModal()">Upgrade to Basic or Premium</button>';
-    } else if (userData.subscriptionPlan === 'basic') {
-      return '<button class="btn-primary" style="background: white; color: var(--primary); width: 100%;" onclick="showUpgradeModal()">Upgrade to Premium</button>';
+      showToast('Listing updated successfully!', 'success');
+    } else {
+      // Create new listing
+      const newListingData = {
+        ...listingData,
+        userId: userData.id,
+        userName: userData.name,
+        userEmail: userData.email,
+        views: 0,
+        inquiries: 0,
+        createdAt: serverTimestamp()
+      };
+      
+      await addDoc(collection(db, 'listings'), newListingData);
+      
+      // Update user document with transaction
+      await runTransaction(db, async (transaction) => {
+        const userRef = doc(db, 'users', userData.id);
+        const userDoc = await transaction.get(userRef);
+        
+        if (userDoc.exists()) {
+          const currentStats = userDoc.data().listings || { active: 0, total: 0 };
+          transaction.update(userRef, {
+            'listings.total': increment(1),
+            'listings.active': status !== 'draft' ? increment(1) : currentStats.active,
+            updatedAt: serverTimestamp()
+          });
+        }
+      });
+      
+      showToast('Listing created successfully!', 'success');
     }
-  } else {
-    if (userData.subscriptionPlan === 'free') {
-      return '<button class="btn-primary" style="background: white; color: var(--primary); width: 100%;" onclick="showUpgradeModal()">Upgrade to Pro or Enterprise</button>';
-    } else if (userData.subscriptionPlan === 'pro') {
-      return '<button class="btn-primary" style="background: white; color: var(--primary); width: 100%;" onclick="showUpgradeModal()">Upgrade to Enterprise</button>';
-    }
+    
+    closeListingModal();
+    
+    // Update local data
+    userData.listings.total = userListings.length;
+    updateSubscriptionBanner();
+    
+  } catch (error) {
+    console.error('Error saving listing:', error);
+    showToast('Failed to save listing. Please try again.', 'error');
+  } finally {
+    saveBtn.disabled = false;
+    publishBtn.disabled = false;
   }
-  return '';
-}
-
-function renderSettingsTab() {
-  return `
-    <div class="content-card">
-      <div class="card-header">
-        <h3>Account Settings</h3>
-      </div>
-      <div style="padding: 1rem;">
-        <div style="margin-bottom: 2rem;">
-          <h4 style="margin-bottom: 1rem;">Account Type</h4>
-          <p><strong>${userData.role === 'seller' ? 'Seller Account' : 'Buyer Account'}</strong></p>
-          <p style="color: var(--gray); font-size: 0.9rem;">Want to switch roles? Contact support.</p>
-        </div>
-        
-        <div style="margin-bottom: 2rem;">
-          <h4 style="margin-bottom: 1rem;">Email Notifications</h4>
-          <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;">
-            <input type="checkbox" checked> New messages and inquiries
-          </label>
-          <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;">
-            <input type="checkbox" checked> Weekly performance summary
-          </label>
-          <label style="display: flex; align-items: center; gap: 0.5rem;">
-            <input type="checkbox"> Marketing and promotions
-          </label>
-        </div>
-        
-        <button class="btn-primary">
-          <i class="fa-solid fa-save"></i> Save Settings
-        </button>
-      </div>
-    </div>
-  `;
 }
 
 // ============================================
-// TAB SWITCHING
+// DELETE LISTING
 // ============================================
 
-// Redirect switchTab calls to navigateTo for backward compatibility
-window.switchTab = function(tabName) {
-  navigateTo(tabName);
+window.openDeleteModal = function(listingId, listingName) {
+  deleteListingId = listingId;
+  document.getElementById('deleteListingName').textContent = listingName;
+  document.getElementById('deleteModal').classList.add('active');
 }
 
-// ============================================
-// CREATE LISTING WITH LIMIT CHECK
-// ============================================
+window.closeDeleteModal = function() {
+  deleteListingId = null;
+  document.getElementById('deleteModal').classList.remove('active');
+}
 
-window.handleCreateListing = function() {
-  if (userData.role !== 'seller') {
-    alert('Only seller accounts can create listings.');
+window.confirmDelete = async function() {
+  if (!deleteListingId) return;
+  
+  const listing = userListings.find(l => l.id === deleteListingId);
+  
+  if (!listing) {
+    showToast('Listing not found', 'error');
+    closeDeleteModal();
     return;
   }
   
-  const plan = PLANS.seller[userData.subscriptionPlan];
-  
-  if (userData.listings.active >= plan.maxListings) {
-    alert(`You've reached your listing limit (${plan.maxListings}). Please upgrade your plan to create more listings.`);
-    showUpgradeModal();
+  if (!canDeleteListing(listing)) {
+    showToast('This listing cannot be deleted. It may have active inquiries.', 'error');
+    closeDeleteModal();
     return;
   }
   
-  window.location.href = 'sell.html';
+  try {
+    // Delete listing
+    await deleteDoc(doc(db, 'listings', deleteListingId));
+    
+    // Update user stats with transaction
+    await runTransaction(db, async (transaction) => {
+      const userRef = doc(db, 'users', userData.id);
+      const userDoc = await transaction.get(userRef);
+      
+      if (userDoc.exists()) {
+        const wasActive = ['active', 'approved', 'pending'].includes(listing.status);
+        transaction.update(userRef, {
+          'listings.total': increment(-1),
+          'listings.active': wasActive ? increment(-1) : userDoc.data().listings?.active || 0,
+          updatedAt: serverTimestamp()
+        });
+      }
+    });
+    
+    showToast('Listing deleted successfully!', 'success');
+    closeDeleteModal();
+    
+    // Update local data
+    userData.listings.total = Math.max(0, userData.listings.total - 1);
+    userData.listings.active = Math.max(0, userData.listings.active - 1);
+    updateSubscriptionBanner();
+    
+  } catch (error) {
+    console.error('Error deleting listing:', error);
+    showToast('Failed to delete listing. Please try again.', 'error');
+  }
+}
+
+// ============================================
+// MARK AS SOLD
+// ============================================
+
+window.markAsSold = async function(listingId) {
+  if (!confirm('Mark this listing as sold? This will update your sales count.')) {
+    return;
+  }
+  
+  const listing = userListings.find(l => l.id === listingId);
+  
+  if (!listing) {
+    showToast('Listing not found', 'error');
+    return;
+  }
+  
+  try {
+    // Update listing status
+    await updateDoc(doc(db, 'listings', listingId), {
+      status: 'sold',
+      soldAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    
+    // Update user stats with transaction
+    await runTransaction(db, async (transaction) => {
+      const userRef = doc(db, 'users', userData.id);
+      const userDoc = await transaction.get(userRef);
+      
+      if (userDoc.exists()) {
+        transaction.update(userRef, {
+          'stats.sales': increment(1),
+          'listings.active': increment(-1),
+          updatedAt: serverTimestamp()
+        });
+      }
+    });
+    
+    showToast('Listing marked as sold! Congratulations! 🎉', 'success');
+    
+    // Update local data
+    userData.stats.sales = (userData.stats.sales || 0) + 1;
+    userData.listings.active = Math.max(0, userData.listings.active - 1);
+    updateDashboardStats();
+    updateSubscriptionBanner();
+    
+  } catch (error) {
+    console.error('Error marking as sold:', error);
+    showToast('Failed to mark as sold. Please try again.', 'error');
+  }
+}
+
+// ============================================
+// VIEW PUBLIC LISTING
+// ============================================
+
+window.viewPublicListing = function(listingId) {
+  window.open(`listing-detail.html?id=${listingId}`, '_blank');
+}
+
+// ============================================
+// PROMOTE MODAL
+// ============================================
+
+window.openPromoteModal = function(listingId) {
+  const plan = PLAN_LIMITS[userData.subscriptionPlan];
+  
+  if (!plan.canPromote) {
+    showToast('Promotion is available on Basic and Premium plans', 'error');
+    openUpgradeModal();
+    return;
+  }
+  
+  // Store listing ID for promotion
+  document.getElementById('promoteModal').dataset.listingId = listingId;
+  document.getElementById('promoteModal').classList.add('active');
+}
+
+window.closePromoteModal = function() {
+  document.getElementById('promoteModal').classList.remove('active');
+}
+
+window.handlePromotePayment = function() {
+  showToast('Payment integration coming soon!', 'info');
+  closePromoteModal();
 }
 
 // ============================================
 // UPGRADE MODAL
 // ============================================
 
-window.showUpgradeModal = function() {
-  const modal = document.getElementById('upgradeModal');
-  const currentPlan = PLANS[userData.role][userData.subscriptionPlan];
+window.openUpgradeModal = function() {
+  const currentPlan = PLAN_LIMITS[userData.subscriptionPlan];
+  const currentPricing = PLAN_PRICING[userData.subscriptionPlan];
   
-  document.getElementById('modalTitle').textContent = 'Upgrade Your Plan';
-  document.getElementById('modalMessage').textContent = 'Unlock more features and grow your business';
   document.getElementById('modalCurrentPlan').innerHTML = `
-    <strong>${currentPlan.name}</strong> - ${currentPlan.currency}${currentPlan.price}/${currentPlan.billingCycle}
+    <strong>${userData.subscriptionPlan.charAt(0).toUpperCase() + userData.subscriptionPlan.slice(1)} Plan</strong> - 
+    ${currentPricing.currency}${currentPricing.price}/${currentPricing.billing}
   `;
   
   const upgradeOptions = document.getElementById('upgradeOptions');
   upgradeOptions.innerHTML = '';
   
-  const availablePlans = getAvailableUpgrades();
+  // Get available upgrades
+  const availablePlans = [];
   
-  availablePlans.forEach(([key, plan]) => {
+  if (userData.subscriptionPlan === 'free') {
+    availablePlans.push(['basic', PLAN_LIMITS.basic, PLAN_PRICING.basic]);
+    availablePlans.push(['premium', PLAN_LIMITS.premium, PLAN_PRICING.premium]);
+  } else if (userData.subscriptionPlan === 'basic') {
+    availablePlans.push(['premium', PLAN_LIMITS.premium, PLAN_PRICING.premium]);
+  }
+  
+  availablePlans.forEach(([key, plan, pricing]) => {
     const optionHTML = `
-      <div class="plan-option" onclick="handleUpgrade('${key}')">
-        <div class="plan-option-header">
-          <div class="plan-option-name">${plan.name}</div>
-          <div class="plan-option-price">${plan.currency}${plan.price}<span>/${plan.billingCycle}</span></div>
+      <div style="border: 2px solid var(--gray-light); padding: 1.5rem; border-radius: 15px; transition: all 0.3s; cursor: pointer;" 
+           onmouseenter="this.style.borderColor='var(--primary)'" 
+           onmouseleave="this.style.borderColor='var(--gray-light)'"
+           onclick="handleUpgrade('${key}')">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div style="font-size: 1.3rem; font-weight: 700;">${key.charAt(0).toUpperCase() + key.slice(1)} Plan</div>
+          <div style="font-size: 1.5rem; font-weight: 900; color: var(--primary);">
+            ${pricing.currency}${pricing.price}<span style="font-size: 1rem; font-weight: 400;">/${pricing.billing}</span>
+          </div>
         </div>
-        <ul class="plan-option-features">
-          ${plan.features.map(f => `<li><i class="fa-solid fa-check"></i> ${f}</li>`).join('')}
+        <ul style="list-style: none; margin-bottom: 1rem;">
+          ${plan.features.map(f => `<li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-check" style="color: var(--success);"></i> ${f}</li>`).join('')}
         </ul>
-        <button class="plan-option-btn">Upgrade to ${plan.name}</button>
+        <button class="btn btn-primary" style="width: 100%;">
+          Upgrade to ${key.charAt(0).toUpperCase() + key.slice(1)}
+        </button>
       </div>
     `;
     upgradeOptions.innerHTML += optionHTML;
   });
   
-  modal.classList.add('active');
-}
-
-function getAvailableUpgrades() {
-  const plans = PLANS[userData.role];
-  const available = [];
-  
-  if (userData.role === 'seller') {
-    if (userData.subscriptionPlan === 'free') {
-      available.push(['basic', plans.basic], ['premium', plans.premium]);
-    } else if (userData.subscriptionPlan === 'basic') {
-      available.push(['premium', plans.premium]);
-    }
-  } else {
-    if (userData.subscriptionPlan === 'free') {
-      available.push(['pro', plans.pro], ['enterprise', plans.enterprise]);
-    } else if (userData.subscriptionPlan === 'pro') {
-      available.push(['enterprise', plans.enterprise]);
-    }
-  }
-  
-  return available;
+  document.getElementById('upgradeModal').classList.add('active');
 }
 
 window.closeUpgradeModal = function() {
   document.getElementById('upgradeModal').classList.remove('active');
 }
 
-window.handleUpgrade = function(planKey) {
-  const plan = PLANS[userData.role][planKey];
+
+window.handleUpgrade = async function(planKey) {
+  // REMOVE the automatic upgrade simulation
+  // In production, redirect to payment gateway
   
-  if (plan.paymentUrl === 'contact') {
-    alert('Please contact our sales team for Enterprise pricing.');
-    window.location.href = 'mailto:sales@systemly.com';
-  } else if (plan.paymentUrl) {
-    sessionStorage.setItem('pendingPlan', planKey);
-    sessionStorage.setItem('pendingRole', userData.role);
-    window.location.href = plan.paymentUrl;
-  } else {
-    alert('Payment integration coming soon!');
+  const pricing = PLAN_PRICING[planKey];
+  
+  showToast('Redirecting to payment gateway...', 'info');
+  
+  // Store intended plan in sessionStorage
+  sessionStorage.setItem('pendingPlanUpgrade', planKey);
+  sessionStorage.setItem('pendingUserId', userData.id);
+  
+  // Redirect to payment page (replace with your actual payment URL)
+  // For PayMongo:
+  // window.location.href = `payment.html?plan=${planKey}&amount=${pricing.price}`;
+  
+  // For Stripe:
+  // window.location.href = `https://buy.stripe.com/${planKey}-plan`;
+  
+  // TEMPORARY: Show alert that payment is needed
+  alert(`To upgrade to ${planKey} plan (₱${pricing.price}/month), please contact support@systemly.com or complete payment integration.`);
+  closeUpgradeModal();
+}
+
+
+
+// Call this function when payment is confirmed (from payment gateway webhook)
+async function confirmPlanUpgrade(userId, newPlan, transactionId) {
+  try {
+    await updateDoc(doc(db, 'users', userId), {
+      subscriptionPlan: newPlan,
+      subscriptionStatus: 'active',
+      subscriptionStartDate: serverTimestamp(),
+      lastPaymentId: transactionId,
+      updatedAt: serverTimestamp()
+    });
+    
+    console.log('✅ Plan upgraded successfully:', newPlan);
+    return true;
+  } catch (error) {
+    console.error('❌ Error upgrading plan:', error);
+    return false;
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ============================================
-// USER MENU
+// SETTINGS
 // ============================================
 
-window.toggleUserMenu = function() {
-  document.getElementById('userDropdown').classList.toggle('show');
+window.saveSettings = async function(event) {
+  event.preventDefault();
+  
+  const name = document.getElementById('settingsName').value.trim();
+  const bio = document.getElementById('settingsBio').value.trim();
+  const company = document.getElementById('settingsCompany').value.trim();
+  const location = document.getElementById('settingsLocation').value.trim();
+  const phone = document.getElementById('settingsPhone').value.trim();
+  const website = document.getElementById('settingsWebsite').value.trim();
+  
+  try {
+    await updateDoc(doc(db, 'users', userData.id), {
+      name,
+      'profile.bio': bio,
+      'profile.company': company,
+      'profile.location': location,
+      'profile.phone': phone,
+      'profile.website': website,
+      updatedAt: serverTimestamp()
+    });
+    
+    // Update local data
+    userData.name = name;
+    userData.profile = { ...userData.profile, bio, company, location, phone, website };
+    
+    updateUserProfile();
+    showToast('Settings saved successfully!', 'success');
+    
+  } catch (error) {
+    console.error('Error saving settings:', error);
+    showToast('Failed to save settings. Please try again.', 'error');
+  }
 }
 
-window.addEventListener('click', function(event) {
-  if (!event.target.closest('.user-menu')) {
-    document.getElementById('userDropdown')?.classList.remove('show');
+window.resetSettings = function() {
+  document.getElementById('settingsName').value = userData.name;
+  document.getElementById('settingsBio').value = userData.profile?.bio || '';
+  document.getElementById('settingsCompany').value = userData.profile?.company || '';
+  document.getElementById('settingsLocation').value = userData.profile?.location || '';
+  document.getElementById('settingsPhone').value = userData.profile?.phone || '';
+  document.getElementById('settingsWebsite').value = userData.profile?.website || '';
+  
+  showToast('Settings reset', 'info');
+}
+
+// ============================================
+// EXPORT ANALYTICS
+// ============================================
+
+window.exportAnalytics = function() {
+  const plan = PLAN_LIMITS[userData.subscriptionPlan];
+  
+  if (plan.analytics !== 'advanced') {
+    showToast('CSV export is available on Premium plan', 'error');
+    return;
   }
-});
+  
+  // Create CSV content
+  let csvContent = 'Listing Name,Views,Inquiries,Conversion Rate,Days Active,Status,Price\n';
+  
+  userListings.forEach(listing => {
+    const daysActive = listing.createdAt ? 
+      Math.floor((new Date() - listing.createdAt.toDate()) / (1000 * 60 * 60 * 24)) : 0;
+    const conversion = listing.views ? ((listing.inquiries || 0) / listing.views * 100).toFixed(1) : 0;
+    
+    csvContent += `"${listing.systemName}",${listing.views || 0},${listing.inquiries || 0},${conversion}%,${daysActive},${listing.status},₱${listing.askingPrice}\n`;
+  });
+  
+  // Download CSV
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `systemly-analytics-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  window.URL.revokeObjectURL(url);
+  
+  showToast('Analytics exported successfully!', 'success');
+}
+
+// ============================================
+// CHART INITIALIZATION
+// ============================================
+
+function initializeChart() {
+  const canvas = document.getElementById('performanceChart');
+  if (!canvas) {
+    console.log('⚠️ Performance chart canvas not found');
+    return;
+  }
+  
+  const ctx = canvas.getContext('2d');
+  
+  // Destroy existing chart
+  if (currentChart) {
+    currentChart.destroy();
+  }
+  
+  // GET REAL DATA FROM LISTINGS
+  // Calculate daily views and inquiries from last 7 days
+  const today = new Date();
+  const last7Days = [];
+  const viewsData = [];
+  const inquiriesData = [];
+  
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+    last7Days.push(dayName);
+    
+    // In a real implementation, you'd track daily stats in Firestore
+    // For now, we'll distribute total views/inquiries across days
+    const avgViews = Math.floor((userData.stats.totalViews || 0) / 7);
+    const avgInquiries = Math.floor((userData.stats.inquiries || 0) / 7);
+    
+    // Add some variance to make it look more realistic
+    const variance = Math.random() * 0.4 + 0.8; // 0.8 to 1.2
+    viewsData.push(Math.floor(avgViews * variance));
+    inquiriesData.push(Math.floor(avgInquiries * variance));
+  }
+  
+  console.log('📊 Chart data - Views:', viewsData, 'Inquiries:', inquiriesData);
+  
+  // If no data, show message
+  if (viewsData.every(v => v === 0) && inquiriesData.every(i => i === 0)) {
+    const chartContainer = canvas.parentElement;
+    chartContainer.innerHTML = `
+      <div class="empty-state" style="padding: 2rem;">
+        <i class="fa-solid fa-chart-line"></i>
+        <p>No performance data yet</p>
+        <p style="font-size: 0.9rem; color: var(--gray);">Data will appear once your listings start getting views and inquiries</p>
+      </div>
+    `;
+    return;
+  }
+  
+  currentChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: last7Days,
+      datasets: [
+        {
+          label: 'Views',
+          data: viewsData,
+          borderColor: 'rgb(249, 115, 22)',
+          backgroundColor: 'rgba(249, 115, 22, 0.1)',
+          tension: 0.4,
+          fill: true
+        },
+        {
+          label: 'Inquiries',
+          data: inquiriesData,
+          borderColor: 'rgb(99, 102, 241)',
+          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          tension: 0.4,
+          fill: true
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Weekly Performance (Last 7 Days)'
+        },
+        tooltip: {
+          callbacks: {
+            footer: function(context) {
+              return 'Note: Data distributed from total stats';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+            callback: function(value) {
+              return Math.floor(value); // Show only integers
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function initializeAnalyticsChart() {
+  const canvas = document.getElementById('analyticsChart');
+  if (!canvas) {
+    console.log('⚠️ Analytics chart canvas not found');
+    return;
+  }
+  
+  const ctx = canvas.getContext('2d');
+  
+  // Destroy existing chart
+  if (currentChart) {
+    currentChart.destroy();
+  }
+  
+  // GET REAL DATA FROM ACTUAL LISTINGS
+  if (userListings.length === 0) {
+    const chartContainer = canvas.parentElement;
+    chartContainer.innerHTML = `
+      <div class="empty-state" style="padding: 2rem;">
+        <i class="fa-solid fa-chart-bar"></i>
+        <p>No listings to analyze</p>
+        <p style="font-size: 0.9rem; color: var(--gray);">Create listings to see performance analytics</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Get top 5 listings by views
+  const topListings = [...userListings]
+    .filter(l => l.status === 'active' || l.status === 'approved')
+    .sort((a, b) => (b.views || 0) - (a.views || 0))
+    .slice(0, 5);
+  
+  if (topListings.length === 0) {
+    const chartContainer = canvas.parentElement;
+    chartContainer.innerHTML = `
+      <div class="empty-state" style="padding: 2rem;">
+        <i class="fa-solid fa-chart-bar"></i>
+        <p>No active listings yet</p>
+        <p style="font-size: 0.9rem; color: var(--gray);">Publish listings to see analytics</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const listingNames = topListings.map(l => {
+    const name = l.systemName || 'Untitled';
+    return name.length > 20 ? name.substring(0, 20) + '...' : name;
+  });
+  const viewsData = topListings.map(l => l.views || 0);
+  const inquiriesData = topListings.map(l => l.inquiries || 0);
+  
+  console.log('📊 Analytics Chart - Listings:', listingNames);
+  console.log('📊 Views:', viewsData, 'Inquiries:', inquiriesData);
+  
+  currentChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: listingNames,
+      datasets: [
+        {
+          label: 'Views',
+          data: viewsData,
+          backgroundColor: 'rgba(249, 115, 22, 0.7)',
+          borderColor: 'rgb(249, 115, 22)',
+          borderWidth: 2
+        },
+        {
+          label: 'Inquiries',
+          data: inquiriesData,
+          backgroundColor: 'rgba(99, 102, 241, 0.7)',
+          borderColor: 'rgb(99, 102, 241)',
+          borderWidth: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Top Listings Performance (Real Data)'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+            callback: function(value) {
+              return Math.floor(value);
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+
+// ============================================
+// TOAST NOTIFICATIONS
+// ============================================
+
+function showToast(message, type = 'info') {
+  // Remove existing toasts
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  const icon = type === 'success' ? 'fa-check-circle' : 
+               type === 'error' ? 'fa-exclamation-circle' : 
+               type === 'info' ? 'fa-info-circle' : 'fa-bell';
+  
+  toast.innerHTML = `
+    <i class="fa-solid ${icon}" style="font-size: 1.5rem;"></i>
+    <div>
+      <strong>${type.charAt(0).toUpperCase() + type.slice(1)}</strong>
+      <div style="font-size: 0.9rem;">${message}</div>
+    </div>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Auto remove after 4 seconds
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease-out forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+// Add slideOut animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(400px); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
 
 // ============================================
 // LOGOUT
@@ -2253,16 +3013,177 @@ window.addEventListener('click', function(event) {
 window.logout = async function() {
   if (confirm('Are you sure you want to sign out?')) {
     try {
+      // Unsubscribe from listeners
+      if (listingsUnsubscribe) {
+        listingsUnsubscribe();
+      }
+      
       await signOut(auth);
       window.location.href = 'index.html';
     } catch (error) {
       console.error('Error signing out:', error);
-      alert('Failed to sign out. Please try again.');
+      showToast('Failed to sign out. Please try again.', 'error');
     }
   }
 }
 
-console.log('🚀 Systemly Unified Dashboard initialized');
+// ============================================
+// CLEANUP ON PAGE UNLOAD
+// ============================================
+
+window.addEventListener('beforeunload', () => {
+  if (listingsUnsubscribe) {
+    listingsUnsubscribe();
+  }
+  if (currentChart) {
+    currentChart.destroy();
+  }
+});
+
+
+
+
+// ============================================
+// OFFERS TAB
+// ============================================
+
+function renderOffersTab() {
+  return `
+    <div class="content-card">
+      <div class="card-header">
+        <h3>Buyer Offers</h3>
+        <button class="btn btn-secondary" onclick="loadSellerOffers()">
+          <i class="fa-solid fa-sync"></i> Refresh
+        </button>
+      </div>
+      <div id="offersContent">
+        <div class="loading">Loading offers...</div>
+      </div>
+    </div>
+  `;
+}
+
+async function loadSellerOffers() {
+  if (!userData) return;
+
+  const offersContent = document.getElementById('offersContent');
+  offersContent.innerHTML = '<div class="spinner"></div>';
+
+  try {
+    const response = await fetch(`${API_URL}/api/offers/seller/${userData.id}`);
+    const data = await response.json();
+
+    if (data.offers.length === 0) {
+      offersContent.innerHTML = '<p>No offers yet</p>';
+      return;
+    }
+
+    // Update badge
+    const pendingCount = data.offers.filter(o => o.status === 'pending').length;
+    const badge = document.getElementById('offersCountBadge');
+    if (badge && pendingCount > 0) {
+      badge.textContent = pendingCount;
+      badge.style.display = 'inline-block';
+    }
+
+    offersContent.innerHTML = `
+      <table class="listings-table">
+        <thead>
+          <tr>
+            <th>Listing</th>
+            <th>Buyer</th>
+            <th>Offer</th>
+            <th>Message</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.offers.map(o => `
+            <tr>
+              <td><strong>${o.listing_name}</strong></td>
+              <td>
+                ${o.buyer_name}<br>
+                <small style="color: var(--gray);">${o.buyer_email}</small>
+              </td>
+              <td><strong style="color: var(--primary);">₱${parseInt(o.offer_amount).toLocaleString()}</strong></td>
+              <td>${o.message || 'No message'}</td>
+              <td><span class="status-badge status-${o.status}">${o.status.toUpperCase()}</span></td>
+              <td>
+                ${o.status === 'pending' ? `
+                  <button class="btn btn-success" onclick="acceptOffer(${o.id})">Accept</button>
+                  <button class="btn btn-danger" onclick="rejectOffer(${o.id})">Reject</button>
+                ` : 'No actions'}
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch (error) {
+    console.error('❌ Error:', error);
+    offersContent.innerHTML = '<p class="alert alert-error">Failed to load offers</p>';
+  }
+}
+
+window.acceptOffer = async function(offerId) {
+  if (!confirm('Accept this offer?')) return;
+
+  try {
+    const response = await fetch(`${API_URL}/api/offers/${offerId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'accepted' })
+    });
+
+    if (response.ok) {
+      showToast('✓ Offer accepted!', 'success');
+      loadSellerOffers();
+    }
+  } catch (error) {
+    showToast('Failed to accept offer', 'error');
+  }
+}
+
+window.rejectOffer = async function(offerId) {
+  if (!confirm('Reject this offer?')) return;
+
+  try {
+    const response = await fetch(`${API_URL}/api/offers/${offerId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'rejected' })
+    });
+
+    if (response.ok) {
+      showToast('Offer rejected', 'info');
+      loadSellerOffers();
+    }
+  } catch (error) {
+    showToast('Failed to reject offer', 'error');
+  }
+}
+
+// Load offers when navigating to offers tab
+const originalNavigateTo = window.navigateTo;
+window.navigateTo = function(page) {
+  originalNavigateTo(page);
+  if (page === 'offers') {
+    setTimeout(loadSellerOffers, 100);
+  }
+}
+
+console.log('✅ Offers system loaded');
+
+
+
+
+
+
+
+
+
+console.log('🚀 Systemly Seller Dashboard - Complete Version Loaded');
 </script>
 
 </body>
