@@ -817,8 +817,7 @@
     messagingSenderId: "32599486733",
     appId: "1:32599486733:web:16d34643c8f920a6fd8044"
   };
-
-  const API_URL = 'https://systemly.onrender.com'; 
+ 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
@@ -1530,53 +1529,47 @@ window.closeMakeOfferModal = function() {
   document.getElementById('makeOfferModal').classList.remove('active');
 }
 
-window.submitOffer = async function(event) {
+// ============================================
+// SEND MESSAGE TO FIREBASE
+// ============================================
+
+window.sendMessage = async function(event) {
   event.preventDefault();
 
   const submitBtn = event.target.querySelector('button[type="submit"]');
   submitBtn.disabled = true;
-  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
 
   try {
-    const offerData = {
-      listingId: document.getElementById('offerListingId').value,
-      listingName: document.getElementById('offerListingName').textContent,
-      sellerId: document.getElementById('offerSellerId').value,
-      sellerEmail: document.getElementById('offerSellerEmail').value,
+    const messageData = {
+      listingId: document.getElementById('messageListingId').value,
+      listingName: document.getElementById('messageListingName').textContent,
+      sellerId: document.getElementById('messageSellerId').value,
+      sellerEmail: document.getElementById('messageSellerEmail').value,
       buyerId: userData.id,
       buyerEmail: userData.email,
       buyerName: userData.name,
-      offerAmount: parseFloat(document.getElementById('offerAmount').value),
-      message: document.getElementById('offerMessage').value || '',
-      status: 'pending',
-      createdAt: new Date().toISOString()
+      subject: document.getElementById('messageSubject').value,
+      message: document.getElementById('messageText').value,
+      isRead: false,
+      createdAt: serverTimestamp()
     };
 
-    console.log('📤 Sending offer data:', offerData);
+    console.log('📤 Sending message to Firebase:', messageData);
 
-    const response = await fetch(`${API_URL}/api/offers`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(offerData)
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      showToast('✓ Offer submitted successfully!', 'success');
-      closeMakeOfferModal();
-    } else {
-      throw new Error(data.error || 'Failed to submit offer');
-    }
+    await addDoc(collection(db, 'messages'), messageData);
+    
+    showToast('✓ Message sent successfully!', 'success');
+    closeMessageSellerModal();
+    
   } catch (error) {
     console.error('❌ Error:', error);
-    showToast('Failed to submit offer', 'error');
+    showToast('Failed to send message: ' + error.message, 'error');
   } finally {
     submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Offer';
+    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
   }
 }
-
 // ============================================
 // MESSAGE FUNCTIONS
 // ============================================
