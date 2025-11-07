@@ -1221,7 +1221,7 @@ import {
   runTransaction,
   increment,
   serverTimestamp,
-  onSnapshot,
+  onSnapshot,      // ✅ Verify this is present
   Timestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
@@ -3237,6 +3237,7 @@ let messagesUnsubscribe = null;
 
 window.loadSellerMessages = async function() {
     console.log('📥 Setting up messages realtime listener for seller:', userData.id);
+    console.log('🔍 userData:', userData); // ✅ ADD THIS LINE
     
     const messagesContent = document.getElementById('messagesContent');
     if (!messagesContent) {
