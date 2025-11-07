@@ -1674,6 +1674,8 @@ if (buyNowBtn) {
   });
 }
 
+console.log('✅ Offers & Messages system initialized');
+
 console.log('🔍 Checking authentication status...');
 getCurrentUser().then(() => {
   console.log('👤 Current User:', currentUser ? currentUser.email : 'Not logged in');
@@ -1683,3 +1685,4 @@ getCurrentUser().then(() => {
   </script>
 </body>
 </html>
+
