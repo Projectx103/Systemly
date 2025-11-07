@@ -3163,24 +3163,6 @@ function renderMessagesTableHTML(messages) {
     `;
 }
 
-// Messages Tab Content Renderer (ADD THIS)
-function renderMessagesTab() {
-    return `
-        <div id="tab-messages" class="tab-content">
-            <div class="content-card">
-                <div class="card-header">
-                    <h3>Buyer Messages</h3>
-                    <button class="btn btn-secondary" onclick="loadSellerMessages()">
-                        <i class="fa-solid fa-sync"></i> Refresh
-                    </button>
-                </div>
-                <div id="messagesContent">
-                    <div class="loading">Loading messages...</div>
-                </div>
-            </div>
-        </div>
-    `;
-}
 
 // Messages Data Loader (ADD THIS)
 window.loadSellerMessages = async function() {
