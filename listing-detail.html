@@ -793,10 +793,8 @@
 
 
 
-
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
   getFirestore, 
   doc, 
   getDoc, 
@@ -807,29 +805,22 @@
   limit, 
   getDocs, 
   increment,
-  addDoc,           // ✅ ADD if missing
-  serverTimestamp   // ✅ ADD if missing
+  addDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyD3PQ5oWrzAXOHnb7wrmpRhL9DWIB7w9rE",
-    authDomain: "systemly-db.firebaseapp.com",
-    projectId: "systemly-db",
-    storageBucket: "systemly-db.firebasestorage.app",
-    messagingSenderId: "32599486733",
-    appId: "1:32599486733:web:16d34643c8f920a6fd8044"
-  };
- 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-
-/// ============================================
-// Get Current User
-// ============================================
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyD3PQ5oWrzAXOHnb7wrmpRhL9DWIB7w9rE",
+  authDomain: "systemly-db.firebaseapp.com",
+  projectId: "systemly-db",
+  storageBucket: "systemly-db.firebasestorage.app",
+  messagingSenderId: "32599486733",
+  appId: "1:32599486733:web:16d34643c8f920a6fd8044"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 const auth = getAuth(app);
 let currentUser = null;
 let userData = null;
@@ -1533,46 +1524,60 @@ window.closeMakeOfferModal = function() {
 }
 
 // ============================================
-// SEND MESSAGE TO FIREBASE
+// SUBMIT OFFER TO FIREBASE
 // ============================================
 
-window.sendMessage = async function(event) {
-  event.preventDefault();
+window.submitOffer = async function(event) {
+  event.preventDefault(); // Prevent page reload
 
   const submitBtn = event.target.querySelector('button[type="submit"]');
   submitBtn.disabled = true;
-  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
 
   try {
-    const messageData = {
-      listingId: document.getElementById('messageListingId').value,
-      listingName: document.getElementById('messageListingName').textContent,
-      sellerId: document.getElementById('messageSellerId').value,
-      sellerEmail: document.getElementById('messageSellerEmail').value,
+    if (!currentUser || !userData) {
+      throw new Error('You must be logged in to make an offer');
+    }
+
+    if (userData.role !== 'buyer') {
+      throw new Error('Only buyers can make offers');
+    }
+
+    const offerData = {
+      listingId: document.getElementById('offerListingId').value,
+      listingName: document.getElementById('offerListingName').textContent,
+      sellerId: document.getElementById('offerSellerId').value,
+      sellerEmail: document.getElementById('offerSellerEmail').value,
       buyerId: userData.id,
       buyerEmail: userData.email,
       buyerName: userData.name,
-      subject: document.getElementById('messageSubject').value,
-      message: document.getElementById('messageText').value,
-      isRead: false,
+      offerAmount: parseFloat(document.getElementById('offerAmount').value),
+      message: document.getElementById('offerMessage').value || '',
+      status: 'pending',
       createdAt: serverTimestamp()
     };
 
-    console.log('📤 Sending message to Firebase:', messageData);
+    console.log('📤 Submitting offer to Firebase:', offerData);
 
-    await addDoc(collection(db, 'messages'), messageData);
+    const docRef = await addDoc(collection(db, 'offers'), offerData);
     
-    showToast('✓ Message sent successfully!', 'success');
-    closeMessageSellerModal();
+    console.log('✅ Offer created with ID:', docRef.id);
+
+    showToast('✓ Offer submitted successfully!', 'success');
+    closeMakeOfferModal();
+    
+    // Reset form
+    document.getElementById('offerForm').reset();
     
   } catch (error) {
-    console.error('❌ Error:', error);
-    showToast('Failed to send message: ' + error.message, 'error');
+    console.error('❌ Error submitting offer:', error);
+    showToast('Failed to submit offer: ' + error.message, 'error');
   } finally {
     submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
+    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Offer';
   }
 }
+
 // ============================================
 // MESSAGE FUNCTIONS
 // ============================================
@@ -1627,9 +1632,6 @@ window.sendMessage = async function(event) {
     };
 
     console.log('📤 Sending message to Firebase:', messageData);
-
-    // ✅ ADD: Import reference
-    const { addDoc, collection, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
 
     const docRef = await addDoc(collection(db, 'messages'), messageData);
     
