@@ -3163,7 +3163,23 @@ function renderMessagesTableHTML(messages) {
         const readStatus = message.isRead ? 'Read' : 'New';
         const readStatusClass = message.isRead ? 'status-draft' : 'status-pending';
         
-        const messageDate = message.createdAt ? new Date(message.createdAt).toLocaleDateString() : 'N/A';
+        // FIX: Handle different date formats from backend
+        let messageDate = 'N/A';
+        try {
+            if (message.createdAt) {
+                if (typeof message.createdAt === 'object' && message.createdAt.seconds) {
+                    // Firestore Timestamp
+                    messageDate = new Date(message.createdAt.seconds * 1000).toLocaleDateString();
+                } else if (typeof message.createdAt === 'string') {
+                    // ISO string
+                    messageDate = new Date(message.createdAt).toLocaleDateString();
+                } else {
+                    messageDate = new Date(message.createdAt).toLocaleDateString();
+                }
+            }
+        } catch (error) {
+            console.warn('Invalid date for message:', message.id, message.createdAt);
+        }
 
         return `
             <tr>
@@ -3446,8 +3462,23 @@ function renderOffersTableHTML(offers) {
             </button>
         ` : '';
         
-        const offerDate = offer.createdAt ? new Date(offer.createdAt).toLocaleDateString() : 'N/A';
-
+        // FIX: Handle different date formats from backend
+        let offerDate = 'N/A';
+        try {
+            if (offer.createdAt) {
+                if (typeof offer.createdAt === 'object' && offer.createdAt.seconds) {
+                    // Firestore Timestamp
+                    offerDate = new Date(offer.createdAt.seconds * 1000).toLocaleDateString();
+                } else if (typeof offer.createdAt === 'string') {
+                    // ISO string
+                    offerDate = new Date(offer.createdAt).toLocaleDateString();
+                } else {
+                    offerDate = new Date(offer.createdAt).toLocaleDateString();
+                }
+            }
+        } catch (error) {
+            console.warn('Invalid date for offer:', offer.id, offer.createdAt);
+        }
         return `
             <tr>
                 <td><strong>${offer.listingName || 'N/A'}</strong></td>
@@ -3517,7 +3548,9 @@ window.loadSellerOffers = async function() {
         const data = await response.json();
         sellerOffers = Array.isArray(data) ? data : (data.offers || []);
 
-        console.log('✅ Loaded', sellerOffers.length, 'offers');
+
+        console.log('📋 Sample offer data:', sellerOffers[0]); // Debug: see actual structure
+	console.log('✅ Loaded', sellerOffers.length, 'offers');
 
         // Sort by creation date (newest first)
         sellerOffers.sort((a, b) => {
