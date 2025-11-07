@@ -658,11 +658,11 @@
             </div>
           </div>
 
-          <button id="buyNowBtn" class="cta-button" aria-label="Make an offer on this listing">
-  Make Offer
+<button id="buyNowBtn" class="cta-button" aria-label="Make an offer on this listing">
+  💰 Make Offer
 </button>
 <button id="contactBtn" class="cta-button secondary" aria-label="Send message to seller">
-  Message Seller
+  ✉️ Message Seller
 </button>
         </section>
 
@@ -823,24 +823,41 @@
   const db = getFirestore(app);
 
 
-// ============================================
+/// ============================================
 // Get Current User
 // ============================================
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const auth = getAuth(app);
 let currentUser = null;
 let userData = null;
 
 async function getCurrentUser() {
-  try {
-    currentUser = JSON.parse(localStorage.getItem('user'));
-    if (currentUser) {
-      const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-      if (userDoc.exists()) {
-        userData = { id: currentUser.uid, ...userDoc.data() };
+  return new Promise((resolve) => {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        try {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            userData = { 
+              id: user.uid, 
+              email: user.email,
+              ...userDoc.data() 
+            };
+            console.log('✅ User authenticated:', userData.email);
+          }
+        } catch (error) {
+          console.error('Error loading user data:', error);
+        }
+      } else {
+        currentUser = null;
+        userData = null;
+        console.log('ℹ️ No user authenticated');
       }
-    }
-  } catch (error) {
-    console.error('Error loading user:', error);
-  }
+      resolve(userData);
+    });
+  });
 }
 
 // Toast notification
@@ -1657,58 +1674,10 @@ if (buyNowBtn) {
   });
 }
 
-console.log('✅ Offers & Messages system initialized');
-
-
-
-
-
-
-
-    const closeModal = getEl("closeModal");
-    const closeModalBtn = getEl("closeModalBtn");
-    const sendMessageBtn = getEl("sendMessageBtn");
-    const messageText = getEl("messageText");
-
-    const toggleModal = (show) => {
-        if (contactModal) contactModal.style.display = show ? "flex" : "none";
-    };
-
-    if (contactBtn) {
-      contactBtn.addEventListener("click", () => toggleModal(true));
-    }
-    if (closeModal) closeModal.addEventListener("click", () => toggleModal(false));
-    if (closeModalBtn) closeModalBtn.addEventListener("click", () => toggleModal(false));
-    
-    if (sendMessageBtn && messageText) {
-      sendMessageBtn.addEventListener("click", () => {
-        if (!messageText.value.trim()) {
-            alert("Please write a message before sending.");
-            messageText.focus();
-            return;
-        }
-
-        const sellerEmail = (getEl("sellerEmail") && getEl("sellerEmail").textContent) || "";
-        if (!sellerEmail || sellerEmail === "Contact via form") {
-            alert("Seller contact is only available through a verified email. Please contact the marketplace support for assistance.");
-            return;
-        }
-        
-        const body = encodeURIComponent(messageText.value.trim());
-        const subject = encodeURIComponent(`Inquiry on Listing: ${getEl("listingTitle")?.textContent || listingId}`);
-        window.location.href = `mailto:${sellerEmail}?subject=${subject}&body=${body}`;
-        
-        toggleModal(false);
-      });
-    }
-
-    window.addEventListener("click", (ev) => {
-      if (ev.target === contactModal) toggleModal(false);
-    });
-
-    // Initialize user and then load listing
+console.log('🔍 Checking authentication status...');
 getCurrentUser().then(() => {
-  loadListingDetails();
+  console.log('👤 Current User:', currentUser ? currentUser.email : 'Not logged in');
+  console.log('📋 User Data:', userData);
 });
 
   </script>
