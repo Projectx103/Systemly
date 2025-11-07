@@ -1226,11 +1226,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 
-const API_URL = 'https://systemly.onrender.com';
-
-
-
-
 
 const firebaseConfig = {
   apiKey: "AIzaSyD3PQ5oWrzAXOHnb7wrmpRhL9DWIB7w9rE",
@@ -3085,9 +3080,15 @@ document.head.appendChild(style);
 window.logout = async function() {
   if (confirm('Are you sure you want to sign out?')) {
     try {
-      // Unsubscribe from listeners
+      // Unsubscribe from all listeners
       if (listingsUnsubscribe) {
         listingsUnsubscribe();
+      }
+      if (offersUnsubscribe) {
+        offersUnsubscribe();
+      }
+      if (messagesUnsubscribe) {
+        messagesUnsubscribe();
       }
       
       await signOut(auth);
@@ -3107,12 +3108,16 @@ window.addEventListener('beforeunload', () => {
   if (listingsUnsubscribe) {
     listingsUnsubscribe();
   }
+  if (offersUnsubscribe) {
+    offersUnsubscribe();
+  }
+  if (messagesUnsubscribe) {
+    messagesUnsubscribe();
+  }
   if (currentChart) {
     currentChart.destroy();
   }
 });
-
-
 
 
 
@@ -3224,8 +3229,14 @@ function renderMessagesTableHTML(messages) {
 // LOAD SELLER MESSAGES (ADD THIS COMPLETE FUNCTION)
 // ============================================
 
+// ============================================
+// LOAD SELLER MESSAGES WITH REALTIME LISTENER
+// ============================================
+
+let messagesUnsubscribe = null;
+
 window.loadSellerMessages = async function() {
-    console.log('📥 Loading messages for seller:', userData.id);
+    console.log('📥 Setting up messages realtime listener for seller:', userData.id);
     
     const messagesContent = document.getElementById('messagesContent');
     if (!messagesContent) {
@@ -3241,49 +3252,71 @@ window.loadSellerMessages = async function() {
     `;
 
     try {
-        const response = await fetch(`${API_URL}/api/messages/seller/${userData.id}`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        // Unsubscribe from previous listener if exists
+        if (messagesUnsubscribe) {
+            messagesUnsubscribe();
         }
+
+        // Create query for seller's messages
+        const messagesRef = collection(db, 'messages');
+        const q = query(messagesRef, where('sellerId', '==', userData.id));
         
-        const data = await response.json();
-        sellerMessages = Array.isArray(data) ? data : (data.messages || []);
+        // Set up real-time listener
+        messagesUnsubscribe = onSnapshot(q, (snapshot) => {
+            sellerMessages = [];
+            
+            snapshot.forEach((doc) => {
+                sellerMessages.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
 
-        console.log('✅ Loaded', sellerMessages.length, 'messages');
+            console.log('✅ Loaded', sellerMessages.length, 'messages in realtime');
 
-        // Sort by creation date (newest first)
-        sellerMessages.sort((a, b) => {
-            const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
-            const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
-            return dateB - dateA;
+            // Sort by creation date (newest first)
+            sellerMessages.sort((a, b) => {
+                const dateA = a.createdAt?.toDate?.() || new Date(0);
+                const dateB = b.createdAt?.toDate?.() || new Date(0);
+                return dateB - dateA;
+            });
+
+            // Render messages table
+            messagesContent.innerHTML = renderMessagesTableHTML(sellerMessages);
+
+            // Update badge count
+            const unreadMessages = sellerMessages.filter(m => !m.isRead).length;
+            const badge = document.getElementById('messagesCountBadge');
+            if (badge) {
+                if (unreadMessages > 0) {
+                    badge.textContent = unreadMessages;
+                    badge.style.display = 'inline';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }, (error) => {
+            console.error('❌ Error in messages snapshot:', error);
+            messagesContent.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-exclamation-triangle" style="color: var(--error);"></i>
+                    <p>Failed to load messages</p>
+                    <p style="font-size: 0.9rem; color: var(--gray);">${error.message}</p>
+                    <button class="btn btn-primary" onclick="loadSellerMessages()" style="margin-top: 1rem;">
+                        <i class="fa-solid fa-refresh"></i> Retry
+                    </button>
+                </div>
+            `;
+            showToast('Failed to load messages', 'error');
         });
 
-        // Render messages table
-        messagesContent.innerHTML = renderMessagesTableHTML(sellerMessages);
-
-        // Update badge count
-        const unreadMessages = sellerMessages.filter(m => !m.isRead).length;
-        const badge = document.getElementById('messagesCountBadge');
-        if (badge) {
-            if (unreadMessages > 0) {
-                badge.textContent = unreadMessages;
-                badge.style.display = 'inline';
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-
     } catch (error) {
-        console.error('❌ Error loading seller messages:', error);
+        console.error('❌ Error setting up messages listener:', error);
         messagesContent.innerHTML = `
             <div class="empty-state">
                 <i class="fa-solid fa-exclamation-triangle" style="color: var(--error);"></i>
                 <p>Failed to load messages</p>
                 <p style="font-size: 0.9rem; color: var(--gray);">${error.message}</p>
-                <button class="btn btn-primary" onclick="loadSellerMessages()" style="margin-top: 1rem;">
-                    <i class="fa-solid fa-refresh"></i> Retry
-                </button>
             </div>
         `;
         showToast('Failed to load messages', 'error');
@@ -3353,53 +3386,86 @@ window.openOfferDetailModal = async function(offerId) {
     modal.classList.add('active');
 }
 
-async function markMessageAsRead(messageId) {
-    try {
-        const response = await fetch(`${API_URL}/api/messages/${messageId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ isRead: true })
-        });
-        if (response.ok) {
-            return true;
-        }
-    } catch (error) {
-        console.error('Error marking message as read:', error);
-        return false;
+// ============================================
+// MESSAGE ACTIONS WITH FIREBASE
+// ============================================
+
+window.openMessageDetailModal = async function(messageId) {
+    const message = sellerMessages.find(m => m.id === messageId);
+    
+    if (!message) {
+        showToast('Message not found', 'error');
+        return;
+    }
+    
+    const modal = document.getElementById('messageDetailModal');
+    const content = document.getElementById('messageDetailModalContent');
+    
+    const messageDate = message.createdAt?.toDate?.() || new Date();
+    const readStatus = message.isRead ? 'Read' : 'New';
+    const readStatusClass = message.isRead ? 'status-draft' : 'status-pending';
+    
+    content.innerHTML = `
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">${message.listingName || 'General Inquiry'}</h3>
+            <p style="color: var(--gray);">From: <strong>${message.buyerName || 'Anonymous'}</strong></p>
+            <p style="color: var(--gray);">Email: ${message.buyerEmail || 'N/A'}</p>
+            <p style="margin-top: 0.5rem;">Status: <span class="status-badge ${readStatusClass}">${readStatus}</span></p>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <h4 style="margin-bottom: 0.5rem;">Subject:</h4>
+            <p style="font-weight: 600;">${message.subject || 'No subject'}</p>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <h4 style="margin-bottom: 0.5rem;">Message:</h4>
+            <div style="background: var(--gray-light); padding: 1rem; border-radius: 10px; white-space: pre-wrap;">
+                ${message.message}
+            </div>
+        </div>
+        
+        <p style="color: var(--gray); font-size: 0.9rem;">Received: ${messageDate.toLocaleString()}</p>
+        
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+            ${!message.isRead ? `
+                <button class="btn btn-secondary" onclick="markMessageAsRead('${message.id}', false)">
+                    <i class="fa-solid fa-check"></i> Mark as Read
+                </button>
+            ` : ''}
+            <button class="btn btn-primary" onclick="replyToMessage('${message.buyerEmail}', '${message.buyerName}', '${message.listingName}')">
+                <i class="fa-solid fa-reply"></i> Reply via Email
+            </button>
+        </div>
+    `;
+    
+    modal.classList.add('active');
+    
+    // Mark as read automatically
+    if (!message.isRead) {
+        markMessageAsRead(message.id, true);
     }
 }
 
-
-
-
-window.closeMessageDetailModal = function() {
-    document.getElementById('messageDetailModal').classList.remove('active');
-    loadSellerMessages(); // Refresh list
-}
-
-// ============================================
-// MESSAGE ACTIONS
-// ============================================
-
-
-window.markMessageAsRead = async function(messageId, showNotification = true) {
+window.markMessageAsRead = async function(messageId, silent = false) {
     try {
-        const response = await fetch(`${API_URL}/api/messages/${messageId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ isRead: true })
+        const messageRef = doc(db, 'messages', messageId);
+        await updateDoc(messageRef, {
+            isRead: true,
+            readAt: serverTimestamp()
         });
-
-        if (response.ok && showNotification) {
+        
+        if (!silent) {
             showToast('Message marked as read', 'info');
-            loadSellerMessages();
         }
+        // Real-time listener will update UI automatically
     } catch (error) {
         console.error('Error marking message as read:', error);
+        if (!silent) {
+            showToast('Failed to mark as read', 'error');
+        }
     }
 }
-
-
 
 window.replyToMessage = function(buyerEmail, buyerName, listingName) {
     const subject = encodeURIComponent(`Re: Inquiry about ${listingName}`);
@@ -3407,11 +3473,9 @@ window.replyToMessage = function(buyerEmail, buyerName, listingName) {
     window.location.href = `mailto:${buyerEmail}?subject=${subject}&body=${body}`;
 }
 
-
-
-
-
-
+window.closeMessageDetailModal = function() {
+    document.getElementById('messageDetailModal').classList.remove('active');
+}
 
 
 
@@ -3522,8 +3586,14 @@ function renderOffersTableHTML(offers) {
 // LOAD SELLER OFFERS (ADD THIS COMPLETE FUNCTION)
 // ============================================
 
+// ============================================
+// LOAD SELLER OFFERS WITH REALTIME LISTENER
+// ============================================
+
+let offersUnsubscribe = null;
+
 window.loadSellerOffers = async function() {
-    console.log('📥 Loading offers for seller:', userData.id);
+    console.log('📥 Setting up offers realtime listener for seller:', userData.id);
     
     const offersContent = document.getElementById('offersContent');
     if (!offersContent) {
@@ -3539,51 +3609,71 @@ window.loadSellerOffers = async function() {
     `;
 
     try {
-        const response = await fetch(`${API_URL}/api/offers/seller/${userData.id}`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        // Unsubscribe from previous listener if exists
+        if (offersUnsubscribe) {
+            offersUnsubscribe();
         }
+
+        // Create query for seller's offers
+        const offersRef = collection(db, 'offers');
+        const q = query(offersRef, where('sellerId', '==', userData.id));
         
-        const data = await response.json();
-        sellerOffers = Array.isArray(data) ? data : (data.offers || []);
+        // Set up real-time listener
+        offersUnsubscribe = onSnapshot(q, (snapshot) => {
+            sellerOffers = [];
+            
+            snapshot.forEach((doc) => {
+                sellerOffers.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
 
+            console.log('✅ Loaded', sellerOffers.length, 'offers in realtime');
 
-        console.log('📋 Sample offer data:', sellerOffers[0]); // Debug: see actual structure
-	console.log('✅ Loaded', sellerOffers.length, 'offers');
+            // Sort by creation date (newest first)
+            sellerOffers.sort((a, b) => {
+                const dateA = a.createdAt?.toDate?.() || new Date(0);
+                const dateB = b.createdAt?.toDate?.() || new Date(0);
+                return dateB - dateA;
+            });
 
-        // Sort by creation date (newest first)
-        sellerOffers.sort((a, b) => {
-            const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
-            const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
-            return dateB - dateA;
+            // Render offers table
+            offersContent.innerHTML = renderOffersTableHTML(sellerOffers);
+
+            // Update badge count
+            const pendingOffers = sellerOffers.filter(o => o.status === 'pending').length;
+            const badge = document.getElementById('offersCountBadge');
+            if (badge) {
+                if (pendingOffers > 0) {
+                    badge.textContent = pendingOffers;
+                    badge.style.display = 'inline';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }, (error) => {
+            console.error('❌ Error in offers snapshot:', error);
+            offersContent.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-exclamation-triangle" style="color: var(--error);"></i>
+                    <p>Failed to load offers</p>
+                    <p style="font-size: 0.9rem; color: var(--gray);">${error.message}</p>
+                    <button class="btn btn-primary" onclick="loadSellerOffers()" style="margin-top: 1rem;">
+                        <i class="fa-solid fa-refresh"></i> Retry
+                    </button>
+                </div>
+            `;
+            showToast('Failed to load offers', 'error');
         });
 
-        // Render offers table
-        offersContent.innerHTML = renderOffersTableHTML(sellerOffers);
-
-        // Update badge count
-        const pendingOffers = sellerOffers.filter(o => o.status === 'pending').length;
-        const badge = document.getElementById('offersCountBadge');
-        if (badge) {
-            if (pendingOffers > 0) {
-                badge.textContent = pendingOffers;
-                badge.style.display = 'inline';
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-
     } catch (error) {
-        console.error('❌ Error loading seller offers:', error);
+        console.error('❌ Error setting up offers listener:', error);
         offersContent.innerHTML = `
             <div class="empty-state">
                 <i class="fa-solid fa-exclamation-triangle" style="color: var(--error);"></i>
                 <p>Failed to load offers</p>
                 <p style="font-size: 0.9rem; color: var(--gray);">${error.message}</p>
-                <button class="btn btn-primary" onclick="loadSellerOffers()" style="margin-top: 1rem;">
-                    <i class="fa-solid fa-refresh"></i> Retry
-                </button>
             </div>
         `;
         showToast('Failed to load offers', 'error');
@@ -3659,22 +3749,22 @@ window.closeOfferDetailModal = function() {
 // OFFER ACTIONS
 // ============================================
 
+// ============================================
+// OFFER ACTIONS WITH FIREBASE
+// ============================================
+
 window.acceptOffer = async function(offerId) {
     if (!confirm('Accept this offer?')) return;
 
     try {
-        const response = await fetch(`${API_URL}/api/offers/${offerId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: 'accepted' })
+        const offerRef = doc(db, 'offers', offerId);
+        await updateDoc(offerRef, {
+            status: 'accepted',
+            updatedAt: serverTimestamp()
         });
-
-        if (response.ok) {
-            showToast('✓ Offer accepted!', 'success');
-            loadSellerOffers();
-        } else {
-            throw new Error('Failed to accept offer');
-        }
+        
+        showToast('✓ Offer accepted!', 'success');
+        // Real-time listener will update UI automatically
     } catch (error) {
         console.error('Error accepting offer:', error);
         showToast('Failed to accept offer', 'error');
@@ -3685,18 +3775,14 @@ window.rejectOffer = async function(offerId) {
     if (!confirm('Reject this offer?')) return;
 
     try {
-        const response = await fetch(`${API_URL}/api/offers/${offerId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: 'rejected' })
+        const offerRef = doc(db, 'offers', offerId);
+        await updateDoc(offerRef, {
+            status: 'rejected',
+            updatedAt: serverTimestamp()
         });
-
-        if (response.ok) {
-            showToast('Offer rejected', 'info');
-            loadSellerOffers();
-        } else {
-            throw new Error('Failed to reject offer');
-        }
+        
+        showToast('Offer rejected', 'info');
+        // Real-time listener will update UI automatically
     } catch (error) {
         console.error('Error rejecting offer:', error);
         showToast('Failed to reject offer', 'error');
