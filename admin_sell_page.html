@@ -3087,20 +3087,26 @@ window.addEventListener('beforeunload', () => {
 // OFFERS TAB
 // ============================================
 
+// ============================================
+// OFFERS TAB CONTENT RENDERER (ADD THIS)
+// ============================================
+
 function renderOffersTab() {
-  return `
-    <div class="content-card">
-      <div class="card-header">
-        <h3>Buyer Offers</h3>
-        <button class="btn btn-secondary" onclick="loadSellerOffers()">
-          <i class="fa-solid fa-sync"></i> Refresh
-        </button>
-      </div>
-      <div id="offersContent">
-        <div class="loading">Loading offers...</div>
-      </div>
-    </div>
-  `;
+    return `
+        <div id="tab-offers" class="tab-content">
+            <div class="content-card">
+                <div class="card-header">
+                    <h3>Listing Offers</h3>
+                    <button class="btn btn-secondary" onclick="loadSellerOffers()">
+                        <i class="fa-solid fa-sync"></i> Refresh
+                    </button>
+                </div>
+                <div id="offersContent">
+                    <div class="loading">Loading offers...</div>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 
