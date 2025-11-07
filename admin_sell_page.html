@@ -3063,67 +3063,97 @@ function renderOffersTab() {
   `;
 }
 
+// REPLACE the entire existing loadSellerOffers function with this:
+
 async function loadSellerOffers() {
-  if (!userData) return;
-
-  const offersContent = document.getElementById('offersContent');
-  offersContent.innerHTML = '<div class="spinner"></div>';
-
-  try {
-    const response = await fetch(`${API_URL}/api/offers/seller/${userData.id}`);
-    const data = await response.json();
-
-    if (data.offers.length === 0) {
-      offersContent.innerHTML = '<p>No offers yet</p>';
-      return;
-    }
-
-    // Update badge
-    const pendingCount = data.offers.filter(o => o.status === 'pending').length;
-    const badge = document.getElementById('offersCountBadge');
-    if (badge && pendingCount > 0) {
-      badge.textContent = pendingCount;
-      badge.style.display = 'inline-block';
-    }
+    const offersContent = document.getElementById('offersContent');
+    if (!offersContent) return;
 
     offersContent.innerHTML = `
-      <table class="listings-table">
-        <thead>
-          <tr>
-            <th>Listing</th>
-            <th>Buyer</th>
-            <th>Offer</th>
-            <th>Message</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${data.offers.map(o => `
-            <tr>
-              <td><strong>${o.listing_name}</strong></td>
-              <td>
-                ${o.buyer_name}<br>
-                <small style="color: var(--gray);">${o.buyer_email}</small>
-              </td>
-              <td><strong style="color: var(--primary);">₱${parseInt(o.offer_amount).toLocaleString()}</strong></td>
-              <td>${o.message || 'No message'}</td>
-              <td><span class="status-badge status-${o.status}">${o.status.toUpperCase()}</span></td>
-              <td>
-                ${o.status === 'pending' ? `
-                  <button class="btn btn-success" onclick="acceptOffer(${o.id})">Accept</button>
-                  <button class="btn btn-danger" onclick="rejectOffer(${o.id})">Reject</button>
-                ` : 'No actions'}
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    `;
-  } catch (error) {
-    console.error('❌ Error:', error);
-    offersContent.innerHTML = '<p class="alert alert-error">Failed to load offers</p>';
-  }
+        <div class="loading-state">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <p>Loading offers...</p>
+        </div>
+        `;
+
+    try {
+        const response = await fetch(`${API_URL}/api/offers/seller/${userData.id}`);
+        if (!response.ok) throw new Error('Failed to fetch offers');
+        const offers = await response.json();
+
+        // Count for the badge
+        document.getElementById('totalOffersCount').textContent = offers.length;
+
+        if (offers.length === 0) {
+            offersContent.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-tag"></i>
+                    <p>No offers received yet.</p>
+                </div>
+                `;
+        } else {
+            // --- CORE FIX: Render the offers list, including the buyer's message ---
+            const offersHTML = `
+                <div class="offers-list">
+                    ${offers.map(offer => {
+                        const offerDate = new Date(offer.createdAt._seconds * 1000).toLocaleDateString();
+                        const offerTime = new Date(offer.createdAt._seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const isPending = offer.status === 'pending';
+                        
+                        return `
+                            <div class="offer-card">
+                                <div class="offer-header">
+                                    <div>
+                                        <div class="offer-listing-title">
+                                            Offer on: ${offer.listingName}
+                                        </div>
+                                        ${getOfferStatusBadgeHTML(offer.status)}
+                                    </div>
+                                    <div class="offer-price">
+                                        ₱${parseInt(offer.offeredPrice || 0).toLocaleString()}
+                                    </div>
+                                </div>
+
+                                <div class="offer-details">
+                                    <div class="offer-detail-item">
+                                        <div class="offer-detail-label">Buyer Email:</div>
+                                        <div class="offer-detail-value">${offer.buyerEmail || 'N/A'}</div>
+                                    </div>
+                                    <div class="offer-detail-item">
+                                        <div class="offer-detail-label">Date Submitted:</div>
+                                        <div class="offer-detail-value">${offerDate} at ${offerTime}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="offer-message-box">
+                                    <div class="offer-detail-label" style="margin-bottom: 0.5rem;">Buyer's Message:</div>
+                                    <p>${offer.message || 'The buyer did not include a specific message with this offer.'}</p>
+                                </div>
+                                
+                                ${isPending ? `
+                                    <div class="offer-actions">
+                                        <button class="btn btn-secondary" onclick="rejectOffer('${offer.id}')">
+                                            <i class="fa-solid fa-xmark"></i> Reject
+                                        </button>
+                                        <button class="btn btn-primary" onclick="acceptOffer('${offer.id}')">
+                                            <i class="fa-solid fa-check"></i> Accept
+                                        </button>
+                                    </div>
+                                ` : ''}
+
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+            offersContent.innerHTML = offersHTML;
+            // End of CORE FIX
+        }
+
+    } catch (error) {
+        console.error('Error loading seller offers:', error);
+        offersContent.innerHTML = '<p class="alert alert-error">Failed to load offers</p>';
+    }
 }
 
 window.acceptOffer = async function(offerId) {
