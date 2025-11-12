@@ -1217,17 +1217,24 @@ let listingsUnsubscribe = null;
 async function loadOffers() {
   try {
     console.log('📥 Loading buyer offers...');
+    console.log('🔍 Buyer ID:', userData.id); // ADD THIS
+    console.log('🔍 API URL:', `${API_URL}/api/offers/buyer/${userData.id}`); // ADD THIS
     
     const response = await fetch(`${API_URL}/api/offers/buyer/${userData.id}`);
+    console.log('📡 Response status:', response.status); // ADD THIS
+    
     const data = await response.json();
+    console.log('📦 Response data:', data); // ADD THIS
     
     if (data.success) {
       myOffers = data.offers;
       console.log('✅ Loaded offers:', myOffers.length);
+      console.log('📋 Offers array:', myOffers); // ADD THIS
       
       // Check for file reviews
       await loadFileReviews();
     } else {
+      console.log('❌ Load failed:', data.error); // ADD THIS
       myOffers = [];
     }
     
