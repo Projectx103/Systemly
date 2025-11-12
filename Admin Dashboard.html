@@ -1414,6 +1414,13 @@
                     </div>
                 </div>
 
+<div class="nav-item" data-view="file-review">
+    <span class="nav-icon">📁</span>
+    <span>File Reviews</span>
+    <span class="nav-badge" id="fileReviewBadge" style="display: none;">0</span>
+</div>
+
+
                 <div class="nav-section">
                     <div class="nav-section-title">Management</div>
                     <div class="nav-item" data-view="users">
@@ -1849,8 +1856,84 @@
                     </div>
                 </div>
             </div>
+
+
+
+<!-- File Review View -->
+<div id="fileReviewView" style="display: none;">
+    <div class="top-bar">
+        <div class="page-title">
+            <h1>File Reviews</h1>
+            <p>Review and approve uploaded files from accepted offers</p>
+        </div>
+        <div class="top-actions">
+            <button class="btn btn-outline" onclick="refreshFileReviews()">
+                🔄 Refresh
+            </button>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-number" id="pendingFileReviews">0</div>
+                    <div class="stat-label">Pending Reviews</div>
+                </div>
+                <div class="stat-icon pending">⏳</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-number" id="approvedFileReviews">0</div>
+                    <div class="stat-label">Approved</div>
+                </div>
+                <div class="stat-icon approved">✅</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-number" id="rejectedFileReviews">0</div>
+                    <div class="stat-label">Rejected</div>
+                </div>
+                <div class="stat-icon rejected">❌</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-container">
+        <div class="content-header">
+            <h2>File Upload Submissions</h2>
+            <span class="listing-count" id="fileReviewCount">0 submissions</span>
+        </div>
+        <div id="fileReviewsContainer" style="padding: 2rem;">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading file reviews...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
         </main>
     </div>
+
+
+
+
+
+
+
 
     <!-- Footer -->
     <footer class="admin-footer">
@@ -1883,6 +1966,32 @@
             </div>
         </div>
     </div>
+
+
+<!-- File Review Detail Modal -->
+<div class="modal" id="fileReviewModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeFileReviewModal()">×</button>
+    <div class="modal-header">
+      <h2>Review Uploaded Files</h2>
+    </div>
+    <div class="modal-body" id="fileReviewModalBody">
+      <!-- Content populated by JS -->
+    </div>
+    <div class="modal-footer" id="fileReviewModalFooter">
+      <!-- Actions populated by JS -->
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
 
     <!-- Firebase SDKs -->
     <script type="module">
@@ -2340,10 +2449,11 @@ onAuthStateChanged(auth, async (user) => {
         mainContent.classList.add('active');
         
         // Load data
-        loadListings();
-        loadUsers();
-        
-        console.log('✅ Admin authenticated successfully');
+loadListings();
+loadUsers();
+loadFileReviews(); // ADD THIS LINE
+
+console.log('✅ Admin authenticated successfully');
         
     } catch (error) {
         console.error('Error checking admin status:', error);
@@ -3509,30 +3619,373 @@ window.filterUsers = function() {
             }
         }
 
-        // Navigation between views
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
 
-                const view = this.dataset.view;
+
+
+
+
+// ============================================
+// FILE REVIEW SYSTEM
+// ============================================
+
+let allFileReviews = [];
+let currentFileReview = null;
+
+async function loadFileReviews() {
+    console.log('📁 Loading file reviews...');
+    try {
+        const response = await fetch('https://systemly.onrender.com/api/admin/file-reviews');
+        const data = await response.json();
+        
+        console.log('File reviews response:', data);
+        
+        if (data.success) {
+            allFileReviews = data.reviews;
+            console.log('✅ Loaded', allFileReviews.length, 'file reviews');
+            renderFileReviews();
+            updateFileReviewStats();
+        } else {
+            throw new Error(data.error || 'Failed to load file reviews');
+        }
+    } catch (error) {
+        console.error('❌ Error loading file reviews:', error);
+        const container = document.getElementById('fileReviewsContainer');
+        if (container) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">❌</div>
+                    <h3>Failed to Load Reviews</h3>
+                    <p>${error.message}</p>
+                    <button class="btn btn-primary" onclick="loadFileReviews()" style="margin-top: 1rem;">
+                        🔄 Retry
+                    </button>
+                </div>
+            `;
+        }
+    }
+}
+
+function renderFileReviews() {
+    const container = document.getElementById('fileReviewsContainer');
+    
+    if (allFileReviews.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h3>No File Reviews</h3>
+                <p>No uploaded files pending review</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = allFileReviews.map(review => `
+        <div class="listing-card" style="margin-bottom: 1.5rem;">
+            <div class="listing-content" style="flex: 1;">
+                <div style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">${review.listingName}</h3>
+                    <div style="display: flex; gap: 1rem; color: var(--gray); font-size: 0.9rem;">
+                        <span>👤 Seller: <strong>${review.sellerName}</strong></span>
+                        <span>🛒 Buyer: <strong>${review.buyerName}</strong></span>
+                        <span>💰 Amount: <strong style="color: var(--primary);">₱${parseInt(review.offerAmount || 0).toLocaleString()}</strong></span>
+                    </div>
+                </div>
                 
-                // Hide all views
-                document.getElementById('dashboardView').style.display = 'none';
-                document.getElementById('analyticsView').style.display = 'none';
-                document.getElementById('usersView').style.display = 'none';
-                document.getElementById('settingsView').style.display = 'none';
+                <div style="background: var(--gray-light); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                    <strong>Files Uploaded:</strong> ${review.fileCount} file(s)
+                    <div style="font-size: 0.9rem; color: var(--gray); margin-top: 0.3rem;">
+                        Uploaded: ${new Date(review.uploadedAt).toLocaleString()}
+                    </div>
+                </div>
+                
+                ${review.instructions ? `
+                    <div style="background: var(--bg); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                        <strong>Transfer Instructions:</strong>
+                        <p style="margin-top: 0.5rem; white-space: pre-wrap;">${review.instructions}</p>
+                    </div>
+                ` : ''}
+            </div>
+            
+            <div class="listing-actions">
+                <span class="status-badge ${review.status}">
+                    ${review.status === 'pending-admin-review' ? '⏳ PENDING' : 
+                      review.status === 'admin-approved' ? '✅ APPROVED' : '❌ REJECTED'}
+                </span>
+                <div class="action-buttons">
+                    <button class="action-btn view" onclick="viewFileReview('${review.id}')">
+                        👁️ Review Files
+                    </button>
+                    ${review.status === 'pending-admin-review' ? `
+                        <button class="action-btn approve" onclick="approveFileReview('${review.id}')">
+                            ✅ Approve
+                        </button>
+                        <button class="action-btn reject" onclick="rejectFileReview('${review.id}')">
+                            ❌ Reject
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    document.getElementById('fileReviewCount').textContent = `${allFileReviews.length} submission${allFileReviews.length !== 1 ? 's' : ''}`;
+}
 
-              // Show selected view
-	if (view === 'analytics') {
-       document.getElementById('analyticsView').style.display = 'block';
-       // Update analytics when view is shown
-       setTimeout(() => updateAnalytics(), 100);
-                } else if (view === 'users') {
-                    document.getElementById('usersView').style.display = 'block';
-                } else if (view === 'settings') {
-                    document.getElementById('settingsView').style.display = 'block';
-                } else {
+function updateFileReviewStats() {
+    const pending = allFileReviews.filter(r => r.status === 'pending-admin-review').length;
+    const approved = allFileReviews.filter(r => r.status === 'admin-approved').length;
+    const rejected = allFileReviews.filter(r => r.status === 'admin-rejected').length;
+    
+    document.getElementById('pendingFileReviews').textContent = pending;
+    document.getElementById('approvedFileReviews').textContent = approved;
+    document.getElementById('rejectedFileReviews').textContent = rejected;
+    
+    const badge = document.getElementById('fileReviewBadge');
+    if (pending > 0) {
+        badge.textContent = pending;
+        badge.style.display = 'inline';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+window.viewFileReview = async function(reviewId) {
+    const review = allFileReviews.find(r => r.id === reviewId);
+    if (!review) return;
+    
+    currentFileReview = review;
+    
+    const modal = document.getElementById('fileReviewModal');
+    const modalBody = document.getElementById('fileReviewModalBody');
+    const modalFooter = document.getElementById('fileReviewModalFooter');
+    
+    // Fetch file details from backend
+    try {
+        const response = await fetch(`https://systemly.onrender.com/api/admin/file-review/${reviewId}`);
+        const data = await response.json();
+        
+        if (!data.success) throw new Error(data.error);
+        
+        const files = data.files || [];
+        
+        modalBody.innerHTML = `
+            <div class="detail-section">
+                <h3>Transaction Details</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Listing Name</div>
+                        <div class="detail-value"><strong>${review.listingName}</strong></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Seller</div>
+                        <div class="detail-value">${review.sellerName}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Buyer</div>
+                        <div class="detail-value">${review.buyerName}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Offer Amount</div>
+                        <div class="detail-value" style="color: var(--primary); font-weight: 700;">₱${parseInt(review.offerAmount || 0).toLocaleString()}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>Uploaded Files (${files.length})</h3>
+                <div style="display: grid; gap: 0.5rem;">
+                    ${files.map(file => `
+                        <div style="background: var(--gray-light); padding: 1rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${file.filename}</strong>
+                                <div style="font-size: 0.85rem; color: var(--gray);">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                            </div>
+                            <button class="btn btn-outline" onclick="downloadFile('${reviewId}', '${file.filename}')">
+                                📥 Download
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            ${review.instructions ? `
+                <div class="detail-section">
+                    <h3>Transfer Instructions</h3>
+                    <div class="detail-description">
+                        <p style="white-space: pre-wrap;">${review.instructions}</p>
+                    </div>
+                </div>
+            ` : ''}
+
+            ${review.whatsIncluded ? `
+                <div class="detail-section">
+                    <h3>What's Included</h3>
+                    <div class="detail-description">
+                        <p style="white-space: pre-wrap;">${review.whatsIncluded}</p>
+                    </div>
+                </div>
+            ` : ''}
+        `;
+        
+        modalFooter.innerHTML = `
+            <button class="btn btn-outline" onclick="closeFileReviewModal()">Close</button>
+            ${review.status === 'pending-admin-review' ? `
+                <button class="action-btn reject" onclick="rejectFileReviewFromModal()">❌ Reject Files</button>
+                <button class="action-btn approve" onclick="approveFileReviewFromModal()">✅ Approve Files</button>
+            ` : ''}
+        `;
+        
+        modal.classList.add('active');
+        
+    } catch (error) {
+        console.error('Error loading file details:', error);
+        alert('Failed to load file details: ' + error.message);
+    }
+}
+
+window.downloadFile = async function(reviewId, filename) {
+    try {
+        const response = await fetch(`https://systemly.onrender.com/api/admin/download-file/${reviewId}/${encodeURIComponent(filename)}`);
+        
+        if (!response.ok) throw new Error('Download failed');
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        showToast('Download started', 'success');
+    } catch (error) {
+        console.error('Download error:', error);
+        alert('Failed to download file');
+    }
+}
+
+window.approveFileReview = async function(reviewId) {
+    if (!confirm('Approve these files? Buyer will be notified to proceed with payment.')) return;
+    
+    try {
+        const response = await fetch(`https://systemly.onrender.com/api/admin/approve-files/${reviewId}`, {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('✅ Files approved! Buyer will be notified.');
+            await loadFileReviews();
+        } else {
+            throw new Error(result.error);
+        }
+    } catch (error) {
+        console.error('Error approving files:', error);
+        alert('Failed to approve files: ' + error.message);
+    }
+}
+
+window.rejectFileReview = async function(reviewId) {
+    const reason = prompt('Provide rejection reason:');
+    if (!reason) return;
+    
+    try {
+        const response = await fetch(`https://systemly.onrender.com/api/admin/reject-files/${reviewId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('❌ Files rejected. Seller will be notified.');
+            await loadFileReviews();
+        } else {
+            throw new Error(result.error);
+        }
+    } catch (error) {
+        console.error('Error rejecting files:', error);
+        alert('Failed to reject files: ' + error.message);
+    }
+}
+
+window.closeFileReviewModal = function() {
+    document.getElementById('fileReviewModal').classList.remove('active');
+    currentFileReview = null;
+}
+
+window.approveFileReviewFromModal = async function() {
+    if (currentFileReview) {
+        closeFileReviewModal();
+        await approveFileReview(currentFileReview.id);
+    }
+}
+
+window.rejectFileReviewFromModal = async function() {
+    if (currentFileReview) {
+        closeFileReviewModal();
+        await rejectFileReview(currentFileReview.id);
+    }
+}
+
+window.refreshFileReviews = function() {
+    loadFileReviews();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // Navigation between views
+       // Navigation between views
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+
+        const view = this.dataset.view;
+        
+        // Hide all views
+        document.getElementById('dashboardView').style.display = 'none';
+        document.getElementById('analyticsView').style.display = 'none';
+        document.getElementById('usersView').style.display = 'none';
+        document.getElementById('settingsView').style.display = 'none';
+        document.getElementById('fileReviewView').style.display = 'none'; // ADD THIS LINE
+
+            // Show selected view
+if (view === 'analytics') {
+    document.getElementById('analyticsView').style.display = 'block';
+    // Update analytics when view is shown
+    setTimeout(() => updateAnalytics(), 100);
+} else if (view === 'users') {
+    document.getElementById('usersView').style.display = 'block';
+} else if (view === 'settings') {
+    document.getElementById('settingsView').style.display = 'block';
+} else if (view === 'file-review') {
+    document.getElementById('fileReviewView').style.display = 'block';
+    // Load file reviews when view is shown
+    loadFileReviews();
+} else {
                     // Dashboard, listings, pending, approved, rejected
                     document.getElementById('dashboardView').style.display = 'block';
                     
@@ -3551,16 +4004,17 @@ window.filterUsers = function() {
                 }
 
                 // Update page title
-                const titles = {
-                    'dashboard': { title: 'Dashboard Overview', subtitle: 'Monitor and manage all platform activities' },
-                    'listings': { title: 'All Listings', subtitle: 'View and manage all system listings' },
-                    'pending': { title: 'Pending Approval', subtitle: 'Review listings waiting for approval' },
-                    'approved': { title: 'Approved Listings', subtitle: 'View all approved and published listings' },
-                    'rejected': { title: 'Rejected Listings', subtitle: 'View listings that were rejected' },
-                    'users': { title: 'User Management', subtitle: 'Manage platform users and permissions' },
-                    'analytics': { title: 'Analytics Dashboard', subtitle: 'Platform performance metrics and insights' },
-                    'settings': { title: 'Platform Settings', subtitle: 'Configure platform preferences and options' }
-                };
+const titles = {
+    'dashboard': { title: 'Dashboard Overview', subtitle: 'Monitor and manage all platform activities' },
+    'listings': { title: 'All Listings', subtitle: 'View and manage all system listings' },
+    'pending': { title: 'Pending Approval', subtitle: 'Review listings waiting for approval' },
+    'approved': { title: 'Approved Listings', subtitle: 'View all approved and published listings' },
+    'rejected': { title: 'Rejected Listings', subtitle: 'View listings that were rejected' },
+    'users': { title: 'User Management', subtitle: 'Manage platform users and permissions' },
+    'analytics': { title: 'Analytics Dashboard', subtitle: 'Platform performance metrics and insights' },
+    'settings': { title: 'Platform Settings', subtitle: 'Configure platform preferences and options' },
+    'file-review': { title: 'File Reviews', subtitle: 'Review and approve uploaded files from accepted offers' }
+};
 
                 const pageTitle = titles[view] || titles['dashboard'];
                 const pageTitleElement = document.querySelector('.page-title h1');
