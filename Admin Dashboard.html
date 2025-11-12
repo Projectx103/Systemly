@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Systemly</title>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet"> 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
@@ -280,44 +279,25 @@
 
         /* Stats Cards */
         .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
-}
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
 
-.stat-card {
-    background: linear-gradient(135deg, var(--white) 0%, #fafbfc 100%);
-    padding: 2rem;
-    border-radius: 16px;
-    border: 1px solid var(--border);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
 
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-}
-
-.stat-card:hover::before {
-    transform: scaleX(1);
-}
-
-.stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-    border-color: var(--primary);
-}
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border-color: var(--primary);
+        }
 
         .stat-header {
             display: flex;
@@ -1246,8 +1226,9 @@
             .action-buttons {
                 flex-direction: row;
             }
-
-
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
             .filters {
                 flex-direction: column;
                 align-items: stretch;
@@ -1381,7 +1362,7 @@
     <header class="admin-header">
         <div class="header-left">
             <a href="index.html" class="header-logo">Systemly</a>
-            <span class="header-badge"><i class="fas fa-shield-alt"></i> ADMIN PANEL</span>
+            <span class="header-badge">ADMIN PANEL</span>
         </div>
         <div class="header-right">
             <div class="header-time" id="currentTime">Loading...</div>
@@ -1403,44 +1384,39 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Overview</div>
                     <div class="nav-item active" data-view="dashboard">
-                        <span class="nav-icon"><i class="fas fa-tachometer-alt"></i></span>
-			<span>Dashboard</span>
+                        <span class="nav-icon">📊</span>
+                        <span>Dashboard</span>
                     </div>
-<!-- Analytics -->
-<span class="nav-icon"><i class="fas fa-chart-line"></i></span>
-<span>Analytics</span>
+                    <div class="nav-item" data-view="analytics">
+                        <span class="nav-icon">📈</span>
+                        <span>Analytics</span>
                     </div>
                 </div>
 
                 <div class="nav-section">
                     <div class="nav-section-title">Listings</div>
                     <div class="nav-item" data-view="listings">
-<!-- All Listings -->
-<span class="nav-icon"><i class="fas fa-list-ul"></i></span>
-<span>All Listings</span>
+                        <span class="nav-icon">📋</span>
+                        <span>All Listings</span>
                     </div>
                     <div class="nav-item" data-view="pending">
-<!-- Pending -->
-<span class="nav-icon"><i class="fas fa-hourglass-half"></i></span>
-<span>Pending</span>
+                        <span class="nav-icon">⏳</span>
+                        <span>Pending</span>
                         <span class="nav-badge" id="pendingBadge">0</span>
                     </div>
                     <div class="nav-item" data-view="approved">
-<!-- Approved -->
-<span class="nav-icon"><i class="fas fa-check-double"></i></span>
-<span>Approved</span>
+                        <span class="nav-icon">✅</span>
+                        <span>Approved</span>
                     </div>
                     <div class="nav-item" data-view="rejected">
-<!-- Rejected -->
-<span class="nav-icon"><i class="fas fa-ban"></i></span>
-<span>Rejected</span>
+                        <span class="nav-icon">❌</span>
+                        <span>Rejected</span>
                     </div>
                 </div>
 
 <div class="nav-item" data-view="file-review">
-<!-- File Reviews -->
-<span class="nav-icon"><i class="fas fa-folder-open"></i></span>
-<span>File Reviews</span>
+    <span class="nav-icon">📁</span>
+    <span>File Reviews</span>
     <span class="nav-badge" id="fileReviewBadge" style="display: none;">0</span>
 </div>
 
@@ -1448,14 +1424,12 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Management</div>
                     <div class="nav-item" data-view="users">
-<!-- Users -->
-<span class="nav-icon"><i class="fas fa-users"></i></span>
-<span>Users</span>
+                        <span class="nav-icon">👥</span>
+                        <span>Users</span>
                     </div>
                     <div class="nav-item" data-view="settings">
-<!-- Settings -->
-<span class="nav-icon"><i class="fas fa-cog"></i></span>
-<span>Settings</span>
+                        <span class="nav-icon">⚙️</span>
+                        <span>Settings</span>
                     </div>
                 </div>
             </nav>
@@ -1471,12 +1445,12 @@
                         <p>Monitor and manage all platform activities</p>
                     </div>
                     <div class="top-actions">
-<button class="btn btn-outline" onclick="refreshData()">
-    <i class="fas fa-sync-alt"></i> Refresh
-</button>
-<button class="btn btn-primary" onclick="exportData()">
-    <i class="fas fa-download"></i> Export Data
-</button>
+                        <button class="btn btn-outline" onclick="refreshData()">
+                            🔄 Refresh
+                        </button>
+                        <button class="btn btn-primary" onclick="exportData()">
+                            📥 Export Data
+                        </button>
                     </div>
                 </div>
 
@@ -1488,7 +1462,7 @@
                                 <div class="stat-number" id="totalListings">0</div>
                                 <div class="stat-label">Total Listings</div>
                             </div>
-                            <div class="stat-icon total"><i class="fas fa-chart-bar"></i></div>
+                            <div class="stat-icon total">📊</div>
                         </div>
                         <div class="stat-change positive">↗ +12% this month</div>
                     </div>
@@ -1499,7 +1473,7 @@
                                 <div class="stat-number" id="pendingListings">0</div>
                                 <div class="stat-label">Pending Approval</div>
                             </div>
-                            <div class="stat-icon pending"><i class="fas fa-clock"></i></div>
+                            <div class="stat-icon pending">⏳</div>
                         </div>
                         <div class="stat-change positive">Needs attention</div>
                     </div>
@@ -1510,7 +1484,7 @@
                                 <div class="stat-number" id="approvedListings">0</div>
                                 <div class="stat-label">Approved</div>
                             </div>
-                            <div class="stat-icon approved"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-icon approved">✅</div>
                         </div>
                         <div class="stat-change positive">↗ +8% this week</div>
                     </div>
@@ -1521,7 +1495,7 @@
                                 <div class="stat-number" id="rejectedListings">0</div>
                                 <div class="stat-label">Rejected</div>
                             </div>
-                            <div class="stat-icon rejected"><i class="fas fa-times-circle"></i></div>
+                            <div class="stat-icon rejected">❌</div>
                         </div>
                         <div class="stat-change negative">↘ -5% this week</div>
                     </div>
@@ -1590,7 +1564,7 @@
                         <!-- Listings will be populated here -->
                     </div>
                     <div class="empty-state" id="emptyState" style="display: none;">
-                        <div class="empty-icon"><i class="fas fa-inbox" style="font-size: 4rem; color: var(--gray-medium);"></i></div>
+                        <div class="empty-icon">📭</div>
                         <h3>No Listings Found</h3>
                         <p>There are no listings matching your criteria</p>
                     </div>
@@ -1748,7 +1722,7 @@
                         </select>
                     </div>
                     <div class="search-box">
-                        <span class="search-icon"><i class="fas fa-search"></i></span>
+                        <span class="search-icon">🔍</span>
                         <input type="text" class="search-input" id="searchUsers" placeholder="Search users..." oninput="filterUsers()">
                     </div>
                 </div>
@@ -1817,7 +1791,7 @@
                         <div class="form-group">
                             <label>Currency</label>
                             <select class="form-input" id="settingCurrency">
-                                <option value="PHP">PHP - Philippine Peso</option>
+                                <option value="USD">USD - US Dollar</option>
                                 <option value="EUR">EUR - Euro</option>
                                 <option value="GBP">GBP - British Pound</option>
                             </select>
@@ -1906,7 +1880,7 @@
                     <div class="stat-number" id="pendingFileReviews">0</div>
                     <div class="stat-label">Pending Reviews</div>
                 </div>
-                <div class="stat-icon pending"><i class="fas fa-hourglass-half"></i></div>
+                <div class="stat-icon pending">⏳</div>
             </div>
         </div>
         <div class="stat-card">
@@ -1915,7 +1889,7 @@
                     <div class="stat-number" id="approvedFileReviews">0</div>
                     <div class="stat-label">Approved</div>
                 </div>
-                <div class="stat-icon approved"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-icon approved">✅</div>
             </div>
         </div>
         <div class="stat-card">
@@ -1924,7 +1898,7 @@
                     <div class="stat-number" id="rejectedFileReviews">0</div>
                     <div class="stat-label">Rejected</div>
                 </div>
-                <div class="stat-icon rejected"><i class="fas fa-times-circle"></i></div>
+                <div class="stat-icon rejected">❌</div>
             </div>
         </div>
     </div>
@@ -2164,7 +2138,7 @@ function updateAnalytics() {
     
     // Update summary cards
     document.getElementById('analyticsRevenue').textContent = 
-        `₱${(analytics.totalRevenue / 1000).toFixed(1)}K`;
+        `$${(analytics.totalRevenue / 1000).toFixed(1)}K`;
     document.getElementById('analyticsListingsValue').textContent = 
         `$${(analytics.totalListingsValue / 1000000).toFixed(2)}M`;
     document.getElementById('analyticsAvgPrice').textContent = 
@@ -2298,7 +2272,7 @@ function updateCharts(analytics) {
         priceChart = new Chart(priceCtx, {
             type: 'bar',
             data: {
-                labels: ['₱0-10K', '$10K-50K', '$50K-100K', '$100K-500K', '$500K+'],
+                labels: ['$0-10K', '$10K-50K', '$50K-100K', '$100K-500K', '$500K+'],
                 datasets: [{
                     label: 'Listings',
                     data: Object.values(analytics.priceRanges),
@@ -2955,22 +2929,22 @@ window.activateUserFromModal = async function(userId) {
                                 </button>
                                 ${listing.status === 'pending' ? `
                                     <button class="action-btn approve" onclick="approveListing('${listing.id}')">
-                                        <i class="fas fa-eye"></i> View Details
+                                        ✅ Approve
                                     </button>
                                     <button class="action-btn reject" onclick="rejectListing('${listing.id}')">
-                                        <i class="fas fa-times"></i> Reject
+                                        ❌ Reject
                                     </button>
                                 ` : listing.status === 'approved' ? `
                                     <button class="action-btn reject" onclick="unpublishListing('${listing.id}')">
-                                        <i class="fas fa-upload"></i> Unpublish
+                                        📤 Unpublish
                                     </button>
                                 ` : `
                                     <button class="action-btn approve" onclick="approveListing('${listing.id}')">
-                                        <i class="fas fa-check"></i> Approve
+                                        ✅ Approve
                                     </button>
                                 `}
                                 <button class="action-btn reject" onclick="deleteListing('${listing.id}')" style="background: var(--error); color: var(--white); border: none;">
-                                    <i class="fas fa-trash-alt"></i> Delete
+                                    🗑️ Delete
                                 </button>
                             </div>
                         </div>
@@ -3634,7 +3608,7 @@ window.filterUsers = function() {
             document.getElementById('settingTagline').value = 'Buy & Sell Digital Systems';
             document.getElementById('settingCommission').value = '10';
             document.getElementById('settingMinPrice').value = '1000';
-            document.getElementById('settingCurrency').value = 'PHP';
+            document.getElementById('settingCurrency').value = 'USD';
             document.getElementById('settingEmailNotifications').checked = true;
             document.getElementById('settingNewListingAlert').checked = true;
             document.getElementById('settingUserRegistration').checked = true;
@@ -3696,7 +3670,7 @@ async function loadFileReviews() {
         if (container) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon"><i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--error);"></i></div>
+                    <div class="empty-icon">❌</div>
                     <h3>Failed to Load Reviews</h3>
                     <p>${error.message}</p>
                     <button class="btn btn-primary" onclick="loadFileReviews()" style="margin-top: 1rem;">
@@ -3714,7 +3688,7 @@ function renderFileReviews() {
     if (allFileReviews.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon"><i class="fas fa-inbox" style="font-size: 4rem; color: var(--gray-medium);"></i></div>
+                <div class="empty-icon">📭</div>
                 <h3>No File Reviews</h3>
                 <p>No uploaded files pending review</p>
             </div>
@@ -3722,95 +3696,54 @@ function renderFileReviews() {
         return;
     }
     
-    container.innerHTML = `
-        <div style="display: grid; gap: 1.5rem; padding: 0;">
-            ${allFileReviews.map(review => `
-                <div style="background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'">
-                    
-                    <!-- Header Section -->
-                    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); padding: 1.5rem; border-bottom: 1px solid var(--border);">
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-                            <div style="flex: 1;">
-                                <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text);">
-                                    <i class="fas fa-box" style="color: var(--primary); margin-right: 0.5rem;"></i>
-                                    ${review.listingName}
-                                </h3>
-                                <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.9rem; color: var(--gray-dark);">
-                                    <span><i class="fas fa-user-tie" style="color: var(--secondary); margin-right: 0.4rem;"></i><strong>Seller:</strong> ${review.sellerName}</span>
-                                    <span><i class="fas fa-user" style="color: var(--accent); margin-right: 0.4rem;"></i><strong>Buyer:</strong> ${review.buyerName}</span>
-                                    <span><i class="fas fa-peso-sign" style="color: var(--primary); margin-right: 0.4rem;"></i><strong>Amount:</strong> <span style="color: var(--primary); font-weight: 700;">₱${parseInt(review.offerAmount || 0).toLocaleString()}</span></span>
-                                </div>
-                            </div>
-                            <div>
-                                ${review.status === 'pending-admin-review' ? 
-                                    '<span class="status-badge pending" style="padding: 0.6rem 1rem;"><i class="fas fa-clock"></i> PENDING REVIEW</span>' : 
-                                  review.status === 'admin-approved' ? 
-                                    '<span class="status-badge approved" style="padding: 0.6rem 1rem;"><i class="fas fa-check-circle"></i> APPROVED</span>' : 
-                                    '<span class="status-badge rejected" style="padding: 0.6rem 1rem;"><i class="fas fa-times-circle"></i> REJECTED</span>'}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Content Section -->
-                    <div style="padding: 1.5rem;">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-                            
-                            <!-- Files Count Card -->
-                            <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05)); padding: 1rem; border-radius: 10px; border-left: 4px solid var(--secondary);">
-                                <div style="display: flex; align-items: center; gap: 0.8rem;">
-                                    <div style="background: var(--secondary); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-file-alt"></i>
-                                    </div>
-                                    <div>
-                                        <div style="font-size: 0.85rem; color: var(--gray-dark); margin-bottom: 0.2rem;">Files Uploaded</div>
-                                        <div style="font-size: 1.4rem; font-weight: 700; color: var(--secondary);">${review.fileCount}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Upload Date Card -->
-                            <div style="background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(20, 184, 166, 0.05)); padding: 1rem; border-radius: 10px; border-left: 4px solid var(--accent);">
-                                <div style="display: flex; align-items: center; gap: 0.8rem;">
-                                    <div style="background: var(--accent); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-calendar-alt"></i>
-                                    </div>
-                                    <div>
-                                        <div style="font-size: 0.85rem; color: var(--gray-dark); margin-bottom: 0.2rem;">Uploaded</div>
-                                        <div style="font-size: 0.95rem; font-weight: 600; color: var(--accent);">${new Date(review.uploadedAt).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        ${review.instructions ? `
-                            <div style="background: #f8f9fa; padding: 1rem; border-radius: 10px; border-left: 4px solid var(--info); margin-bottom: 1.5rem;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                                    <i class="fas fa-info-circle" style="color: var(--info);"></i>
-                                    <strong style="color: var(--text);">Transfer Instructions</strong>
-                                </div>
-                                <p style="margin: 0; white-space: pre-wrap; font-size: 0.9rem; color: var(--gray-dark); line-height: 1.6;">${review.instructions}</p>
-                            </div>
-                        ` : ''}
-                        
-                        <!-- Action Buttons -->
-                        <div style="display: flex; gap: 0.8rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border);">
-                            <button class="btn btn-outline" onclick="viewFileReview('${review.id}')" style="display: flex; align-items: center; gap: 0.5rem;">
-                                <i class="fas fa-eye"></i> Review Files
-                            </button>
-                            ${review.status === 'pending-admin-review' ? `
-                                <button class="btn btn-outline" onclick="rejectFileReview('${review.id}')" style="color: var(--error); border-color: var(--error); display: flex; align-items: center; gap: 0.5rem;">
-                                    <i class="fas fa-times"></i> Reject
-                                </button>
-                                <button class="btn btn-primary" onclick="approveFileReview('${review.id}')" style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                            ` : ''}
-                        </div>
+    container.innerHTML = allFileReviews.map(review => `
+        <div class="listing-card" style="margin-bottom: 1.5rem;">
+            <div class="listing-content" style="flex: 1;">
+                <div style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">${review.listingName}</h3>
+                    <div style="display: flex; gap: 1rem; color: var(--gray); font-size: 0.9rem;">
+                        <span>👤 Seller: <strong>${review.sellerName}</strong></span>
+                        <span>🛒 Buyer: <strong>${review.buyerName}</strong></span>
+                        <span>💰 Amount: <strong style="color: var(--primary);">₱${parseInt(review.offerAmount || 0).toLocaleString()}</strong></span>
                     </div>
                 </div>
-            `).join('')}
+                
+                <div style="background: var(--gray-light); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                    <strong>Files Uploaded:</strong> ${review.fileCount} file(s)
+                    <div style="font-size: 0.9rem; color: var(--gray); margin-top: 0.3rem;">
+                        Uploaded: ${new Date(review.uploadedAt).toLocaleString()}
+                    </div>
+                </div>
+                
+                ${review.instructions ? `
+                    <div style="background: var(--bg); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                        <strong>Transfer Instructions:</strong>
+                        <p style="margin-top: 0.5rem; white-space: pre-wrap;">${review.instructions}</p>
+                    </div>
+                ` : ''}
+            </div>
+            
+            <div class="listing-actions">
+                <span class="status-badge ${review.status}">
+                    ${review.status === 'pending-admin-review' ? '⏳ PENDING' : 
+                      review.status === 'admin-approved' ? '✅ APPROVED' : '❌ REJECTED'}
+                </span>
+                <div class="action-buttons">
+                    <button class="action-btn view" onclick="viewFileReview('${review.id}')">
+                        👁️ Review Files
+                    </button>
+                    ${review.status === 'pending-admin-review' ? `
+                        <button class="action-btn approve" onclick="approveFileReview('${review.id}')">
+                            ✅ Approve
+                        </button>
+                        <button class="action-btn reject" onclick="rejectFileReview('${review.id}')">
+                            ❌ Reject
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
         </div>
-    `;
+    `).join('');
     
     document.getElementById('fileReviewCount').textContent = `${allFileReviews.length} submission${allFileReviews.length !== 1 ? 's' : ''}`;
 }
@@ -4046,7 +3979,7 @@ window.viewFile = async function(reviewId, filename, fileType) {
         console.error('Error viewing file:', error);
         body.innerHTML = `
             <div class="empty-state" style="padding: 3rem;">
-                <div class="empty-icon"><i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--error);"></i></div>
+                <div class="empty-icon">❌</div>
                 <h3>Failed to Load File</h3>
                 <p>${error.message}</p>
                 <button class="btn btn-primary" onclick="viewFile('${reviewId}', '${filename}', '${fileType}')" style="margin-top: 1rem;">
@@ -4295,7 +4228,7 @@ const titles = {
                 document.getElementById('settingTagline').value = settings.tagline || 'Buy & Sell Digital Systems';
                 document.getElementById('settingCommission').value = settings.commission || '10';
                 document.getElementById('settingMinPrice').value = settings.minPrice || '1000';
-                document.getElementById('settingCurrency').value = settings.currency || 'PHP';
+                document.getElementById('settingCurrency').value = settings.currency || 'USD';
                 document.getElementById('settingEmailNotifications').checked = settings.emailNotifications !== false;
                 document.getElementById('settingNewListingAlert').checked = settings.newListingAlert !== false;
                 document.getElementById('settingUserRegistration').checked = settings.userRegistration !== false;
