@@ -1309,6 +1309,13 @@ let currentChart = null;
 let deleteListingId = null;
 let sellerOffers = [];
 let sellerMessages = [];
+let currentOfferForUpload = null;
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+let uploadedFilesData = [];
+
+
+
+
 
 
 // ============================================
@@ -3897,6 +3904,7 @@ window.acceptOffer = async function(offerId) {
 
 
 // Add this function after acceptOffer
+// Add this function after acceptOffer
 window.reopenFileUploadModal = async function(offerId) {
     const offer = sellerOffers.find(o => o.id === offerId);
     
@@ -3905,15 +3913,14 @@ window.reopenFileUploadModal = async function(offerId) {
         return;
     }
     
-    if (offer.status !== 'accepted-pending-upload') {
+    if (offer.status !== 'accepted-pending-upload' && offer.status !== 'admin-rejected') {
         showToast('This offer is not in the correct status for file upload', 'error');
         return;
     }
     
+    // Call the main openFileUploadModal function
     openFileUploadModal(offer);
 }
-
-
 
 
 
@@ -3984,30 +3991,39 @@ window.openFileUploadModal = function(offer) {
     const dropZone = document.getElementById('fileDropZone');
     const fileInput = document.getElementById('fileUploadInput');
     
-    dropZone.onclick = () => fileInput.click();
+    // Remove old event listeners by cloning
+    const newDropZone = dropZone.cloneNode(true);
+    dropZone.parentNode.replaceChild(newDropZone, dropZone);
+    const newFileInput = document.getElementById('fileUploadInput');
     
-    fileInput.onchange = handleFileSelection;
+    newDropZone.onclick = () => newFileInput.click();
     
-    dropZone.ondragover = (e) => {
+    newFileInput.onchange = handleFileSelection;
+    
+    newDropZone.ondragover = (e) => {
         e.preventDefault();
-        dropZone.style.borderColor = 'var(--primary)';
-        dropZone.style.background = 'rgba(249, 115, 22, 0.05)';
+        newDropZone.style.borderColor = 'var(--primary)';
+        newDropZone.style.background = 'rgba(249, 115, 22, 0.05)';
     };
     
-    dropZone.ondragleave = () => {
-        dropZone.style.borderColor = '';
-        dropZone.style.background = '';
+    newDropZone.ondragleave = () => {
+        newDropZone.style.borderColor = '';
+        newDropZone.style.background = '';
     };
     
-    dropZone.ondrop = (e) => {
+    newDropZone.ondrop = (e) => {
         e.preventDefault();
-        dropZone.style.borderColor = '';
-        dropZone.style.background = '';
-        handleFileSelection({ target: { files: e.dataTransfer.files } });
+        newDropZone.style.borderColor = '';
+        newDropZone.style.background = '';
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        newFileInput.files = files;
+        handleFileSelection({ target: { files: files } });
     };
     
     document.getElementById('fileUploadModal').classList.add('active');
 }
+
 
 window.closeFileUploadModal = function() {
     document.getElementById('fileUploadModal').classList.remove('active');
@@ -4033,10 +4049,9 @@ function handleFileSelection(event) {
             size: file.size,
             type: file.type
         });
-        
-        renderUploadedFilesList();
     });
     
+    renderUploadedFilesList();
     showToast(`${files.length} file(s) added`, 'success');
 }
 
@@ -4051,11 +4066,11 @@ function renderUploadedFilesList() {
     
     listDiv.style.display = 'block';
     
-    container.innerHTML = uploadedFilesData.map((file, index) => `
+    container.innerHTML = uploadedFilesData.map((fileData, index) => `
         <div style="display: flex; justify-content: space-between; align-items: center; background: var(--gray-light); padding: 1rem; border-radius: 10px; margin-bottom: 0.5rem;">
             <div style="flex: 1;">
-                <strong>${file.name}</strong>
-                <div style="font-size: 0.85rem; color: var(--gray);">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                <strong>${fileData.name}</strong>
+                <div style="font-size: 0.85rem; color: var(--gray);">${(fileData.size / 1024 / 1024).toFixed(2)} MB</div>
             </div>
             <button type="button" class="btn btn-danger" onclick="removeUploadedFile(${index})" style="padding: 0.5rem 1rem;">
                 <i class="fa-solid fa-trash"></i>
@@ -4070,7 +4085,7 @@ window.removeUploadedFile = function(index) {
     showToast('File removed', 'info');
 }
 
-// Handle form submission
+// Handle form submission - should be inside DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('fileUploadForm');
     if (form) {
@@ -4107,9 +4122,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 formData.append('whatsIncluded', listing?.whatsIncluded || '');
                 
                 // Add all files
-                uploadedFilesData.forEach((fileData, index) => {
+                uploadedFilesData.forEach((fileData) => {
                     formData.append('files', fileData.file);
                 });
+                
+                console.log('📤 Uploading', uploadedFilesData.length, 'files for offer:', currentOfferForUpload.id);
                 
                 // Upload to backend (like Storagetest.html)
                 const response = await fetch('https://systemly.onrender.com/api/upload-offer-files', {
@@ -4131,6 +4148,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     showToast('✅ Files uploaded successfully! Admin will review shortly.', 'success');
                     closeFileUploadModal();
+                    
+                    // Reload offers to show updated status
+                    await loadSellerOffers();
                 } else {
                     throw new Error(result.error || 'Upload failed');
                 }
