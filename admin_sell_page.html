@@ -3944,24 +3944,13 @@ window.rejectOffer = async function(offerId) {
     }
 }
 
-
-    tabContainer.innerHTML = tabContent;
-    document.getElementById(`tab-${page}`).classList.add('active');
-
-    // Special logic for data loading (ADDITIONS HERE)
-    if (page === 'dashboard') {
-        initializeChart();
-    }
-    if (page === 'offers') { // ADDED: Load offers data when switching to this tab
-        loadSellerOffers();
-    }
-    if (page === 'messages') { // ADDED: Load messages data when switching to this tab
-        loadSellerMessages();
-    }
-console.log('✅ Offers system loaded');
+console.log('✅ Offers & Messages system loaded');
 
 
 
+// ============================================
+// FILE UPLOAD FOR ACCEPTED OFFERS
+// ============================================
 
 window.openFileUploadModal = function(offer) {
     currentOfferForUpload = offer;
@@ -4017,6 +4006,22 @@ window.openFileUploadModal = function(offer) {
     document.getElementById('fileUploadModal').classList.add('active');
 }
 
+window.reopenFileUploadModal = async function(offerId) {
+    const offer = sellerOffers.find(o => o.id === offerId);
+    
+    if (!offer) {
+        showToast('Offer not found', 'error');
+        return;
+    }
+    
+    if (offer.status !== 'accepted-pending-upload' && offer.status !== 'admin-rejected') {
+        showToast('This offer is not in the correct status for file upload', 'error');
+        return;
+    }
+    
+    // Call the main openFileUploadModal function
+    openFileUploadModal(offer);
+}
 
 window.closeFileUploadModal = function() {
     document.getElementById('fileUploadModal').classList.remove('active');
@@ -4078,7 +4083,7 @@ window.removeUploadedFile = function(index) {
     showToast('File removed', 'info');
 }
 
-// Handle form submission - should be inside DOMContentLoaded
+// Handle form submission
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('fileUploadForm');
     if (form) {
@@ -4158,7 +4163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
+console.log('🚀 Systemly Seller Dashboard - Complete Version Loaded');
 
 
 
