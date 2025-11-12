@@ -2644,15 +2644,15 @@ function renderUsers() {
                 <td>
                     <div style="display: flex; gap: 0.5rem;">
                         <button class="action-btn view" onclick="viewUser('${user.id}')" style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
-                            👁️ View
+                            View
                         </button>
                         ${user.status === 'active' ? `
                             <button class="action-btn reject" onclick="suspendUser('${user.id}')" style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
-                                🚫 Suspend
+                                 Suspend
                             </button>
                         ` : `
                             <button class="action-btn approve" onclick="activateUser('${user.id}')" style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
-                                ✅ Activate
+                                 Activate
                             </button>
                         `}
                     </div>
@@ -2946,7 +2946,7 @@ window.activateUserFromModal = async function(userId) {
                             </span>
                             <div class="action-buttons">
                                 <button class="action-btn view" onclick="viewListing('${listing.id}')">
-                                    👁️ View Details
+                                    View Details
                                 </button>
                                 ${listing.status === 'pending' ? `
                                     <button class="action-btn approve" onclick="approveListing('${listing.id}')">
@@ -3883,10 +3883,10 @@ window.viewFileReview = async function(reviewId) {
         </div>
         <div style="display: flex; gap: 0.5rem;">
             <button class="btn btn-outline" onclick="viewFile('${reviewId}', '${encodeURIComponent(file.filename)}', '${file.type || ''}')" style="background: var(--info); color: white; border-color: var(--info);">
-                👁️ View
+                 View
             </button>
             <button class="btn btn-outline" onclick="downloadFile('${reviewId}', '${file.filename}')">
-                📥 Download
+                 Download
             </button>
         </div>
     </div>
