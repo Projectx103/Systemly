@@ -1205,12 +1205,19 @@ let savedListings = [];
 let inquiries = [];
 let purchases = [];
 let recentlyViewed = [];
+let myOffers = [];
+let myMessages = [];
+let fileReviews = [];
 let listingsUnsubscribe = null;
 
 
 
 
 / ============================================
+// LOAD OFFERS
+// ============================================
+
+// ============================================
 // LOAD OFFERS
 // ============================================
 
@@ -1224,6 +1231,9 @@ async function loadOffers() {
     if (data.success) {
       myOffers = data.offers;
       console.log('✅ Loaded offers:', myOffers.length);
+      
+      // Check for file reviews
+      await loadFileReviews();
     } else {
       myOffers = [];
     }
@@ -1231,6 +1241,39 @@ async function loadOffers() {
   } catch (error) {
     console.error('❌ Error loading offers:', error);
     myOffers = [];
+  }
+}
+
+// ============================================
+// LOAD FILE REVIEWS FOR BUYER
+// ============================================
+
+async function loadFileReviews() {
+  try {
+    console.log('📥 Loading file reviews for buyer...');
+    
+    const response = await fetch(`${API_URL}/api/file-reviews/buyer/${userData.id}`);
+    const data = await response.json();
+    
+    if (data.success) {
+      fileReviews = data.reviews || [];
+      console.log('✅ Loaded file reviews:', fileReviews.length);
+      
+      // Update offer statuses based on file review status
+      fileReviews.forEach(review => {
+        const offer = myOffers.find(o => o.id === review.offer_id);
+        if (offer && review.status === 'admin-approved') {
+          offer.fileReviewStatus = 'approved';
+          offer.fileReviewId = review.id;
+        }
+      });
+    } else {
+      fileReviews = [];
+    }
+    
+  } catch (error) {
+    console.error('❌ Error loading file reviews:', error);
+    fileReviews = [];
   }
 }
 
@@ -1284,9 +1327,7 @@ onAuthStateChanged(auth, async (user) => {
     window.location.href = 'login.html';
     return;
   }
-
   console.log('✅ User authenticated:', user.email);
-
   try {
     const userDocRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userDocRef);
@@ -1327,6 +1368,13 @@ onAuthStateChanged(auth, async (user) => {
         console.error('❌ Error in user snapshot:', error);
       });
       
+      // ✅ Set up real-time listener for offers and file reviews
+      setInterval(async () => {
+        await loadOffers();
+        renderOffers();
+        updateStats();
+      }, 10000); // Check every 10 seconds for file review updates
+      
       // Ensure buyer role
       if (userData.role !== 'buyer') {
         console.log('⚠️ User is not a buyer, but allowing access...');
@@ -1353,12 +1401,12 @@ onAuthStateChanged(auth, async (user) => {
     }
     
     // Load data
-await loadMarketplaceListings();
-await loadSavedListings();
-await loadInquiries();
-await loadPurchases();
-await loadOffers();
-await loadMessages();
+    await loadMarketplaceListings();
+    await loadSavedListings();
+    await loadInquiries();
+    await loadPurchases();
+    await loadOffers(); // This will also load file reviews
+    await loadMessages();
     
     initializeDashboard();
     
@@ -1369,7 +1417,6 @@ await loadMessages();
     document.body.classList.add('loaded');
   }
 });
-
 // ============================================
 // LOAD MARKETPLACE LISTINGS
 // ============================================
@@ -1759,10 +1806,15 @@ function renderOffers() {
       pending: 'warning',
       accepted: 'success',
       rejected: 'error',
-      countered: 'info'
+      countered: 'info',
+      'files-uploaded': 'info',
+      'files-ready': 'success'
     };
     
     const statusColor = statusColors[offer.status] || 'pending';
+    
+    // Check if files are ready for this offer
+    const hasApprovedFiles = offer.fileReviewStatus === 'approved';
     
     return `
       <div class="inquiry-card">
@@ -1774,9 +1826,35 @@ function renderOffers() {
             </p>
           </div>
           <span class="inquiry-status ${statusColor}">
-            ${offer.status.toUpperCase()}
+            ${hasApprovedFiles ? 'FILES READY' : offer.status.toUpperCase()}
           </span>
         </div>
+        
+        ${hasApprovedFiles ? `
+          <div style="background: linear-gradient(135deg, var(--success), var(--accent)); color: white; padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+              <i class="fa-solid fa-check-circle" style="font-size: 2rem;"></i>
+              <div>
+                <h4 style="margin-bottom: 0.3rem;">✅ Files Approved by Admin</h4>
+                <p style="opacity: 0.9; font-size: 0.9rem;">The seller has uploaded all necessary files and they have been verified. Proceed with payment to complete the purchase.</p>
+              </div>
+            </div>
+            <button class="btn" style="background: white; color: var(--success); width: 100%; margin-top: 1rem; font-weight: 700; font-size: 1.1rem;" 
+                    onclick="proceedToPayment('${offer.id}', '${offer.fileReviewId}')">
+              <i class="fa-solid fa-credit-card"></i> Proceed to Payment - ₱${parseFloat(offer.offer_amount).toLocaleString()}
+            </button>
+          </div>
+        ` : offer.status === 'files-uploaded' ? `
+          <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 10px; margin: 1rem 0; border-left: 4px solid var(--info);">
+            <div style="display: flex; align-items: center; gap: 0.8rem;">
+              <i class="fa-solid fa-hourglass-half" style="color: var(--info); font-size: 1.5rem;"></i>
+              <div>
+                <strong>Files Uploaded - Pending Admin Review</strong>
+                <p style="font-size: 0.9rem; color: var(--gray); margin-top: 0.3rem;">The seller has uploaded the transfer files. Our admin team is currently reviewing them to ensure everything is in order.</p>
+              </div>
+            </div>
+          </div>
+        ` : ''}
         
         <div style="background: var(--gray-light); padding: 1rem; border-radius: 10px; margin: 1rem 0;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1818,6 +1896,12 @@ function renderOffers() {
               <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem; background: var(--error);" 
                       onclick="cancelOffer('${offer.id}')">
                 <i class="fa-solid fa-times"></i> Cancel Offer
+              </button>
+            ` : ''}
+            ${offer.status === 'countered' ? `
+              <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;" 
+                      onclick="acceptCounterOffer('${offer.id}', '${offer.counter_amount}')">
+                <i class="fa-solid fa-check"></i> Accept Counter
               </button>
             ` : ''}
           </div>
@@ -1880,6 +1964,135 @@ function renderMessages() {
     </div>
   `).join('');
 }
+
+
+
+
+
+// ============================================
+// PROCEED TO PAYMENT
+// ============================================
+
+window.proceedToPayment = async function(offerId, fileReviewId) {
+  if (!confirm('Proceed to payment? You will be redirected to complete the transaction.')) return;
+  
+  try {
+    // Show loading
+    showToast('Preparing payment...', 'info');
+    
+    // Here you would typically:
+    // 1. Create a payment intent
+    // 2. Redirect to payment gateway
+    // 3. Handle payment confirmation
+    
+    // For now, we'll simulate the payment process
+    const paymentConfirmed = confirm(`
+Payment Details:
+Amount: ₱${myOffers.find(o => o.id === offerId)?.offer_amount}
+
+Click OK to confirm payment (Demo Mode)
+Click Cancel to return
+    `);
+    
+    if (paymentConfirmed) {
+      // Update offer status to paid
+      const response = await fetch(`${API_URL}/api/offers/${offerId}/payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          paymentStatus: 'completed',
+          paymentDate: new Date().toISOString(),
+          fileReviewId: fileReviewId
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        showToast('Payment successful! Files will be transferred to you shortly.', 'success');
+        
+        // Reload offers and file reviews
+        await loadOffers();
+        renderOffers();
+        updateStats();
+        
+        // Show success message with download option
+        setTimeout(() => {
+          if (confirm('Payment completed! Would you like to download the files now?')) {
+            downloadPurchasedFiles(fileReviewId);
+          }
+        }, 1000);
+      } else {
+        throw new Error(data.error || 'Payment failed');
+      }
+    }
+    
+  } catch (error) {
+    console.error('❌ Payment error:', error);
+    showToast('Payment failed: ' + error.message, 'error');
+  }
+}
+
+// ============================================
+// DOWNLOAD PURCHASED FILES
+// ============================================
+
+window.downloadPurchasedFiles = async function(fileReviewId) {
+  try {
+    showToast('Preparing files for download...', 'info');
+    
+    // Get file list from review
+    const response = await fetch(`${API_URL}/api/file-reviews/buyer/${fileReviewId}/files`);
+    const data = await response.json();
+    
+    if (data.success && data.files && data.files.length > 0) {
+      // Download each file
+      for (const file of data.files) {
+        await downloadFile(fileReviewId, file.filename);
+        await new Promise(resolve => setTimeout(resolve, 500)); // Delay between downloads
+      }
+      
+      showToast('All files downloaded successfully!', 'success');
+    } else {
+      throw new Error('No files available for download');
+    }
+    
+  } catch (error) {
+    console.error('❌ Download error:', error);
+    showToast('Failed to download files: ' + error.message, 'error');
+  }
+}
+
+async function downloadFile(reviewId, filename) {
+  try {
+    const response = await fetch(`${API_URL}/api/admin/download-file/${reviewId}/${encodeURIComponent(filename)}`);
+    
+    if (!response.ok) throw new Error('Download failed');
+    
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    
+  } catch (error) {
+    console.error('Download error for ' + filename + ':', error);
+    throw error;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
