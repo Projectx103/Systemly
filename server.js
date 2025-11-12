@@ -394,6 +394,56 @@ app.get('/api/admin/file-review/:offerId', async (req, res) => {
   }
 });
 
+
+
+
+// Admin: View file content (for preview)
+app.get('/api/admin/view-file/:offerId/:filename', async (req, res) => {
+  try {
+    const { offerId, filename } = req.params;
+    
+    const result = await pool.query(
+      `SELECT file_name, file_data, file_type
+       FROM offer_files
+       WHERE offer_id = $1 AND file_name = $2
+       LIMIT 1`,
+      [offerId, filename]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    const file = result.rows[0];
+    
+    // Return file data as JSON for preview
+    res.json({
+      success: true,
+      filename: file.file_name,
+      type: file.file_type,
+      data: file.file_data, // Base64 data
+      size: Buffer.from(file.file_data, 'base64').length
+    });
+    
+    console.log(`👁️ Admin previewing: ${file.file_name}`);
+
+  } catch (error) {
+    console.error('View file error:', error);
+    res.status(500).json({ error: 'Failed to load file' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
 // Admin: Download file
 app.get('/api/admin/download-file/:offerId/:filename', async (req, res) => {
   try {
@@ -494,3 +544,4 @@ app.listen(PORT, () => {
   console.log(`📤 Offer file upload: /api/upload-offer-files`);
   console.log(`👨‍💼 Admin file reviews: /api/admin/file-reviews`);
 });
+
