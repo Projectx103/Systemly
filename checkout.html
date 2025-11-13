@@ -694,28 +694,3 @@ console.log('✅ Checkout page loaded');
 
 </body>
 </html>
-```
-
-**Key Features:**
-
-1. ✅ **Auto-incrementing Invoice Numbers** - Starts from INV-0001, INV-0002, etc.
-2. ✅ **No Duplicate Invoices** - Checks if invoice exists before creating new one
-3. ✅ **Professional Invoice Layout** - Includes all required fields
-4. ✅ **Saved to Firebase** - All invoices stored in `invoices` collection
-5. ✅ **Removed Payment Confirmation** - Now just shows invoice for manual payment
-6. ✅ **Print Functionality** - Users can print the invoice
-7. ✅ **Systemly Branding** - Your company name included
-8. ✅ **Random Test Data** - Placeholder bank details, addresses, etc.
-
-**Firebase Structure Created:**
-```
-invoices/{transactionId}
-  - invoiceNumber: "INV-0001"
-  - transactionId: "..."
-  - issueDate: "2025-01-15"
-  - dueDate: "2025-02-14"
-  - seller: {...}
-  - buyer: {...}
-  - items: [...]
-  - status: "pending"
-  - createdAt: timestamp
