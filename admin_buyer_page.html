@@ -1340,7 +1340,12 @@ async function loadMessages() {
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     console.log('❌ No user authenticated, redirecting to login...');
-    window.location.href = 'login.html';
+    // Hide loading screen before redirect
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.body.classList.add('loaded');
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 500);
     return;
   }
   console.log('✅ User authenticated:', user.email);
@@ -1428,11 +1433,21 @@ onAuthStateChanged(auth, async (user) => {
     
   } catch (error) {
     console.error('❌ Error loading user data:', error);
-    showToast('Failed to load dashboard. Please refresh the page.', 'error');
     document.getElementById('loadingScreen').classList.add('hidden');
     document.body.classList.add('loaded');
+    showToast('Failed to load dashboard. Please refresh the page.', 'error');
   }
 });
+
+// Add timeout fallback for loading screen
+setTimeout(() => {
+  const loadingScreen = document.getElementById('loadingScreen');
+  if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+    console.warn('⏰ Loading timeout - hiding loading screen');
+    loadingScreen.classList.add('hidden');
+    document.body.classList.add('loaded');
+  }
+}, 5000); // 5 second timeout
 // ============================================
 // LOAD MARKETPLACE LISTINGS
 // ============================================
@@ -2030,11 +2045,22 @@ window.proceedToPayment = async function(offerId, fileReviewId) {
     return;
   }
   
+  const btn = event.target;
+  const originalHTML = btn.innerHTML;
+  
   try {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating transaction...';
+    
+    // Validate required data
+    if (!userData || !userData.id) {
+      throw new Error('User not authenticated');
+    }
+    
     // Create transaction checkout summary in Firebase
     const transactionData = {
       offerId: offerId,
-      fileReviewId: fileReviewId,
+      fileReviewId: fileReviewId || null,
       buyerId: userData.id,
       buyerEmail: userData.email,
       buyerName: userData.name,
@@ -2057,12 +2083,28 @@ window.proceedToPayment = async function(offerId, fileReviewId) {
     // Store transaction ID in sessionStorage for checkout page
     sessionStorage.setItem('pendingTransactionId', transactionRef.id);
     
+    showToast('Redirecting to checkout...', 'success');
+    
     // Redirect to checkout summary page
-    window.location.href = `checkout.html?transaction=${transactionRef.id}`;
+    setTimeout(() => {
+      window.location.href = `checkout.html?transaction=${transactionRef.id}`;
+    }, 500);
     
   } catch (error) {
     console.error('❌ Error creating transaction:', error);
-    showToast('Failed to proceed to payment: ' + error.message, 'error');
+    
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+    
+    let errorMessage = 'Failed to proceed to payment';
+    
+    if (error.code === 'permission-denied') {
+      errorMessage = 'Permission denied. Please ensure you are logged in and try again.';
+    } else if (error.message) {
+      errorMessage += ': ' + error.message;
+    }
+    
+    showToast(errorMessage, 'error');
   }
 }
 
