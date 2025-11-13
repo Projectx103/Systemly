@@ -538,10 +538,94 @@ app.post('/api/admin/reject-files/:offerId', async (req, res) => {
   }
 });
 
+
+app.get('/api/file-reviews/offer/:offerId', async (req, res) => {
+  try {
+    const { offerId } = req.params;
+    
+    console.log(`🔍 Looking for file review for offer: ${offerId}`);
+    
+    // Query to get the first file review record for this offer
+    const result = await pool.query(
+      `SELECT DISTINCT ON (offer_id)
+        offer_id as id, 
+        listing_id, 
+        seller_id, 
+        seller_name,
+        buyer_id, 
+        buyer_name, 
+        buyer_email, 
+        listing_name,
+        offer_amount, 
+        instructions, 
+        whats_included,
+        status, 
+        created_at,
+        (SELECT COUNT(*) FROM offer_files of2 WHERE of2.offer_id = offer_files.offer_id) as file_count
+      FROM offer_files
+      WHERE offer_id = $1
+      ORDER BY offer_id, created_at DESC
+      LIMIT 1`,
+      [offerId]
+    );
+
+    if (result.rows.length === 0) {
+      console.log(`ℹ️ No file review found for offer ${offerId}`);
+      return res.json({ success: true, review: null });
+    }
+    
+    const review = result.rows[0];
+    
+    console.log(`✅ Found file review for offer ${offerId}: status=${review.status}`);
+    
+    res.json({ 
+      success: true, 
+      review: {
+        id: review.id,
+        listingId: review.listing_id,
+        listingName: review.listing_name,
+        sellerId: review.seller_id,
+        sellerName: review.seller_name,
+        buyerId: review.buyer_id,
+        buyerName: review.buyer_name,
+        buyerEmail: review.buyer_email,
+        offerAmount: review.offer_amount,
+        instructions: review.instructions,
+        whatsIncluded: review.whats_included,
+        status: review.status,
+        uploadedAt: review.created_at,
+        fileCount: parseInt(review.file_count)
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Error getting file review by offer:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📁 Original file exchange: /api/upload`);
   console.log(`📤 Offer file upload: /api/upload-offer-files`);
   console.log(`👨‍💼 Admin file reviews: /api/admin/file-reviews`);
 });
+
 
