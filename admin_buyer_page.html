@@ -1257,32 +1257,41 @@ async function loadOffers() {
   }
 }
 
+// ============================================
+// LOAD FILE REVIEWS - FIXED
+// ============================================
 async function loadFileReviews() {
   try {
     console.log('📥 Loading file reviews for buyer offers...');
     
-    // For each offer, check if files were uploaded and approved
+    // Set timeout helper
+    const timeout = (ms) => new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), ms)
+    );
+    
     for (const offer of myOffers) {
       try {
-        // Query backend for file reviews matching this offer
-        const response = await fetch(`${API_URL}/api/file-reviews/offer/${offer.id}`);
+        // Race between fetch and 3-second timeout
+        const response = await Promise.race([
+          fetch(`${API_URL}/api/file-reviews/offer/${offer.id}`),
+          timeout(3000)
+        ]);
         
         if (response.ok) {
           const data = await response.json();
           
           if (data.success && data.review) {
-            // Map status to what buyer needs to see
-            offer.fileReviewStatus = data.review.status; // will be 'admin-approved' when ready
-            offer.fileReviewId = data.review.id; // This is the offer_id from database
+            offer.fileReviewStatus = data.review.status;
+            offer.fileReviewId = data.review.id;
             offer.fileCount = data.review.fileCount || 0;
             
-            console.log(`✅ Offer ${offer.id}: File review status = ${data.review.status}, files = ${offer.fileCount}`);
+            console.log(`✅ Offer ${offer.id}: status=${data.review.status}, files=${offer.fileCount}`);
           } else {
-            console.log(`ℹ️ Offer ${offer.id}: No file review found`);
+            console.log(`ℹ️ Offer ${offer.id}: No file review`);
           }
         }
       } catch (err) {
-        console.warn(`File review check failed for offer ${offer.id}:`, err);
+        console.warn(`⚠️ File review timeout for offer ${offer.id}`);
       }
     }
     
@@ -1294,20 +1303,13 @@ async function loadFileReviews() {
 }
 
 // ============================================
-// LOAD MESSAGES  
+// LOAD MESSAGES - FIXED
 // ============================================
-
 async function loadMessages() {
   try {
     console.log('📥 Loading buyer messages...');
-    
-    // For buyers, we'll need to track messages they sent
-    // Since the backend only has seller messages endpoint,
-    // we'll use inquiries for now or you can add a buyer messages endpoint
-    
     myMessages = [];
     console.log('✅ Messages loaded');
-    
   } catch (error) {
     console.error('❌ Error loading messages:', error);
     myMessages = [];
@@ -1331,19 +1333,26 @@ async function loadMessages() {
 
 
 
-
-
 // ============================================
 // AUTH STATE OBSERVER
 // ============================================
 
+// ============================================
+// AUTH STATE OBSERVER - FIXED VERSION
+// ============================================
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     console.log('❌ No user authenticated, redirecting to login...');
-    window.location.href = 'login.html';
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.body.classList.add('loaded');
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 500);
     return;
   }
+  
   console.log('✅ User authenticated:', user.email);
+  
   try {
     const userDocRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userDocRef);
@@ -1362,21 +1371,17 @@ onAuthStateChanged(auth, async (user) => {
       
       console.log('✅ User document loaded:', userData);
       
-      // ✅ Set up real-time listener for user document updates
+      // Set up real-time listener for user document updates
       onSnapshot(userDocRef, async (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           
-          // Check if savedListings changed
           const oldSaved = userData.savedListings || [];
           const newSaved = data.savedListings || [];
           
           if (JSON.stringify(oldSaved) !== JSON.stringify(newSaved)) {
             console.log('🔄 Saved listings updated:', newSaved.length);
-            
             userData.savedListings = newSaved;
-            
-            // Reload saved listings
             await loadSavedListings();
           }
         }
@@ -1384,14 +1389,13 @@ onAuthStateChanged(auth, async (user) => {
         console.error('❌ Error in user snapshot:', error);
       });
       
-      // ✅ Set up real-time listener for offers and file reviews
+      // Set up polling for file reviews
       setInterval(async () => {
         await loadOffers();
         renderOffers();
         updateStats();
-      }, 10000); // Check every 10 seconds for file review updates
+      }, 10000);
       
-      // Ensure buyer role
       if (userData.role !== 'buyer') {
         console.log('⚠️ User is not a buyer, but allowing access...');
       }
@@ -1416,23 +1420,74 @@ onAuthStateChanged(auth, async (user) => {
       console.log('✅ New buyer user document created');
     }
     
-    // Load data
-    await loadMarketplaceListings();
-    await loadSavedListings();
-    await loadInquiries();
-    await loadPurchases();
-    await loadOffers(); // This will also load file reviews
-    await loadMessages();
+    // Load all data with individual error handling
+    console.log('🔄 Starting data load...');
     
+    try {
+      await loadMarketplaceListings();
+      console.log('✅ Step 1/6: Marketplace loaded');
+    } catch (e) {
+      console.error('❌ Marketplace load failed:', e);
+    }
+    
+    try {
+      await loadSavedListings();
+      console.log('✅ Step 2/6: Saved listings loaded');
+    } catch (e) {
+      console.error('❌ Saved listings load failed:', e);
+    }
+    
+    try {
+      await loadInquiries();
+      console.log('✅ Step 3/6: Inquiries loaded');
+    } catch (e) {
+      console.error('❌ Inquiries load failed:', e);
+    }
+    
+    try {
+      await loadPurchases();
+      console.log('✅ Step 4/6: Purchases loaded');
+    } catch (e) {
+      console.error('❌ Purchases load failed:', e);
+    }
+    
+    try {
+      await loadOffers();
+      console.log('✅ Step 5/6: Offers loaded');
+    } catch (e) {
+      console.error('❌ Offers load failed:', e);
+    }
+    
+    try {
+      await loadMessages();
+      console.log('✅ Step 6/6: Messages loaded');
+    } catch (e) {
+      console.error('❌ Messages load failed:', e);
+    }
+    
+    console.log('🎯 All data loaded, initializing dashboard...');
+    
+    // ALWAYS initialize dashboard
     initializeDashboard();
     
   } catch (error) {
-    console.error('❌ Error loading user data:', error);
-    showToast('Failed to load dashboard. Please refresh the page.', 'error');
+    console.error('❌ Critical error loading user data:', error);
     document.getElementById('loadingScreen').classList.add('hidden');
     document.body.classList.add('loaded');
+    showToast('Failed to load dashboard. Please refresh the page.', 'error');
   }
 });
+
+// Add timeout fallback AFTER the onAuthStateChanged block
+setTimeout(() => {
+  const loadingScreen = document.getElementById('loadingScreen');
+  if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+    console.warn('⏰ Loading timeout - forcing dashboard to display');
+    loadingScreen.classList.add('hidden');
+    document.body.classList.add('loaded');
+    showToast('Dashboard loaded (some data may be incomplete)', 'info');
+  }
+}, 5000);
 // ============================================
 // LOAD MARKETPLACE LISTINGS
 // ============================================
