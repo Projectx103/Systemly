@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice - Systemly</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #F97316;
+  --secondary: #6366F1;
+  --accent: #14B8A6;
+  --text: #1F2937;
+  --gray: #6B7280;
+  --gray-light: #F3F4F6;
+  --border: #E5E7EB;
+  --success: #10B981;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #F9FAFB;
+  color: var(--text);
+  line-height: 1.6;
+  padding: 2rem;
+}
+
+.no-print {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--text);
+  border: 2px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--secondary);
+  color: var(--secondary);
+}
+
+/* A4 Invoice Container */
+.invoice-wrapper {
+  max-width: 210mm;
+  margin: 0 auto;
+  background: white;
+  box-shadow: 0 0 30px rgba(0,0,0,0.1);
+}
+
+.invoice-page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm;
+  background: white;
+}
+
+/* Invoice Header */
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 3px solid var(--primary);
+}
+
+.company-info {
+  flex: 1;
+}
+
+.company-logo {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.company-tagline {
+  color: var(--gray);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.company-details {
+  font-size: 0.85rem;
+  color: var(--gray);
+  line-height: 1.8;
+}
+
+.invoice-title-section {
+  text-align: right;
+}
+
+.invoice-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.invoice-number {
+  font-size: 1.1rem;
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.invoice-date {
+  font-size: 0.9rem;
+  color: var(--gray);
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.status-paid {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+  border: 2px solid var(--success);
+}
+
+.status-pending {
+  background: rgba(249, 115, 22, 0.1);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+
+/* Parties Section */
+.parties-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.party-box {
+  padding: 1.5rem;
+  background: var(--gray-light);
+  border-radius: 8px;
+}
+
+.party-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gray);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.party-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.party-details {
+  font-size: 0.9rem;
+  color: var(--gray);
+  line-height: 1.8;
+}
+
+/* Invoice Table */
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.invoice-table thead {
+  background: var(--secondary);
+  color: white;
+}
+
+.invoice-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.invoice-table th:last-child,
+.invoice-table td:last-child {
+  text-align: right;
+}
+
+.invoice-table tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.invoice-table td {
+  padding: 1.25rem 1rem;
+}
+
+.item-description {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.item-subdescription {
+  font-size: 0.85rem;
+  color: var(--gray);
+  line-height: 1.6;
+}
+
+.item-qty {
+  text-align: center;
+  color: var(--gray);
+}
+
+/* Totals Section */
+.totals-section {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 3rem;
+}
+
+.totals-table {
+  width: 400px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.total-row.subtotal {
+  font-size: 0.95rem;
+}
+
+.total-row.tax {
+  font-size: 0.95rem;
+  color: var(--gray);
+}
+
+.total-row.grand-total {
+  padding: 1rem 0;
+  margin-top: 0.5rem;
+  border-top: 3px solid var(--secondary);
+  border-bottom: 3px solid var(--secondary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Payment Info */
+.payment-info {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(20, 184, 166, 0.05));
+  border: 2px solid var(--secondary);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.payment-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.payment-grid {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.payment-label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.payment-value {
+  color: var(--gray);
+}
+
+/* Terms & Notes */
+.terms-section {
+  background: var(--gray-light);
+  border-left: 4px solid var(--primary);
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin-bottom: 2rem;
+}
+
+.terms-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.terms-list {
+  list-style: none;
+  counter-reset: item;
+}
+
+.terms-list li {
+  counter-increment: item;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--gray);
+  line-height: 1.7;
+  padding-left: 2rem;
+  position: relative;
+}
+
+.terms-list li::before {
+  content: counter(item) ".";
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Footer */
+.invoice-footer {
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 2px solid var(--border);
+  color: var(--gray);
+  font-size: 0.85rem;
+}
+
+.invoice-footer p {
+  margin-bottom: 0.5rem;
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: white;
+    padding: 0;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  .invoice-wrapper {
+    box-shadow: none;
+    max-width: 100%;
+  }
+  
+  .invoice-page {
+    width: 100%;
+    padding: 15mm;
+    page-break-after: always;
+  }
+  
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.loader {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--gray-light);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-container {
+  text-align: center;
+  padding: 3rem;
+  color: var(--gray);
+}
+
+.error-container i {
+  font-size: 4rem;
+  color: #EF4444;
+  margin-bottom: 1rem;
+}
+</style>
+</head>
+<body>
+
+<!-- Action Buttons -->
+<div class="no-print">
+  <button class="btn btn-primary" onclick="window.print()">
+    <i class="fas fa-print"></i> Print Invoice
+  </button>
+  <button class="btn btn-secondary" onclick="downloadPDF()">
+    <i class="fas fa-download"></i> Download PDF
+  </button>
+  <a href="buyer_dashboard.html?tab=invoices" class="btn btn-secondary">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+  </a>
+</div>
+
+<!-- Invoice Container -->
+<div class="invoice-wrapper">
+  <div class="invoice-page" id="invoiceContent">
+    <div class="loading-container">
+      <div class="loader"></div>
+      <p style="margin-top: 1rem; color: var(--gray);">Loading invoice...</p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD3PQ5oWrzAXOHnb7wrmpRhL9DWIB7w9rE",
+  authDomain: "systemly-db.firebaseapp.com",
+  projectId: "systemly-db",
+  storageBucket: "systemly-db.firebasestorage.app",
+  messagingSenderId: "32599486733",
+  appId: "1:32599486733:web:16d34643c8f920a6fd8044"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentInvoice = null;
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+  
+  await loadInvoice();
+});
+
+async function loadInvoice() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const invoiceId = urlParams.get('id');
+  
+  if (!invoiceId) {
+    showError('Invoice ID not provided');
+    return;
+  }
+  
+  try {
+    const invoiceRef = doc(db, 'invoices', invoiceId);
+    const invoiceDoc = await getDoc(invoiceRef);
+    
+    if (!invoiceDoc.exists()) {
+      showError('Invoice not found');
+      return;
+    }
+    
+    currentInvoice = { id: invoiceId, ...invoiceDoc.data() };
+    renderInvoice(currentInvoice);
+    
+  } catch (error) {
+    console.error('Error loading invoice:', error);
+    showError('Failed to load invoice');
+  }
+}
+
+function renderInvoice(invoice) {
+  const content = document.getElementById('invoiceContent');
+  
+  const statusClass = invoice.status === 'paid' ? 'paid' : 'pending';
+  const statusText = invoice.status === 'paid' ? 'PAID' : 'PENDING';
+  
+  content.innerHTML = `
+    <!-- Invoice Header -->
+    <div class="invoice-header">
+      <div class="company-info">
+        <div class="company-logo">Systemly</div>
+        <div class="company-tagline">System Marketplace Platform</div>
+        <div class="company-details">
+          ${invoice.seller.address}<br>
+          Email: ${invoice.seller.contact}<br>
+          Phone: ${invoice.seller.phone}<br>
+          Tax ID: ${invoice.seller.taxId}
+        </div>
+      </div>
+      
+      <div class="invoice-title-section">
+        <div class="invoice-title">INVOICE</div>
+        <div class="invoice-number">${invoice.invoiceNumber}</div>
+        <div class="invoice-date">Issue Date: ${invoice.issueDate}</div>
+        <div class="invoice-date">Due Date: ${invoice.dueDate}</div>
+        <div class="status-badge status-${statusClass}">${statusText}</div>
+      </div>
+    </div>
+    
+    <!-- Billing Parties -->
+    <div class="parties-section">
+      <div class="party-box">
+        <div class="party-title">Bill From (Seller)</div>
+        <div class="party-name">${invoice.seller.companyName}</div>
+        <div class="party-details">
+          ${invoice.seller.address}<br>
+          ${invoice.seller.contact}<br>
+          ${invoice.seller.phone}<br>
+          Tax ID: ${invoice.seller.taxId}
+        </div>
+      </div>
+      
+      <div class="party-box">
+        <div class="party-title">Bill To (Buyer)</div>
+        <div class="party-name">${invoice.buyer.companyName}</div>
+        <div class="party-details">
+          ${invoice.buyer.address}<br>
+          ${invoice.buyer.contact}<br>
+          ${invoice.buyer.phone}<br>
+          Tax ID: ${invoice.buyer.taxId}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Invoice Items -->
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th style="width: 60px;">#</th>
+          <th>Description</th>
+          <th style="width: 80px; text-align: center;">Qty</th>
+          <th style="width: 150px; text-align: right;">Unit Price</th>
+          <th style="width: 150px; text-align: right;">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${invoice.items.map(item => `
+          <tr>
+            <td>${item.itemNumber}</td>
+            <td>
+              <div class="item-description">${item.description}</div>
+              <div class="item-subdescription">${item.subDescription}</div>
+            </td>
+            <td class="item-qty">${item.quantity}</td>
+            <td style="text-align: right;">₱${item.unitPrice.toLocaleString()}</td>
+            <td style="text-align: right; font-weight: 600;">₱${item.lineTotal.toLocaleString()}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    
+    <!-- Totals -->
+    <div class="totals-section">
+      <div class="totals-table">
+        <div class="total-row subtotal">
+          <span>Subtotal</span>
+          <span>₱${invoice.subtotal.toLocaleString()}</span>
+        </div>
+        <div class="total-row tax">
+          <span>Tax/VAT (${invoice.taxRate}%)</span>
+          <span>₱${invoice.taxAmount.toLocaleString()}</span>
+        </div>
+        <div class="total-row grand-total">
+          <span>Total Due</span>
+          <span>₱${invoice.totalDue.toLocaleString()}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Payment Information -->
+    <div class="payment-info">
+      <div class="payment-title">
+        <i class="fas fa-university"></i>
+        Payment Information
+      </div>
+      <div class="payment-grid">
+        <div class="payment-label">Bank Name:</div>
+        <div class="payment-value">${invoice.payment.bankName}</div>
+        
+        <div class="payment-label">Account Name:</div>
+        <div class="payment-value">${invoice.payment.accountName}</div>
+        
+        <div class="payment-label">Account Number:</div>
+        <div class="payment-value">${invoice.payment.accountNumber}</div>
+        
+        <div class="payment-label">SWIFT Code:</div>
+        <div class="payment-value">${invoice.payment.swiftCode}</div>
+        
+        <div class="payment-label">Payment Terms:</div>
+        <div class="payment-value">${invoice.payment.paymentTerms}</div>
+      </div>
+    </div>
+    
+    <!-- Terms & Conditions -->
+    <div class="terms-section">
+      <div class="terms-title">Terms & Conditions</div>
+      <ul class="terms-list">
+        <li>This invoice corresponds to the purchase and transfer of the system as agreed via the Systemly marketplace listing.</li>
+        <li>The seller certifies that they have full rights to transfer the assets and IP listed, and that no undisclosed liabilities exist.</li>
+        <li>The buyer has inspected the system, accepted the condition, and triggers the transfer upon receipt of payment.</li>
+        <li>Any disputes to be raised within 30 days of invoice date. Transfer of ownership is contingent upon full payment.</li>
+        <li>Once payment is confirmed by the administrator, the buyer will receive access to download all system files and assets.</li>
+      </ul>
+    </div>
+    
+    <!-- Footer -->
+    <div class="invoice-footer">
+      <p><strong>Systemly</strong> - System Marketplace Platform</p>
+      <p>This is a computer-generated invoice and is valid without signature</p>
+      <p style="margin-top: 1rem; font-size: 0.75rem;">
+        For questions about this invoice, please contact us at support@systemly.com
+      </p>
+    </div>
+  `;
+}
+
+function showError(message) {
+  const content = document.getElementById('invoiceContent');
+  content.innerHTML = `
+    <div class="error-container">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h2 style="margin-bottom: 0.5rem;">Error</h2>
+      <p>${message}</p>
+      <br>
+      <a href="buyer_dashboard.html?tab=invoices" class="btn btn-primary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+  `;
+}
+
+window.downloadPDF = function() {
+  window.print();
+}
+
+console.log('✅ Invoice viewer loaded');
+</script>
+
+</body>
+</html>
