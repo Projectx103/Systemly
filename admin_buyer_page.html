@@ -778,6 +778,258 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   background: rgba(249, 115, 22, 0.05);
 }
 
+/* Professional Offer Card Redesign */
+.offer-card {
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s;
+}
+
+.offer-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-color: var(--secondary);
+}
+
+.offer-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.offer-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.offer-subtitle {
+  font-size: 0.813rem;
+  color: var(--gray);
+}
+
+.offer-status-badge {
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.offer-status-badge.pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: #D97706;
+}
+
+.offer-status-badge.accepted {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+.offer-status-badge.paid {
+  background: rgba(16, 185, 129, 0.15);
+  color: #047857;
+}
+
+.offer-status-badge.rejected {
+  background: rgba(239, 68, 68, 0.1);
+  color: #DC2626;
+}
+
+.offer-status-badge.countered {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563EB;
+}
+
+.offer-amount-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.amount-box {
+  text-align: center;
+}
+
+.amount-label {
+  font-size: 0.75rem;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.amount-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.offer-message-box {
+  padding: 0.75rem;
+  background: var(--gray-light);
+  border-left: 3px solid var(--secondary);
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.offer-message-label {
+  font-size: 0.75rem;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.offer-message-text {
+  font-size: 0.875rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.offer-action-banner {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.offer-action-banner.success {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(20, 184, 166, 0.1));
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.offer-action-banner.info {
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.offer-action-banner-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.offer-action-banner-text {
+  font-size: 0.813rem;
+  color: var(--gray-dark);
+}
+
+.offer-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--gray-light);
+}
+
+.offer-date {
+  font-size: 0.75rem;
+  color: var(--gray);
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.offer-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-sm {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.813rem;
+  border-radius: 6px;
+}
+
+/* Invoice Card */
+.invoice-card {
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s;
+}
+
+.invoice-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-color: var(--primary);
+}
+
+.invoice-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.invoice-number {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.invoice-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.invoice-meta-item {
+  text-align: center;
+  padding: 0.75rem;
+  background: var(--bg);
+  border-radius: 8px;
+}
+
+.invoice-meta-label {
+  font-size: 0.75rem;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.invoice-meta-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.invoice-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--gray-light);
+}
+
+
+
+
+
+
+
+
+
+
 
 
 </style>
@@ -834,21 +1086,20 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
         </div>
       </div>
       
-      <div class="nav-section">
-  <div class="nav-section-title">Tools</div>
-  <div class="nav-item" onclick="navigateTo('calculator')">
-    <i class="fa-solid fa-calculator"></i>
-    <span>ROI Calculator</span>
-  </div>
+     <div class="nav-section">
+  <div class="nav-section-title">Activity</div>
   <div class="nav-item" onclick="navigateTo('offers')">
-    <i class="fa-solid fa-money-bill-trend-up"></i>
+    <i class="fa-solid fa-handshake"></i>
     <span>My Offers</span>
     <span class="badge" id="offersCount">0</span>
   </div>
-  <div class="nav-item" onclick="navigateTo('messages')">
-    <i class="fa-solid fa-envelope"></i>
-    <span>Messages</span>
-    <span class="badge" id="messagesCount">0</span>
+  <div class="nav-item" onclick="navigateTo('invoices')">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Invoices</span>
+  </div>
+  <div class="nav-item" onclick="navigateTo('inquiries')">
+    <i class="fa-solid fa-comments"></i>
+    <span>My Inquiries</span>
   </div>
 </div>
     
@@ -1096,7 +1347,18 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   </div>
 </div>
 
-
+<!-- INVOICES / PURCHASE HISTORY TAB -->
+<div id="tab-invoices" class="tab-content">
+  <div class="content-card">
+    <div class="card-header">
+      <h3>Invoice History</h3>
+      <button class="card-action" onclick="loadInvoices()">
+        <i class="fa-solid fa-rotate"></i> Refresh
+      </button>
+    </div>
+    <div id="invoicesList"></div>
+  </div>
+</div>
 
 
 
@@ -1317,7 +1579,41 @@ async function loadMessages() {
 }
 
 
+// ============================================
+// LOAD INVOICES
+// ============================================
+let myInvoices = [];
 
+async function loadInvoices() {
+  try {
+    console.log('📥 Loading invoices...');
+    
+    const invoicesRef = collection(db, 'invoices');
+    const q = query(invoicesRef, where('buyer.userId', '==', userData.id));
+    
+    const snapshot = await getDocs(q);
+    myInvoices = [];
+    
+    snapshot.forEach((doc) => {
+      myInvoices.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    
+    // Sort by date (newest first)
+    myInvoices.sort((a, b) => new Date(b.issueDate) - new Date(a.issueDate));
+    
+    console.log('✅ Loaded invoices:', myInvoices.length);
+    renderInvoices();
+    
+  } catch (error) {
+    console.error('❌ Error loading invoices:', error);
+    myInvoices = [];
+  }
+}
+
+window.loadInvoices = loadInvoices;
 
 
 
@@ -1639,11 +1935,11 @@ function initializeDashboard() {
   renderPurchases();
   renderOffers();
   renderMessages();
+  loadInvoices(); // ✅ ADD THIS LINE
   updateRecentlyViewed();
   
   console.log('✅ Buyer dashboard initialized successfully');
 }
-
 function updateUserProfile() {
   const initials = userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   
@@ -1860,7 +2156,7 @@ function renderOffers() {
   if (myOffers.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
-        <i class="fa-solid fa-money-bill-wave"></i>
+        <i class="fa-regular fa-handshake"></i>
         <p>No offers made yet</p>
         <p style="font-size: 0.9rem; color: var(--gray);">Browse listings and make offers to sellers</p>
         <br>
@@ -1873,142 +2169,115 @@ function renderOffers() {
   }
   
   container.innerHTML = myOffers.map(offer => {
-
-  const statusColors = {
-  pending: 'warning',
-  accepted: 'success',
-  rejected: 'error',
-  countered: 'info',
-  paid: 'success'
-};
-
-// Determine display status
-let displayStatus = offer.status;
-if (offer.status === 'paid') {
-  displayStatus = 'COMPLETED';
-} else if (offer.fileReviewStatus === 'admin-approved' && offer.status !== 'paid') {
-  displayStatus = 'READY FOR PAYMENT';
-} else if (offer.fileReviewStatus === 'pending-admin-review') {
-  displayStatus = 'FILES UNDER REVIEW';
-} else {
-  displayStatus = offer.status;
-}
-
-
+    const statusColors = {
+      pending: 'pending',
+      accepted: 'accepted',
+      rejected: 'rejected',
+      countered: 'countered',
+      paid: 'paid'
+    };
     
-    const statusColor = statusColors[offer.status] || 'pending';
+    let displayStatus = offer.status;
+    if (offer.status === 'paid') {
+      displayStatus = 'COMPLETED';
+    } else if (offer.fileReviewStatus === 'admin-approved' && offer.status !== 'paid') {
+      displayStatus = 'READY FOR PAYMENT';
+    } else if (offer.fileReviewStatus === 'pending-admin-review') {
+      displayStatus = 'FILES UNDER REVIEW';
+    }
     
-    // Check if files are ready for this offer
+    const statusClass = statusColors[offer.status] || 'pending';
     const hasApprovedFiles = offer.fileReviewStatus === 'admin-approved';
     
     return `
-      <div class="inquiry-card">
-        <div class="inquiry-header">
+      <div class="offer-card">
+        <div class="offer-card-header">
           <div>
-            <h4>${offer.listing_name || 'Listing Offer'}</h4>
-            <p style="color: var(--gray); font-size: 0.9rem; margin-top: 0.3rem;">
-              To: ${offer.seller_email}
-            </p>
+            <div class="offer-title">${offer.listing_name || 'Listing Offer'}</div>
+            <div class="offer-subtitle">
+              <i class="fa-regular fa-envelope"></i> ${offer.seller_email}
+            </div>
           </div>
-          <span class="inquiry-status ${statusColor}">
-  	  ${displayStatus.toUpperCase()}
-	  </span>
+          <span class="offer-status-badge ${statusClass}">${displayStatus}</span>
         </div>
         
-      ${offer.status === 'paid' ? `
-  <div style="background: linear-gradient(135deg, var(--success), var(--accent)); color: white; padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
-    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-      <i class="fa-solid fa-check-circle" style="font-size: 2rem;"></i>
-      <div>
-        <h4 style="margin-bottom: 0.3rem;">✅ Payment Completed!</h4>
-        <p style="opacity: 0.9; font-size: 0.9rem;">Your purchase is complete. Download your files below.</p>
-      </div>
-    </div>
-    <button class="btn" style="background: white; color: var(--success); width: 100%; margin-top: 1rem; font-weight: 700; font-size: 1.1rem;" 
-            onclick="downloadPurchasedFiles('${offer.fileReviewId}')">
-      <i class="fa-solid fa-download"></i> Download All Files (${offer.fileCount || 0} files)
-    </button>
-  </div>
-` : offer.fileReviewStatus === 'pending-admin-review' ? `
-  <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 10px; margin: 1rem 0; border-left: 4px solid var(--info);">
-    <div style="display: flex; align-items: center; gap: 0.8rem;">
-      <i class="fa-solid fa-hourglass-half" style="color: var(--info); font-size: 1.5rem;"></i>
-      <div>
-        <strong>Files Uploaded - Pending Admin Review</strong>
-        <p style="font-size: 0.9rem; color: var(--gray); margin-top: 0.3rem;">The seller has uploaded ${offer.fileCount || 0} file(s). Our admin team is currently reviewing them to ensure everything is in order.</p>
-      </div>
-    </div>
-  </div>
-` : hasApprovedFiles ? `
-  <div style="background: linear-gradient(135deg, var(--success), var(--accent)); color: white; padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
-    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-      <i class="fa-solid fa-check-circle" style="font-size: 2rem;"></i>
-      <div>
-        <h4 style="margin-bottom: 0.3rem;">✅ Files Approved by Admin</h4>
-        <p style="opacity: 0.9; font-size: 0.9rem;">The seller has uploaded ${offer.fileCount || 0} file(s) and they have been verified. Proceed with payment to complete the purchase.</p>
-      </div>
-    </div>
-    <button class="btn" style="background: white; color: var(--success); width: 100%; margin-top: 1rem; font-weight: 700; font-size: 1.1rem;" 
-            onclick="proceedToPayment('${offer.id}', '${offer.fileReviewId}')">
-      <i class="fa-solid fa-credit-card"></i> Proceed to Payment - ₱${parseFloat(offer.offer_amount).toLocaleString()}
-    </button>
-  </div>
-        ` : offer.status === 'files-uploaded' ? `
-          <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 10px; margin: 1rem 0; border-left: 4px solid var(--info);">
-            <div style="display: flex; align-items: center; gap: 0.8rem;">
-              <i class="fa-solid fa-hourglass-half" style="color: var(--info); font-size: 1.5rem;"></i>
-              <div>
-                <strong>Files Uploaded - Pending Admin Review</strong>
-                <p style="font-size: 0.9rem; color: var(--gray); margin-top: 0.3rem;">The seller has uploaded the transfer files. Our admin team is currently reviewing them to ensure everything is in order.</p>
-              </div>
+        ${offer.status === 'paid' ? `
+          <div class="offer-action-banner success">
+            <div class="offer-action-banner-title">
+              <i class="fa-solid fa-circle-check" style="color: var(--success);"></i>
+              Payment Completed
             </div>
+            <div class="offer-action-banner-text">
+              Your purchase is complete. ${offer.fileCount || 0} file(s) ready for download.
+            </div>
+            <button class="btn btn-success btn-full" style="margin-top: 0.75rem;" 
+                    onclick="downloadPurchasedFiles('${offer.fileReviewId}')">
+              <i class="fa-solid fa-download"></i> Download All Files
+            </button>
+          </div>
+        ` : offer.fileReviewStatus === 'pending-admin-review' ? `
+          <div class="offer-action-banner info">
+            <div class="offer-action-banner-title">
+              <i class="fa-solid fa-clock" style="color: var(--info);"></i>
+              Files Under Review
+            </div>
+            <div class="offer-action-banner-text">
+              Seller uploaded ${offer.fileCount || 0} file(s). Admin team is reviewing them now.
+            </div>
+          </div>
+        ` : hasApprovedFiles ? `
+          <div class="offer-action-banner success">
+            <div class="offer-action-banner-title">
+              <i class="fa-solid fa-circle-check" style="color: var(--success);"></i>
+              Files Approved
+            </div>
+            <div class="offer-action-banner-text">
+              ${offer.fileCount || 0} file(s) verified and ready. Proceed with payment.
+            </div>
+            <button class="btn btn-success btn-full" style="margin-top: 0.75rem;" 
+                    onclick="proceedToPayment('${offer.id}', '${offer.fileReviewId}')">
+              <i class="fa-solid fa-credit-card"></i> Proceed to Payment - ₱${parseFloat(offer.offer_amount).toLocaleString()}
+            </button>
           </div>
         ` : ''}
         
-        <div style="background: var(--gray-light); padding: 1rem; border-radius: 10px; margin: 1rem 0;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-size: 0.85rem; color: var(--gray); margin-bottom: 0.3rem;">Your Offer</div>
-              <div style="font-size: 1.8rem; font-weight: 900; color: var(--primary);">
-                ₱${parseFloat(offer.offer_amount).toLocaleString()}
-              </div>
-            </div>
-            ${offer.status === 'countered' ? `
-              <div style="text-align: right;">
-                <div style="font-size: 0.85rem; color: var(--gray); margin-bottom: 0.3rem;">Counter Offer</div>
-                <div style="font-size: 1.5rem; font-weight: 700; color: var(--secondary);">
-                  ₱${parseFloat(offer.counter_amount || 0).toLocaleString()}
-                </div>
-              </div>
-            ` : ''}
+        <div class="offer-amount-section">
+          <div class="amount-box">
+            <div class="amount-label">Your Offer</div>
+            <div class="amount-value">₱${parseFloat(offer.offer_amount).toLocaleString()}</div>
           </div>
+          ${offer.status === 'countered' ? `
+            <div class="amount-box">
+              <div class="amount-label">Counter Offer</div>
+              <div class="amount-value" style="color: var(--secondary);">₱${parseFloat(offer.counter_amount || 0).toLocaleString()}</div>
+            </div>
+          ` : ''}
         </div>
         
         ${offer.message ? `
-          <div style="margin: 1rem 0; padding: 1rem; background: white; border-left: 3px solid var(--secondary); border-radius: 5px;">
-            <strong style="font-size: 0.9rem; color: var(--gray);">Your Message:</strong>
-            <p style="margin-top: 0.5rem; color: var(--text);">${offer.message}</p>
+          <div class="offer-message-box">
+            <div class="offer-message-label">Your Message</div>
+            <div class="offer-message-text">${offer.message}</div>
           </div>
         ` : ''}
         
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-light);">
-          <span style="font-size: 0.85rem; color: var(--gray);">
-            <i class="fa-solid fa-calendar"></i> 
+        <div class="offer-footer">
+          <div class="offer-date">
+            <i class="fa-regular fa-calendar"></i>
             ${new Date(offer.created_at).toLocaleDateString()}
-          </span>
-          <div style="display: flex; gap: 0.5rem;">
-            <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;" 
-                    onclick="viewListing('${offer.listing_id}')">
-              <i class="fa-solid fa-eye"></i> View Listing
+          </div>
+          <div class="offer-actions">
+            <button class="btn btn-secondary btn-sm" onclick="viewListing('${offer.listing_id}')">
+              <i class="fa-regular fa-eye"></i> View Listing
             </button>
             ${offer.status === 'pending' ? `
-              <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem; background: var(--error);" 
+              <button class="btn btn-sm" style="background: var(--error); color: white;" 
                       onclick="cancelOffer('${offer.id}')">
-                <i class="fa-solid fa-times"></i> Cancel Offer
+                <i class="fa-solid fa-xmark"></i> Cancel
               </button>
             ` : ''}
             ${offer.status === 'countered' ? `
-              <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;" 
+              <button class="btn btn-success btn-sm" 
                       onclick="acceptCounterOffer('${offer.id}', '${offer.counter_amount}')">
                 <i class="fa-solid fa-check"></i> Accept Counter
               </button>
@@ -2019,6 +2288,90 @@ if (offer.status === 'paid') {
     `;
   }).join('');
 }
+
+
+function renderInvoices() {
+  const container = document.getElementById('invoicesList');
+  
+  if (!container) return;
+  
+  if (myInvoices.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fa-regular fa-file-lines"></i>
+        <p>No invoices yet</p>
+        <p style="font-size: 0.9rem; color: var(--gray);">Your invoices will appear here after completing transactions</p>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = myInvoices.map(invoice => `
+    <div class="invoice-card">
+      <div class="invoice-card-header">
+        <div>
+          <div class="invoice-number">
+            <i class="fa-solid fa-file-invoice-dollar"></i> ${invoice.invoiceNumber}
+          </div>
+          <div style="font-size: 0.875rem; color: var(--gray); margin-top: 0.25rem;">
+            ${invoice.items[0]?.description || 'System Purchase'}
+          </div>
+        </div>
+        <span class="offer-status-badge ${invoice.status === 'paid' ? 'paid' : 'pending'}">
+          ${invoice.status === 'paid' ? 'PAID' : 'PENDING'}
+        </span>
+      </div>
+      
+      <div class="invoice-meta">
+        <div class="invoice-meta-item">
+          <div class="invoice-meta-label">Issue Date</div>
+          <div class="invoice-meta-value">${invoice.issueDate}</div>
+        </div>
+        <div class="invoice-meta-item">
+          <div class="invoice-meta-label">Due Date</div>
+          <div class="invoice-meta-value">${invoice.dueDate}</div>
+        </div>
+        <div class="invoice-meta-item">
+          <div class="invoice-meta-label">Amount</div>
+          <div class="invoice-meta-value" style="color: var(--primary); font-size: 1.125rem;">
+            ₱${invoice.totalDue.toLocaleString()}
+          </div>
+        </div>
+      </div>
+      
+      <div class="invoice-footer">
+        <div style="font-size: 0.813rem; color: var(--gray);">
+          <i class="fa-regular fa-building"></i> ${invoice.seller.companyName}
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="viewInvoice('${invoice.id}')">
+          <i class="fa-regular fa-file-pdf"></i> View Invoice
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.viewInvoice = function(invoiceId) {
+  window.open(`checkout.html?transaction=${invoiceId}`, '_blank');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ============================================
 // RENDER MESSAGES
@@ -2553,14 +2906,13 @@ window.navigateTo = function(page) {
   document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
   event?.target.closest('.nav-item')?.classList.add('active');
   
-  // Update page title
   const pageTitles = {
   overview: 'Overview',
   marketplace: 'Marketplace',
   saved: 'Saved Listings',
   calculator: 'ROI Calculator',
   offers: 'My Offers',
-  messages: 'Messages',
+  invoices: 'Invoice History',
   inquiries: 'My Inquiries',
   purchases: 'Purchase History',
   settings: 'Settings'
