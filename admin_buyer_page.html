@@ -81,6 +81,16 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   text-align: left;
 }
 
+.loader {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--gray-light);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Dashboard Layout */
@@ -1088,12 +1098,10 @@ body:not(.loaded) .dashboard-layout {
 }
 
 
-
-
-
-
 </style>
 </head>
+
+
 <body>
 
 <div class="loading-screen" id="loadingScreen">
@@ -1731,8 +1739,12 @@ async function loadInvoices() {
       return dateB - dateA;
     });
     
-    console.log('✅ Loaded invoices:', myInvoices.length);
-    renderInvoices();
+   console.log('✅ Loaded invoices:', myInvoices.length);
+if (myInvoices.length > 0) {
+  console.log('Invoice details:', myInvoices);
+}
+renderInvoices();
+
     
   } catch (error) {
     console.error('❌ Error loading invoices:', error);
@@ -1750,6 +1762,15 @@ window.loadInvoices = loadInvoices;
 
 
 
+
+// Show loading screen immediately
+document.addEventListener('DOMContentLoaded', function() {
+  const loadingScreen = document.getElementById('loadingScreen');
+  if (loadingScreen) {
+    loadingScreen.style.display = 'flex';
+    loadingScreen.style.opacity = '1';
+  }
+});
 
 
 
@@ -2128,40 +2149,104 @@ async function loadPurchases() {
 
 function initializeDashboard() {
   console.log('🎯 Initializing buyer dashboard...');
-  console.log('Saved listings to render:', savedListings.length);
-  console.log('Invoices to render:', myInvoices.length);
+  console.log('Data loaded:', {
+    savedListings: savedListings.length,
+    invoices: myInvoices.length,
+    offers: myOffers.length,
+    inquiries: inquiries.length,
+    purchases: purchases.length
+  });
   
-  updateUserProfile();
-  updateStats();
-  renderSavedListings();
-  renderInquiries();
-  renderPurchases();
-  renderOffers();
-  renderMessages();
-  renderInvoices();
-  updateRecentlyViewed();
+  try {
+    updateUserProfile();
+    console.log('✅ User profile updated');
+  } catch (e) {
+    console.error('❌ Error updating user profile:', e);
+  }
+  
+  try {
+    updateStats();
+    console.log('✅ Stats updated');
+  } catch (e) {
+    console.error('❌ Error updating stats:', e);
+  }
+  
+  try {
+    renderSavedListings();
+    console.log('✅ Saved listings rendered');
+  } catch (e) {
+    console.error('❌ Error rendering saved listings:', e);
+  }
+  
+  try {
+    renderInquiries();
+    console.log('✅ Inquiries rendered');
+  } catch (e) {
+    console.error('❌ Error rendering inquiries:', e);
+  }
+  
+  try {
+    renderPurchases();
+    console.log('✅ Purchases rendered');
+  } catch (e) {
+    console.error('❌ Error rendering purchases:', e);
+  }
+  
+  try {
+    renderOffers();
+    console.log('✅ Offers rendered');
+  } catch (e) {
+    console.error('❌ Error rendering offers:', e);
+  }
+  
+  try {
+    renderMessages();
+    console.log('✅ Messages rendered');
+  } catch (e) {
+    console.error('❌ Error rendering messages:', e);
+  }
+  
+  try {
+    renderInvoices();
+    console.log('✅ Invoices rendered');
+  } catch (e) {
+    console.error('❌ Error rendering invoices:', e);
+  }
+  
+  try {
+    updateRecentlyViewed();
+    console.log('✅ Recently viewed updated');
+  } catch (e) {
+    console.error('❌ Error updating recently viewed:', e);
+  }
   
   // Force a re-render after a short delay to ensure DOM is ready
   setTimeout(() => {
     console.log('🔄 Force re-render...');
-    renderSavedListings();
-    renderInvoices();
-    updateStats();
+    try {
+      renderSavedListings();
+      renderInvoices();
+      updateStats();
+      console.log('✅ Re-render complete');
+    } catch (e) {
+      console.error('❌ Error in re-render:', e);
+    }
   }, 100);
   
   // Hide loading screen with fade out
   setTimeout(() => {
     const loadingScreen = document.getElementById('loadingScreen');
-    loadingScreen.style.opacity = '0';
-    
-    setTimeout(() => {
-      loadingScreen.classList.add('hidden');
-      document.body.classList.add('loaded');
-      console.log('✅ Buyer dashboard initialized successfully');
-    }, 300);
+    if (loadingScreen) {
+      loadingScreen.style.opacity = '0';
+      
+      setTimeout(() => {
+        loadingScreen.classList.add('hidden');
+        document.body.classList.add('loaded');
+        console.log('✅ Buyer dashboard fully initialized');
+      }, 300);
+    }
   }, 500);
 }
-
 
 
 function updateUserProfile() {
@@ -2173,20 +2258,32 @@ function updateUserProfile() {
 }
 
 function updateStats() {
-  document.getElementById('savedListingsCount').textContent = savedListings.length;
-  document.getElementById('savedCount').textContent = savedListings.length;
-  document.getElementById('activeInquiriesCount').textContent = inquiries.filter(i => i.status === 'pending').length;
-  document.getElementById('totalPurchasesCount').textContent = purchases.length;
+  // Safely update stat elements
+  const savedListingsCountEl = document.getElementById('savedListingsCount');
+  const savedCountEl = document.getElementById('savedCount');
+  const activeInquiriesCountEl = document.getElementById('activeInquiriesCount');
+  const totalPurchasesCountEl = document.getElementById('totalPurchasesCount');
+  const totalSpentAmountEl = document.getElementById('totalSpentAmount');
+  const offersCountEl = document.getElementById('offersCount');
+  
+  if (savedListingsCountEl) savedListingsCountEl.textContent = savedListings.length;
+  if (savedCountEl) savedCountEl.textContent = savedListings.length;
+  if (activeInquiriesCountEl) activeInquiriesCountEl.textContent = inquiries.filter(i => i.status === 'pending').length;
+  if (totalPurchasesCountEl) totalPurchasesCountEl.textContent = purchases.length;
   
   const totalSpent = purchases.reduce((sum, p) => sum + (p.amount || 0), 0);
-  document.getElementById('totalSpentAmount').textContent = `₱${totalSpent.toLocaleString()}`;
+  if (totalSpentAmountEl) totalSpentAmountEl.textContent = `₱${totalSpent.toLocaleString()}`;
   
   // Update badges
   const pendingOffers = myOffers.filter(o => o.status === 'pending').length;
-  document.getElementById('offersCount').textContent = pendingOffers;
+  if (offersCountEl) offersCountEl.textContent = pendingOffers;
   
-  const unreadMessages = myMessages.filter(m => !m.is_read).length;
-  document.getElementById('messagesCount').textContent = unreadMessages;
+  console.log('✅ Stats updated:', {
+    saved: savedListings.length,
+    inquiries: inquiries.length,
+    purchases: purchases.length,
+    offers: pendingOffers
+  });
 }
 
 // ============================================
@@ -2238,6 +2335,14 @@ function renderMarketplace() {
 
 function renderSavedListings() {
   const container = document.getElementById('savedListings');
+  
+  console.log('🎨 Rendering saved listings:', savedListings.length);
+  console.log('Container found:', !!container);
+  
+  if (!container) {
+    console.error('❌ savedListings container not found!');
+    return;
+  }
   
   if (savedListings.length === 0) {
     container.innerHTML = `
@@ -2517,7 +2622,13 @@ function renderOffers() {
 function renderInvoices() {
   const container = document.getElementById('invoicesList');
   
-  if (!container) return;
+  console.log('🎨 Rendering invoices:', myInvoices.length);
+  console.log('Container found:', !!container);
+  
+  if (!container) {
+    console.error('❌ invoicesList container not found!');
+    return;
+  }
   
   if (myInvoices.length === 0) {
     container.innerHTML = `
