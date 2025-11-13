@@ -1023,7 +1023,42 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
 
 
 
+/* Loading Progress */
+.loading-step {
+  padding: 0.5rem 1rem;
+  margin: 0.3rem 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  opacity: 0;
+  animation: fadeInStep 0.3s forwards;
+}
 
+@keyframes fadeInStep {
+  to { opacity: 1; }
+}
+
+.loading-step.pending {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--gray);
+}
+
+.loading-step.loading {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--info);
+}
+
+.loading-step.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.loading-step.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
 
 
 
@@ -1038,7 +1073,10 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
 
 <div class="loading-screen" id="loadingScreen">
   <div class="loader"></div>
-  <p>Loading your dashboard...</p>
+  <p id="loadingText">Initializing dashboard...</p>
+  <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray);">
+    <div id="loadingSteps"></div>
+  </div>
 </div>
 
 <div class="dashboard-layout">
@@ -1580,29 +1618,95 @@ async function loadMessages() {
 
 
 // ============================================
-// LOAD INVOICES
+// LOAD INVOICES - FIXED
 // ============================================
 let myInvoices = [];
+// ============================================
+// LOADING PROGRESS SYSTEM
+// ============================================
+const loadingSteps = [
+  { id: 'auth', label: 'Authenticating user', status: 'pending' },
+  { id: 'user', label: 'Loading profile', status: 'pending' },
+  { id: 'listings', label: 'Loading marketplace', status: 'pending' },
+  { id: 'saved', label: 'Loading saved listings', status: 'pending' },
+  { id: 'inquiries', label: 'Loading inquiries', status: 'pending' },
+  { id: 'purchases', label: 'Loading purchases', status: 'pending' },
+  { id: 'offers', label: 'Loading offers', status: 'pending' },
+  { id: 'invoices', label: 'Loading invoices', status: 'pending' }
+];
+
+function updateLoadingStep(stepId, status) {
+  const step = loadingSteps.find(s => s.id === stepId);
+  if (step) {
+    step.status = status;
+    renderLoadingSteps();
+  }
+}
+
+function renderLoadingSteps() {
+  const container = document.getElementById('loadingSteps');
+  if (!container) return;
+  
+  container.innerHTML = loadingSteps.map(step => {
+    const icon = step.status === 'success' ? '✓' :
+                 step.status === 'error' ? '✗' :
+                 step.status === 'loading' ? '⋯' : '○';
+    
+    return `
+      <div class="loading-step ${step.status}">
+        <span style="font-weight: bold;">${icon}</span>
+        <span>${step.label}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+
+
+
+
 
 async function loadInvoices() {
   try {
-    console.log('📥 Loading invoices...');
+    console.log('📥 Loading invoices for user:', userData.id);
     
     const invoicesRef = collection(db, 'invoices');
-    const q = query(invoicesRef, where('buyer.userId', '==', userData.id));
     
-    const snapshot = await getDocs(q);
+    // Get all invoices and filter by transaction
+    const snapshot = await getDocs(invoicesRef);
     myInvoices = [];
     
+    // Also load transactions to match invoices
+    const transactionsRef = collection(db, 'transactions');
+    const transQuery = query(transactionsRef, where('buyerId', '==', userData.id));
+    const transSnapshot = await getDocs(transQuery);
+    
+    const myTransactionIds = [];
+    transSnapshot.forEach(doc => {
+      myTransactionIds.push(doc.id);
+    });
+    
+    console.log('📋 Found', myTransactionIds.length, 'transactions');
+    
+    // Filter invoices that match transaction IDs
     snapshot.forEach((doc) => {
-      myInvoices.push({
-        id: doc.id,
-        ...doc.data()
-      });
+      const invoiceData = doc.data();
+      
+      // Check if this invoice belongs to user's transaction
+      if (myTransactionIds.includes(doc.id)) {
+        myInvoices.push({
+          id: doc.id,
+          ...invoiceData
+        });
+      }
     });
     
     // Sort by date (newest first)
-    myInvoices.sort((a, b) => new Date(b.issueDate) - new Date(a.issueDate));
+    myInvoices.sort((a, b) => {
+      const dateA = a.issueDate ? new Date(a.issueDate) : new Date(0);
+      const dateB = b.issueDate ? new Date(b.issueDate) : new Date(0);
+      return dateB - dateA;
+    });
     
     console.log('✅ Loaded invoices:', myInvoices.length);
     renderInvoices();
@@ -1610,6 +1714,7 @@ async function loadInvoices() {
   } catch (error) {
     console.error('❌ Error loading invoices:', error);
     myInvoices = [];
+    renderInvoices(); // Render empty state
   }
 }
 
@@ -1626,30 +1731,29 @@ window.loadInvoices = loadInvoices;
 
 
 
-
-
-
-// ============================================
-// AUTH STATE OBSERVER
-// ============================================
-
-// ============================================
-// AUTH STATE OBSERVER - FIXED VERSION
-// ============================================
 onAuthStateChanged(auth, async (user) => {
+  updateLoadingStep('auth', 'loading');
+  
   if (!user) {
     console.log('❌ No user authenticated, redirecting to login...');
-    document.getElementById('loadingScreen').classList.add('hidden');
-    document.body.classList.add('loaded');
+    updateLoadingStep('auth', 'error');
+    document.getElementById('loadingText').textContent = 'Redirecting to login...';
+    
     setTimeout(() => {
+      document.getElementById('loadingScreen').classList.add('hidden');
       window.location.href = 'login.html';
-    }, 500);
+    }, 1000);
     return;
   }
   
+  updateLoadingStep('auth', 'success');
   console.log('✅ User authenticated:', user.email);
   
   try {
+    // Load user document
+    updateLoadingStep('user', 'loading');
+    document.getElementById('loadingText').textContent = 'Loading your profile...';
+    
     const userDocRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userDocRef);
     
@@ -1665,6 +1769,7 @@ onAuthStateChanged(auth, async (user) => {
         recentlyViewed: data.recentlyViewed || []
       };
       
+      updateLoadingStep('user', 'success');
       console.log('✅ User document loaded:', userData);
       
       // Set up real-time listener for user document updates
@@ -1679,6 +1784,8 @@ onAuthStateChanged(auth, async (user) => {
             console.log('🔄 Saved listings updated:', newSaved.length);
             userData.savedListings = newSaved;
             await loadSavedListings();
+            renderSavedListings();
+            updateStats();
           }
         }
       }, (error) => {
@@ -1692,9 +1799,6 @@ onAuthStateChanged(auth, async (user) => {
         updateStats();
       }, 10000);
       
-      if (userData.role !== 'buyer') {
-        console.log('⚠️ User is not a buyer, but allowing access...');
-      }
     } else {
       console.log('📝 Creating new buyer user document...');
       userData = {
@@ -1713,77 +1817,130 @@ onAuthStateChanged(auth, async (user) => {
         updatedAt: serverTimestamp()
       });
       
+      updateLoadingStep('user', 'success');
       console.log('✅ New buyer user document created');
     }
     
-    // Load all data with individual error handling
+    // Load all data sequentially with progress updates
     console.log('🔄 Starting data load...');
     
+    // Step 3: Marketplace
     try {
+      updateLoadingStep('listings', 'loading');
+      document.getElementById('loadingText').textContent = 'Loading marketplace...';
       await loadMarketplaceListings();
-      console.log('✅ Step 1/6: Marketplace loaded');
+      // Wait a bit for snapshot to populate
+      await new Promise(resolve => setTimeout(resolve, 500));
+      updateLoadingStep('listings', 'success');
+      console.log('✅ Marketplace loaded');
     } catch (e) {
       console.error('❌ Marketplace load failed:', e);
+      updateLoadingStep('listings', 'error');
     }
     
+    // Step 4: Saved Listings
     try {
+      updateLoadingStep('saved', 'loading');
+      document.getElementById('loadingText').textContent = 'Loading saved listings...';
       await loadSavedListings();
-      console.log('✅ Step 2/6: Saved listings loaded');
+      await new Promise(resolve => setTimeout(resolve, 300));
+      updateLoadingStep('saved', 'success');
+      console.log('✅ Saved listings loaded');
     } catch (e) {
       console.error('❌ Saved listings load failed:', e);
+      updateLoadingStep('saved', 'error');
     }
     
+    // Step 5: Inquiries
     try {
+      updateLoadingStep('inquiries', 'loading');
+      document.getElementById('loadingText').textContent = 'Loading inquiries...';
       await loadInquiries();
-      console.log('✅ Step 3/6: Inquiries loaded');
+      await new Promise(resolve => setTimeout(resolve, 300));
+      updateLoadingStep('inquiries', 'success');
+      console.log('✅ Inquiries loaded');
     } catch (e) {
       console.error('❌ Inquiries load failed:', e);
+      updateLoadingStep('inquiries', 'error');
     }
     
+    // Step 6: Purchases
     try {
+      updateLoadingStep('purchases', 'loading');
+      document.getElementById('loadingText').textContent = 'Loading purchases...';
       await loadPurchases();
-      console.log('✅ Step 4/6: Purchases loaded');
+      await new Promise(resolve => setTimeout(resolve, 300));
+      updateLoadingStep('purchases', 'success');
+      console.log('✅ Purchases loaded');
     } catch (e) {
       console.error('❌ Purchases load failed:', e);
+      updateLoadingStep('purchases', 'error');
     }
     
+    // Step 7: Offers
     try {
+      updateLoadingStep('offers', 'loading');
+      document.getElementById('loadingText').textContent = 'Loading offers...';
       await loadOffers();
-      console.log('✅ Step 5/6: Offers loaded');
+      await new Promise(resolve => setTimeout(resolve, 300));
+      updateLoadingStep('offers', 'success');
+      console.log('✅ Offers loaded');
     } catch (e) {
       console.error('❌ Offers load failed:', e);
+      updateLoadingStep('offers', 'error');
     }
     
+    // Step 8: Invoices
     try {
-      await loadMessages();
-      console.log('✅ Step 6/6: Messages loaded');
+      updateLoadingStep('invoices', 'loading');
+      document.getElementById('loadingText').textContent = 'Loading invoices...';
+      await loadInvoices();
+      await new Promise(resolve => setTimeout(resolve, 300));
+      updateLoadingStep('invoices', 'success');
+      console.log('✅ Invoices loaded');
     } catch (e) {
-      console.error('❌ Messages load failed:', e);
+      console.error('❌ Invoices load failed:', e);
+      updateLoadingStep('invoices', 'error');
     }
     
     console.log('🎯 All data loaded, initializing dashboard...');
+    document.getElementById('loadingText').textContent = 'Finalizing...';
     
-    // ALWAYS initialize dashboard
+    // Wait a moment before showing dashboard
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Initialize dashboard
     initializeDashboard();
     
   } catch (error) {
     console.error('❌ Critical error loading user data:', error);
-    document.getElementById('loadingScreen').classList.add('hidden');
-    document.body.classList.add('loaded');
-    showToast('Failed to load dashboard. Please refresh the page.', 'error');
+    document.getElementById('loadingText').textContent = 'Error loading dashboard';
+    updateLoadingStep('user', 'error');
+    
+    setTimeout(() => {
+      document.getElementById('loadingScreen').classList.add('hidden');
+      document.body.classList.add('loaded');
+      showToast('Failed to load dashboard. Please refresh the page.', 'error');
+    }, 2000);
   }
 });
 
-// Add timeout fallback AFTER the onAuthStateChanged block
+// Remove the timeout fallback and replace with this:
 setTimeout(() => {
   const loadingScreen = document.getElementById('loadingScreen');
   if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
     console.warn('⏰ Loading timeout - forcing dashboard to display');
-    loadingScreen.classList.add('hidden');
-    document.body.classList.add('loaded');
-    showToast('Dashboard loaded (some data may be incomplete)', 'info');
+    document.getElementById('loadingText').textContent = 'Loading completed with warnings';
+    
+    setTimeout(() => {
+      loadingScreen.classList.add('hidden');
+      document.body.classList.add('loaded');
+      showToast('Dashboard loaded (some data may be incomplete)', 'info');
+    }, 1000);
   }
-}, 5000);
+}, 15000); // Increased to 15 seconds
+
+
 // ============================================
 // LOAD MARKETPLACE LISTINGS
 // ============================================
@@ -1925,9 +2082,6 @@ async function loadPurchases() {
 function initializeDashboard() {
   console.log('🎯 Initializing buyer dashboard...');
   
-  document.getElementById('loadingScreen').classList.add('hidden');
-  document.body.classList.add('loaded');
-  
   updateUserProfile();
   updateStats();
   renderSavedListings();
@@ -1935,11 +2089,19 @@ function initializeDashboard() {
   renderPurchases();
   renderOffers();
   renderMessages();
-  loadInvoices(); // ✅ ADD THIS LINE
+  renderInvoices(); // ✅ Make sure this is called
   updateRecentlyViewed();
   
-  console.log('✅ Buyer dashboard initialized successfully');
+  // Hide loading screen with fade out
+  setTimeout(() => {
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.body.classList.add('loaded');
+    console.log('✅ Buyer dashboard initialized successfully');
+  }, 300);
 }
+
+
+
 function updateUserProfile() {
   const initials = userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   
