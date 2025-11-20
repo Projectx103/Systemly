@@ -499,6 +499,7 @@ app.post('/api/admin/approve-files/:offerId', async (req, res) => {
   try {
     const { offerId } = req.params;
     
+    // Update PostgreSQL
     await pool.query(
       `UPDATE offer_files 
        SET status = 'admin-approved', 
@@ -507,7 +508,25 @@ app.post('/api/admin/approve-files/:offerId', async (req, res) => {
       [offerId]
     );
 
-    console.log(`✅ Admin approved files for offer ${offerId}`);
+    // ✅ ALSO UPDATE FIREBASE
+    const admin = require('firebase-admin');
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: "systemly-db",
+          clientEmail: "firebase-adminsdk-vvpdy@systemly-db.iam.gserviceaccount.com",
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+        })
+      });
+    }
+    
+    const db = admin.firestore();
+    await db.collection('offers').doc(offerId).update({
+      status: 'admin-approved',
+      adminApprovedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    console.log(`✅ Admin approved files for offer ${offerId} (PostgreSQL + Firebase)`);
 
     res.json({
       success: true,
@@ -528,6 +547,7 @@ app.post('/api/admin/reject-files/:offerId', async (req, res) => {
     const { offerId } = req.params;
     const { reason } = req.body;
     
+    // Update PostgreSQL
     await pool.query(
       `UPDATE offer_files 
        SET status = 'admin-rejected', 
@@ -537,7 +557,26 @@ app.post('/api/admin/reject-files/:offerId', async (req, res) => {
       [offerId, reason || 'No reason provided']
     );
 
-    console.log(`❌ Admin rejected files for offer ${offerId}`);
+    // ✅ ALSO UPDATE FIREBASE
+    const admin = require('firebase-admin');
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: "systemly-db",
+          clientEmail: "firebase-adminsdk-vvpdy@systemly-db.iam.gserviceaccount.com",
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+        })
+      });
+    }
+    
+    const db = admin.firestore();
+    await db.collection('offers').doc(offerId).update({
+      status: 'admin-rejected',
+      rejectionReason: reason || 'No reason provided',
+      adminRejectedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    console.log(`❌ Admin rejected files for offer ${offerId} (PostgreSQL + Firebase)`);
 
     res.json({
       success: true,
@@ -634,3 +673,4 @@ const server = app.listen(PORT, () => {
 server.timeout = 300000; // 5 minutes
 server.keepAliveTimeout = 300000;
 server.headersTimeout = 300000;
+
