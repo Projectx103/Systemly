@@ -2570,25 +2570,21 @@ onAuthStateChanged(auth, async (user) => {
             console.error('❌ Failed to load users:', error);
         }
         
-try {
+       try {
     await loadFileReviews();
     console.log('✅ File reviews loaded');
 } catch (error) {
-    console.error('❌ Failed to load file reviews:', error);
-    // Don't hide the section, just show error state
-    const container = document.getElementById('fileReviewsContainer');
-    if (container) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon"><i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--error);"></i></div>
-                <h3>Failed to Load Reviews</h3>
-                <p>${error.message}</p>
-                <button class="btn btn-primary" onclick="loadFileReviews()" style="margin-top: 1rem;">
-                    🔄 Retry
-                </button>
-            </div>
-        `;
-    }
+    console.warn('⚠️ File reviews unavailable:', error.message);
+    const badge = document.getElementById('fileReviewBadge');
+    if (badge) badge.style.display = 'none';
+    
+    // Hide file review counts
+    const pending = document.getElementById('pendingFileReviews');
+    const approved = document.getElementById('approvedFileReviews');
+    const rejected = document.getElementById('rejectedFileReviews');
+    if (pending) pending.textContent = 'N/A';
+    if (approved) approved.textContent = 'N/A';
+    if (rejected) rejected.textContent = 'N/A';
 }
         
         console.log('✅ Admin authenticated successfully');
