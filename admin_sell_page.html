@@ -1165,10 +1165,10 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
 <div class="modal" id="offerDetailModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeOfferDetailModal()">×</button>
-    <div class="modal-header">
-      <div class="modal-icon">💰</div>
-      <h2>Offer Details</h2>
-    </div>
+   <div class="modal-header">
+    <h2>Offer Details</h2>
+    <p style="color: var(--gray); font-size: 0.9rem; margin-top: 0.5rem;">Review buyer proposal</p>
+</div>
     <div id="offerDetailModalContent">
       </div>
   </div>
@@ -1177,10 +1177,10 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
 <div class="modal" id="messageDetailModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeMessageDetailModal()">×</button>
-    <div class="modal-header">
-      <div class="modal-icon">✉️</div>
-      <h2>Buyer Message</h2>
-    </div>
+<div class="modal-header">
+    <h2>Buyer Inquiry</h2>
+    <p style="color: var(--gray); font-size: 0.9rem; margin-top: 0.5rem;">Message from potential buyer</p>
+</div>
     <div id="messageDetailModalContent">
       </div>
   </div>
@@ -1191,11 +1191,10 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
 <div class="modal" id="fileUploadModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeFileUploadModal()">×</button>
-    <div class="modal-header">
-      <div class="modal-icon">📦</div>
-      <h2>Upload Listing Files</h2>
-      <p>Upload all files included with this listing for buyer transfer</p>
-    </div>
+<div class="modal-header">
+    <h2>Asset Transfer Files</h2>
+    <p style="color: var(--gray); font-size: 0.9rem; margin-top: 0.5rem;">Upload all deliverables for admin verification</p>
+</div>
 
     <div id="fileUploadModalContent" style="padding: 2rem;">
       <div style="background: var(--bg); padding: 1.5rem; border-radius: 15px; margin-bottom: 2rem;">
@@ -1216,7 +1215,9 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
           <label class="form-label">Upload Files <span style="color: var(--error);">*</span></label>
           <div style="border: 2px dashed var(--border); border-radius: 15px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s;" id="fileDropZone">
             <input type="file" id="fileUploadInput" multiple style="display: none;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">📁</div>
+            <svg style="width: 64px; height: 64px; margin: 0 auto 1rem; color: var(--primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+</svg>
             <div style="font-weight: 600; margin-bottom: 0.5rem;">Click to upload or drag and drop</div>
             <div style="font-size: 0.9rem; color: var(--gray);">Upload source code, databases, credentials, documentation, etc.</div>
             <div style="font-size: 0.85rem; color: var(--gray); margin-top: 0.5rem;">Max 100MB per file</div>
@@ -3570,9 +3571,9 @@ window.closeMessageDetailModal = function() {
 // Helper function for offer status badge
 function getOfferStatusBadge(status) {
     const badges = {
-        'pending': '<span class="status-badge status-pending" style="background: var(--warning);">⏳ Pending</span>',
-        'accepted': '<span class="status-badge status-active" style="background: var(--success);">✓ Accepted</span>',
-        'rejected': '<span class="status-badge status-closed" style="background: var(--error);">✗ Rejected</span>'
+        'pending': '<span class="status-badge status-pending" style="background: var(--warning);"> Pending</span>',
+        'accepted': '<span class="status-badge status-active" style="background: var(--success);"> Accepted</span>',
+        'rejected': '<span class="status-badge status-closed" style="background: var(--error);"> Rejected</span>'
     };
     return badges[status] || badges['pending'];
 }
@@ -3593,15 +3594,18 @@ function renderOffersTableHTML(offers) {
         `;
     }
 
+
+
+
     const rows = offers.map(offer => {
         // UPDATE THIS SECTION - Add all status badges
         const statusBadges = {
-            'pending': '<span class="status-badge status-pending">⏳ Pending</span>',
+            'pending': '<span class="status-badge status-pending"> Pending</span>',
             'accepted': '<span class="status-badge status-approved">✓ Accepted</span>',
-            'accepted-pending-upload': '<span class="status-badge status-warning" style="background: var(--info);">📤 Upload Files</span>',
-            'pending-admin-review': '<span class="status-badge status-info" style="background: var(--secondary);">🔍 Admin Review</span>',
-            'admin-approved': '<span class="status-badge status-success" style="background: var(--success);">✅ Approved</span>',
-            'admin-rejected': '<span class="status-badge status-error" style="background: var(--error);">❌ Files Rejected</span>',
+            'accepted-pending-upload': '<span class="status-badge status-warning" style="background: var(--info);"> Uploading</span>',
+            'pending-admin-review': '<span class="status-badge status-info" style="background: var(--secondary);"> Under Review</span>',
+            'admin-approved': '<span class="status-badge status-success" style="background: var(--success);"> Approved</span>',
+            'admin-rejected': '<span class="status-badge status-error" style="background: var(--error);"> Rejected</span>',
             'rejected': '<span class="status-badge status-closed">✗ Rejected</span>'
         };
         const statusBadge = statusBadges[offer.status] || statusBadges['pending'];
@@ -3637,9 +3641,19 @@ function renderOffersTableHTML(offers) {
         } catch (error) {
             console.warn('Invalid date for offer:', offer.id, offer.createdAt);
         }
-        return `
-            <tr>
-                <td><strong>${offer.listingName || 'N/A'}</strong></td>
+
+
+// Get license label
+const licenseLabel = offer.licenseType === 'inclusive' ? 'Inclusive' : 
+                     offer.licenseType === 'exclusive' ? 'Exclusive' : 
+                     'N/A';
+
+       return `
+    <tr>
+        <td>
+            <strong>${offer.listingName || 'N/A'}</strong>
+            <div style="font-size: 0.85rem; color: var(--gray);">${licenseLabel} License</div>
+        </td>
                 <td>${offer.buyerName || 'Anonymous'}</td>
                 <td><strong style="color: var(--primary);">₱${parseInt(offer.offerAmount || 0).toLocaleString()}</strong></td>
                 <td>${statusBadge}</td>
@@ -3791,19 +3805,26 @@ window.openOfferDetailModal = async function(offerId) {
     const content = document.getElementById('offerDetailModalContent');
     
     // UPDATE STATUS BADGES - Add all statuses
-    const statusBadges = {
-        'pending': '<span class="status-badge status-pending">⏳ Pending</span>',
-        'accepted': '<span class="status-badge status-approved">✓ Accepted</span>',
-        'accepted-pending-upload': '<span class="status-badge status-warning" style="background: var(--info);">📤 Upload Files</span>',
-        'pending-admin-review': '<span class="status-badge status-info" style="background: var(--secondary);">🔍 Admin Review</span>',
-        'admin-approved': '<span class="status-badge status-success" style="background: var(--success);">✅ Approved</span>',
-        'admin-rejected': '<span class="status-badge status-error" style="background: var(--error);">❌ Files Rejected</span>',
-        'rejected': '<span class="status-badge status-closed">✗ Rejected</span>'
-    };
+   const statusBadges = {
+    'pending': '<span class="status-badge status-pending">Pending Review</span>',
+    'accepted': '<span class="status-badge status-approved">Accepted</span>',
+    'accepted-pending-upload': '<span class="status-badge status-warning" style="background: var(--info);">Upload Required</span>',
+    'pending-admin-review': '<span class="status-badge status-info" style="background: var(--secondary);">Under Review</span>',
+    'admin-approved': '<span class="status-badge status-success" style="background: var(--success);">Approved</span>',
+    'admin-rejected': '<span class="status-badge status-error" style="background: var(--error);">Rejected</span>',
+    'rejected': '<span class="status-badge status-closed">Declined</span>'
+};
     
-    content.innerHTML = `
-        <div style="margin-bottom: 1.5rem;">
-            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">${offer.listingName || 'N/A'}</h3>
+   // Get license type label
+const licenseLabel = offer.licenseType === 'inclusive' ? 'Inclusive License' : 
+                     offer.licenseType === 'exclusive' ? 'Exclusive Rights' : 
+                     'Unknown License';
+
+content.innerHTML = `
+    <div style="margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">${offer.listingName || 'N/A'}</h3>
+        <p style="color: var(--gray); font-size: 0.9rem;">License Type: <strong>${licenseLabel}</strong></p>
+
             <p style="color: var(--gray);">From: <strong>${offer.buyerName || 'Anonymous'}</strong></p>
             <p style="color: var(--gray);">Email: ${offer.buyerEmail || 'N/A'}</p>
             <p style="margin-top: 0.5rem;">Status: ${statusBadges[offer.status]}</p>
@@ -3959,10 +3980,65 @@ window.openFileUploadModal = function(offer) {
     document.getElementById('uploadBuyerName').textContent = offer.buyerName;
     document.getElementById('uploadOfferAmount').textContent = `₱${parseInt(offer.offerAmount).toLocaleString()}`;
     
-    // Get what's included from listing
-    const listing = userListings.find(l => l.id === offer.listingId);
-    document.getElementById('uploadWhatsIncluded').textContent = listing?.whatsIncluded || 'No details provided';
-    
+   // Get what's included from listing based on license type
+const listing = userListings.find(l => l.id === offer.listingId);
+let whatsIncluded = 'No details provided';
+
+if (listing && listing.variants && Array.isArray(listing.variants)) {
+    const selectedVariant = listing.variants.find(v => v.type === offer.licenseType);
+    if (selectedVariant) {
+        whatsIncluded = selectedVariant.description;
+        if (selectedVariant.notes) {
+            whatsIncluded += '\n\nNotes: ' + selectedVariant.notes;
+        }
+    }
+} else if (listing) {
+    // Fallback to old structure
+    if (offer.licenseType === 'inclusive' && listing.inclusiveDescription) {
+        whatsIncluded = listing.inclusiveDescription;
+        if (listing.inclusiveNotes) {
+            whatsIncluded += '\n\nNotes: ' + listing.inclusiveNotes;
+        }
+    } else if (offer.licenseType === 'exclusive' && listing.exclusiveDescription) {
+        whatsIncluded = listing.exclusiveDescription;
+        if (listing.exclusiveNotes) {
+            whatsIncluded += '\n\nNotes: ' + listing.exclusiveNotes;
+        }
+    }
+}
+
+document.getElementById('uploadWhatsIncluded').textContent = whatsIncluded;    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Reset form
     document.getElementById('fileUploadForm').reset();
     uploadedFilesData = [];
