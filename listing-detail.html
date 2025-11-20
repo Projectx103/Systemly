@@ -6,403 +6,1165 @@
   <title>Listing Details — Systemly</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+ 
   <style>
-    /* (Your design variables & styles — kept from your requested palette) */
-    :root{
-      --primary:#F97316;
-      --secondary:#6366F1;
-      --accent:#14B8A6;
-      --bg:#FFF7ED;
-      --text:#1F2937;
-      --white:#FFFFFF;
-      --gray-light:#F3F4F6;
-      --gray-medium:#9CA3AF;
-      --gray-dark:#4B5563;
-      --success:#10B981;
-      --error:#EF4444;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
-      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    /* Design System Variables */
+    :root {
+        --primary: #F97316;
+        --primary-dark: #EA580C;
+        --secondary: #6366F1;
+        --accent: #14B8A6;
+        --bg: #FFF7ED;
+        --white: #FFFFFF;
+        --gray-50: #F9FAFB;
+        --gray-100: #F3F4F6;
+        --gray-200: #E5E7EB;
+        --gray-300: #D1D5DB;
+        --gray-400: #9CA3AF;
+        --gray-500: #6B7280;
+        --gray-600: #4B5563;
+        --gray-700: #374151;
+        --gray-800: #1F2937;
+        --gray-900: #111827;
+        --success: #10B981;
+        --error: #EF4444;
+        --warning: #F59E0B;
+        --text: #1F2937;
+        --border: #E5E7EB;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
     }
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;font-size:16px;}
-    
-    nav{position:sticky;top:0;background:rgba(255,247,237,0.85);backdrop-filter:blur(10px);padding:1rem 5%;box-shadow:var(--shadow-md);z-index:50}
-    .nav-container{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-    .logo{font-family:'Archivo',sans-serif;font-weight:900;font-size:1.75rem;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
-    
-    .back-btn{background:var(--white);padding:.6rem 1.2rem;border-radius:999px;border:1px solid var(--gray-light);text-decoration:none;color:var(--text);font-weight:600;transition:all 0.2s;}
-    .back-btn:hover{background:var(--gray-light);border-color:var(--gray-medium);}
-    .back-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
 
-    .loading-container{min-height:56vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Sarabun', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    /* Navigation */
+    nav {
+        position: sticky;
+        top: 0;
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        padding: 0 5%;
+        z-index: 50;
+    }
+
+    .nav-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 72px;
+    }
+
+    .logo {
+        font-family: 'Archivo', sans-serif;
+        font-weight: 800;
+        font-size: 1.5rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-decoration: none;
+        letter-spacing: -0.5px;
+    }
+
+    .back-btn {
+        background: var(--white);
+        padding: 0.625rem 1.25rem;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 600;
+        font-size: 0.9375rem;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .back-btn:hover {
+        background: var(--gray-50);
+        border-color: var(--gray-300);
+    }
+
+    .back-btn:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+    }
+
+    /* Loading State */
+    .loading-container {
+        min-height: 60vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+    }
+
     .spinner {
-    width: 60px;
-    height: 60px;
+        width: 60px;
+        height: 60px;
+        border: 4px solid var(--gray-200);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Main Container */
+    .detail-container {
+        max-width: 1400px;
+        margin: 2rem auto 4rem;
+        padding: 0 5%;
+        display: none;
+    }
+
+    .detail-container.active {
+        display: block;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+        color: var(--gray-500);
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .breadcrumb a {
+        color: var(--gray-500);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .breadcrumb a:hover {
+        color: var(--primary);
+    }
+
+    /* Layout Grid */
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    /* Image Gallery */
+/* Image Gallery */
+.image-gallery {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
     position: relative;
-    animation: rotate 1s linear infinite;
 }
 
-.spinner::before,
-.spinner::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
+.main-image-container {
+    height: 480px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--gray-50);
 }
 
-.spinner::before {
-    width: 100%;
-    height: 100%;
-    border: 6px solid var(--gray-light);
-}
-
-.spinner::after {
-    width: 100%;
-    height: 100%;
-    border: 6px solid transparent;
-    border-top-color: var(--primary);
-    border-right-color: var(--secondary);
-    animation: rotate 0.8s ease-in-out infinite;
-}
-
-@keyframes rotate {
-    to { transform: rotate(360deg); }
-}
-
-    .detail-container{max-width:1400px;margin:2.5rem auto;padding:0 5%;display:none}
-    .detail-container.active{display:block}
-    .breadcrumb{color:var(--gray-medium);font-size:.85rem;margin-bottom:1.25rem;display:flex;gap:.5rem;align-items:center}
-    .breadcrumb a{color:var(--gray-medium);text-decoration:none}
-    .breadcrumb a:hover{color:var(--text)}
-    .detail-grid{display:grid;grid-template-columns:1fr 380px;gap:2rem}
-    .main-content{display:flex;flex-direction:column;gap:1.5rem} 
-
-    /* image gallery */
-.image-gallery{background:var(--white);border-radius:1rem;overflow:hidden;box-shadow:var(--shadow-lg)}
-
-.main-image-container{
-    height:480px;
-    position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-    cursor: zoom-in;
-}
-
-/* Blurred background for main image */
 .main-image-container::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background-image: var(--bg-image);
     background-size: cover;
     background-position: center;
     filter: blur(20px);
     transform: scale(1.1);
-    z-index: 0;
+    z-index: -1;
+    pointer-events: none;
 }
 
-.main-image{
+.main-image {
     position: relative;
-    z-index: 1;
-    max-width:100%;
-    max-height:100%;
-    object-fit:contain;
-    display:block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
     transition: transform 0.3s ease;
+    cursor: zoom-in;
+    pointer-events: auto;
 }
 
-.main-image:hover {
-    transform: scale(1.02);
+.main-image-container {
+    pointer-events: none;
 }
 
-.image-placeholder{
-    width:100%;
-    height:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:4rem;
-    opacity:.15;
-    z-index: 1;
+.main-image-container * {
+    pointer-events: auto;
 }
 
-.image-thumbnails{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-    gap:.75rem;
-    padding:1rem;
-    background:var(--white);
-}
+    .main-image:hover {
+        transform: scale(1.02);
+    }
 
-.thumbnail{
-    border-radius:8px;
-    overflow:hidden;
-    cursor:pointer;
-    border:3px solid transparent;
-    transition:all 0.2s;
-    height: 100px; /* Fixed height for consistent display */
-}
+    .image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        opacity: 0.15;
+        z-index: 1;
+    }
 
-.thumbnail:hover{
-    border-color:var(--gray-medium);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
+    .image-thumbnails {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.75rem;
+        padding: 1rem;
+        background: var(--white);
+    }
 
-.thumbnail img{
-    width:100%;
-    height:100%;
-    object-fit:cover; /* Changed to cover for better thumbnail display */
-    display:block;
-}
+    .thumbnail {
+        border-radius: 6px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s;
+        height: 100px;
+    }
 
-.thumbnail.active{
-    border-color:var(--primary);
-    box-shadow: 0 0 0 1px var(--primary);
-}
+    .thumbnail:hover {
+        border-color: var(--gray-400);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
 
-.thumbnail.active:hover{
-    border-color:var(--primary);
-}
+    .thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
 
-/* Image zoom modal */
+    .thumbnail.active {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 1px var(--primary);
+    }
+
+    /* Image Zoom Modal */
 .image-zoom-modal {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: rgba(0, 0, 0, 0.95);
-    z-index: 9999;
+    z-index: 999999 !important;  /* ✅ Below offer/message modals but above everything else */
     align-items: center;
     justify-content: center;
     cursor: zoom-out;
+    padding: 2rem;
+    overflow: auto;
 }
 
-.image-zoom-modal.active {
-    display: flex;
-}
+    .image-zoom-modal.active {
+        display: flex;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
 
 .image-zoom-modal img {
-    max-width: 95%;
-    max-height: 95%;
+    max-width: 90%;
+    max-height: 90%;
     object-fit: contain;
     border-radius: 8px;
+    transition: none; /* ✅ Removed transition for smoother zoom */
+    cursor: zoom-in;
+    user-select: none; /* ✅ Prevent text selection while dragging */
+    -webkit-user-drag: none; /* ✅ Prevent image drag */
 }
 
-.zoom-close {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    font-size: 40px;
-    color: white;
-    cursor: pointer;
+.image-zoom-modal img:active {
+    cursor: grabbing;
+}
+
+    .zoom-close {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 40px;
+        color: white;
+        cursor: pointer;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.5);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        border: none;
+    }
+
+    .zoom-close:hover {
+        background: rgba(0, 0, 0, 0.8);
+        transform: rotate(90deg);
+    }
+
+    .zoom-controls {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 1rem;
+        z-index: 10000;
+    }
+
+    .zoom-btn {
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: 2px solid white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    /* Listing Header */
+    .listing-header {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem 2rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .listing-category-badge {
+        display: inline-block;
+        background: rgba(249, 115, 22, 0.1);
+        color: var(--primary);
+        padding: 0.375rem 1rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.8125rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .listing-title {
+        font-family: 'Archivo', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+        color: var(--gray-900);
+    }
+
+    .listing-meta {
+        display: flex;
+        gap: 1.5rem;
+        color: var(--gray-500);
+        font-size: 0.875rem;
+        flex-wrap: wrap;
+        border-top: 1px solid var(--border);
+        padding-top: 1rem;
+        align-items: center;
+    }
+
+    .listing-meta > div {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .listing-meta svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+
+    #statusBadge {
+        font-family: 'Archivo', sans-serif;
+        font-weight: 800;
+        color: var(--success);
+        text-transform: uppercase;
+        font-size: 0.875rem;
+        margin-left: auto;
+    }
+
+    /* Content Sections */
+    .section {
+        background: var(--white);
+        padding: 1.75rem 2rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .section h2 {
+        font-family: 'Archivo', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid var(--gray-100);
+        padding-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--gray-900);
+    }
+
+    .section h2 svg {
+        width: 20px;
+        height: 20px;
+        color: var(--secondary);
+        flex-shrink: 0;
+    }
+
+    .section h3 {
+        font-size: 1rem;
+        margin-top: 1.25rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--gray-900);
+    }
+
+    .section p, .section div {
+        color: var(--gray-700);
+        font-size: 0.9375rem;
+        line-height: 1.6;
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .metric-card {
+        background: var(--gray-50);
+        padding: 1rem 1.25rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary);
+    }
+
+    .metric-label {
+        font-size: 0.8125rem;
+        color: var(--gray-600);
+        margin-bottom: 0.375rem;
+        font-weight: 500;
+    }
+
+    .metric-value {
+        font-weight: 800;
+        font-family: 'Archivo', sans-serif;
+        font-size: 1.5rem;
+        color: var(--gray-900);
+    }
+
+    /* Detail Items */
+    .detail-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .detail-item:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        font-size: 0.8125rem;
+        color: var(--gray-600);
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+    }
+
+    .detail-value {
+        font-weight: 600;
+        color: var(--gray-900);
+        font-size: 0.9375rem;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        position: sticky;
+        top: 88px;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        align-self: start;
+    }
+
+    /* Price Card */
+    .price-card {
+        background: var(--white);
+        padding: 1.75rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: var(--shadow-md);
+        text-align: center;
+    }
+
+    .price-label {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .price-amount {
+        font-family: 'Archivo', sans-serif;
+        font-weight: 900;
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0.5rem 0;
+        line-height: 1;
+    }
+
+    .price-subtitle {
+        color: var(--gray-500);
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+
+    .price-breakdown {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+        font-size: 0.875rem;
+    }
+
+    .price-breakdown > div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .breakdown-label {
+        color: var(--gray-600);
+    }
+
+    .breakdown-value {
+        font-weight: 700;
+        color: var(--gray-900);
+    }
+
+    /* CTA Buttons */
+    .cta-button {
+        display: block;
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        border-radius: 6px;
+        border: none;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: var(--white);
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 1rem;
+        font-size: 0.9375rem;
+        transition: all 0.2s;
+        font-family: 'Inter', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .cta-button:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .cta-button:focus-visible {
+        outline: 4px solid rgba(99, 102, 241, 0.5);
+        outline-offset: 2px;
+    }
+
+    .cta-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .cta-button.secondary {
+        background: var(--white);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+    }
+
+    .cta-button.secondary:hover {
+        background: var(--gray-50);
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* License Cards */
+    .license-cards {
+        background: var(--white);
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .license-cards h3 {
+        font-family: 'Archivo', sans-serif;
+        font-size: 1.125rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-align: center;
+        color: var(--gray-900);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .license-cards h3 svg {
+        width: 20px;
+        height: 20px;
+        color: var(--primary);
+    }
+
+    .license-option-card {
+        background: linear-gradient(135deg, rgba(249, 115, 22, 0.03), rgba(99, 102, 241, 0.03));
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .license-option-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .license-option-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .license-option-card.selected {
+        border-color: var(--primary);
+        background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(99, 102, 241, 0.1));
+        box-shadow: 0 6px 20px rgba(249, 115, 22, 0.2);
+    }
+
+    .license-option-card.selected::after {
+        content: "✓";
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 28px;
+        height: 28px;
+        background: var(--primary);
+        color: var(--white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.875rem;
+    }
+
+    .license-option-card.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .license-option-card.disabled::before {
+        content: 'SOLD OUT';
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--error);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .license-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .license-icon {
+        font-size: 1.75rem;
+    }
+
+    .license-card-header h4 {
+        font-family: 'Archivo', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        margin: 0;
+        flex: 1;
+        color: var(--gray-900);
+    }
+
+    .exclusive-badge {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        color: #1A1A1A;
+        padding: 0.25rem 0.625rem;
+        border-radius: 12px;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .license-price {
+        font-family: 'Archivo', sans-serif;
+        font-size: 1.75rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+
+    .license-features {
+        list-style: none;
+        padding: 0;
+        margin: 0.75rem 0;
+    }
+
+    .license-features li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.375rem 0;
+        font-size: 0.875rem;
+        color: var(--gray-700);
+    }
+
+    .license-features li svg {
+        width: 16px;
+        height: 16px;
+        color: var(--success);
+        flex-shrink: 0;
+    }
+
+    .license-availability {
+        background: var(--gray-50);
+        padding: 0.75rem;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .license-availability svg {
+        width: 16px;
+        height: 16px;
+        color: var(--primary);
+    }
+
+    .license-select-btn {
+        width: 100%;
+        padding: 0.875rem;
+        border: none;
+        border-radius: 6px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        font-weight: 700;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .license-select-btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    }
+
+    .license-select-btn.exclusive-btn {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        color: #1A1A1A;
+    }
+
+    .license-select-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .license-info-alert {
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        border-radius: 6px;
+        padding: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--secondary);
+        margin-top: 1rem;
+    }
+
+    .license-info-alert svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+
+    /* Seller Card */
+    .seller-card {
+        background: var(--white);
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        border-left: 4px solid var(--accent);
+    }
+
+    .seller-card h3 {
+        font-family: 'Archivo', sans-serif;
+        font-size: 1.125rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--gray-900);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .seller-card h3 svg {
+        width: 20px;
+        height: 20px;
+        color: var(--accent);
+    }
+
+    .seller-info-content {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .seller-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        border: 4px solid var(--accent);
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .seller-details h4 {
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+        color: var(--gray-900);
+    }
+
+    .seller-details p {
+        font-size: 0.875rem;
+        line-height: 1.4;
+        color: var(--gray-600);
+    }
+
+    .seller-plan-badge {
+        display: inline-block;
+        padding: 0.375rem 0.875rem;
+        border-radius: 20px;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        margin-top: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .seller-plan-badge.premium-seller {
+        background: linear-gradient(45deg, #A67C00, #FFDF8B, #EDCA66, #F0E7BF, #A67C00);
+        background-size: 200% 200%;
+        animation: gradient-shift 3s ease infinite;
+        color: #1A1A1A;
+    }
+
+    .seller-plan-badge.basic-seller {
+        background: linear-gradient(45deg, #6EC8FF, #FFFFFF, #A9DFFF, #FFFFFF, #6EC8FF);
+        background-size: 200% 200%;
+        animation: gradient-shift 3s ease infinite;
+        color: #1A1A1A;
+    }
+
+    .seller-plan-badge.free-seller {
+        background: linear-gradient(45deg, #828282, #E5E5E5, #BABABA, #EFEFEF, #828282);
+        background-size: 200% 200%;
+        animation: gradient-shift 3s ease infinite;
+        color: #1A1A1A;
+    }
+
+    @keyframes gradient-shift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Trust Badges */
+    .trust-badges {
+        padding: 1.5rem;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .trust-badges h3 {
+        font-family: 'Archivo', sans-serif;
+        font-size: 1.125rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--gray-900);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .trust-badges h3 svg {
+        width: 20px;
+        height: 20px;
+        color: var(--success);
+    }
+
+    .trust-badge-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 0;
+        color: var(--gray-700);
+        font-size: 0.875rem;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .trust-badge-item:last-child {
+        border-bottom: none;
+    }
+
+    .trust-badge-item svg {
+        width: 18px;
+        height: 18px;
+        color: var(--success);
+        flex-shrink: 0;
+    }
+
+    /* What's Included */
+    .included-list-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.625rem;
+        margin-top: 1rem;
+    }
+
+    .included-item {
+        display: flex;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: var(--gray-50);
+        border-radius: 6px;
+        align-items: center;
+        font-size: 0.875rem;
+        color: var(--gray-700);
+        border: 1px solid var(--border);
+        transition: all 0.2s;
+    }
+
+    .included-item:hover {
+        background: var(--white);
+        border-color: var(--primary);
+    }
+
+    .included-item svg {
+        width: 18px;
+        height: 18px;
+        color: var(--secondary);
+        flex-shrink: 0;
+    }
+
+/* Slide-in Side Panels (Flippa Style) */
+.side-panel {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    max-width: 500px;
+    height: 100vh;
+    background: white;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
     z-index: 10000;
+    transition: right 0.3s ease-in-out;
+    overflow-y: auto;
 }
 
+.side-panel.active {
+    right: 0;
+}
 
+.panel-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+}
 
+.panel-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
 
+.panel-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 10;
+}
 
-
-
-    /* header */
-    .listing-header{background:var(--white);border-radius:1rem;padding:1.5rem 2rem;box-shadow:var(--shadow-md)}
-    .listing-title{font-family:'Archivo',sans-serif;font-size:2.25rem;font-weight:900;margin-bottom:.5rem;line-height:1.2;}
-    .listing-category-badge{display:inline-block;background:rgba(249,115,22,0.1);color:var(--primary);padding:.3rem 1rem;border-radius:999px;font-weight:700;font-size:.875rem}
-    .listing-meta{display:flex;gap:1.5rem;color:var(--gray-medium);margin-top:.8rem;font-size:.9rem;flex-wrap:wrap;border-top:1px solid var(--gray-light);padding-top:1rem;}
-    
-    #statusBadge{
-        font-family:'Archivo',sans-serif;
-        font-weight:900;
-        color:var(--success);
-        text-transform:uppercase;
-        font-size:1rem;
-    }
-
-    /* large description & sections */
-    .section{background:var(--white);padding:1.75rem;border-radius:1rem;box-shadow:var(--shadow-md);line-height:1.6;}
-    /* Adjusted H2 styling to accommodate Font Awesome icons */
-    .section h2{
-        font-family:'Archivo',sans-serif;
-        font-size:1.5rem;
-        font-weight:700;
-        margin-bottom:1rem;
-        border-bottom:2px solid var(--gray-light);
-        padding-bottom:.5rem;
-        display:flex; /* Enable flex for icon alignment */
-        align-items:center;
-    }
-    /* Style for Font Awesome icons in H2 */
-    .section h2 i{
-        margin-right:.75rem;
-        color:var(--secondary);
-        font-size: 1.25em; /* Bigger icon */
-    }
-
-
-.seller-plan-badge {
-    display: inline-block;
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
+.panel-header h2 {
+    font-family: 'Archivo', sans-serif;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin-top: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    margin: 0;
+    color: var(--gray-900);
 }
 
-.seller-plan-badge.premium-seller {
-    background: linear-gradient(45deg, #A67C00, #FFDF8B, #EDCA66, #F0E7BF, #A67C00);
-    background-size: 200% 200%;
-    animation: gradient-shift 3s ease infinite;
-    color: #1A1A1A;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+.panel-close {
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    cursor: pointer;
+    color: var(--gray-400);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
 
-.seller-plan-badge.basic-seller {
-    background: linear-gradient(45deg, #6EC8FF, #FFFFFF, #A9DFFF, #FFFFFF, #6EC8FF);
-    background-size: 200% 200%;
-    animation: gradient-shift 3s ease infinite;
-    color: #1A1A1A;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+.panel-close:hover {
+    background: var(--gray-100);
+    color: var(--gray-900);
 }
 
-.seller-plan-badge.free-seller {
-    background: linear-gradient(45deg, #828282, #E5E5E5, #BABABA, #EFEFEF, #828282);
-    background-size: 200% 200%;
-    animation: gradient-shift 3s ease infinite;
-    color: #1A1A1A;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+.panel-content {
+    padding: 2rem;
 }
 
-@keyframes gradient-shift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+.panel-info-box {
+    background: var(--gray-50);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
 }
 
-
-
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(5px);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
+.panel-info-box .listing-name {
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
 }
 
-.modal.active {
-  display: flex !important;
+.panel-info-box .listing-price {
+    font-size: 1.25rem;
+    font-weight: 800;
+    font-family: 'Archivo', sans-serif;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.modal-content {
-  background: white;
-  padding: 3rem;
-  border-radius: 30px;
-  max-width: 600px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-
-.close-modal {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  color: #6B7280;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  transition: all 0.3s;
-}
-
-.close-modal:hover {
-  background: #F3F4F6;
-  color: #1F2937;
-}
-
-.modal-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.modal-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: var(--text);
-}
-
-.form-input, .form-textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px solid var(--gray-light);
-  border-radius: 10px;
-  font-family: 'Sarabun', sans-serif;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-
-.form-input:focus, .form-textarea:focus {
-  outline: none;
-  border-color: var(--primary);
-}
-
-.btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 10px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 1rem;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: white;
-}
-
-.btn-primary:hover {
-  opacity: 0.9;
-}
-
-.btn-secondary {
-  background: white;
-  color: var(--text);
-  border: 2px solid var(--gray-light);
-}
-
-.btn-secondary:hover {
-  background: var(--gray-light);
+/* Mobile responsive */
+@media (max-width: 640px) {
+    .side-panel {
+        max-width: 100%;
+    }
 }
 
 
@@ -413,78 +1175,288 @@
 
 
 
-    .section h3{font-size:1.15rem;margin-top:1rem;margin-bottom:.5rem;font-weight:600;}
-    .section p, .section div{color:var(--gray-dark);}
 
-    .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;}
-    .metric-card{background:var(--gray-light);padding:1rem;border-radius:10px;border-left:4px solid var(--primary);}
-    .metric-label{font-size:.85rem;color:var(--gray-dark);margin-bottom:.3rem;}
-    .metric-value{font-weight:900;font-family:'Archivo',sans-serif;font-size:1.5rem;color:var(--text);}
-    
-    .detail-item{padding:.6rem 0;border-bottom:1px dashed var(--gray-light);}
-    .detail-item:last-child{border-bottom:none;}
-    .detail-label{font-size:.85rem;color:var(--gray-medium);}
-    .detail-value{font-weight:600;color:var(--text);margin-top:.1rem;}
+/* Alert Boxes */
+.alert-box {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: start;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+}
 
-    /* sidebar */
-    .sidebar{position:sticky;top:100px;display:flex;flex-direction:column;gap:1.5rem}
-    .price-card{background:var(--white);padding:1.75rem;border-radius:1rem;box-shadow:var(--shadow-lg);border:1px solid var(--gray-light);text-align:center;}
-    .price-label{font-size:1rem;color:var(--gray-dark);font-weight:600;}
-    .price-amount{font-family:'Archivo',sans-serif;font-weight:900;font-size:2.8rem;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-top:.2rem;margin-bottom:.3rem;}
-    .price-subtitle{color:var(--gray-medium);font-size:.9rem;}
-    
-    .price-breakdown{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--gray-light);display:flex;flex-direction:column;gap:.5rem;font-size:.9rem;color:var(--gray-dark);}
-    .price-breakdown > div{display:flex;justify-content:space-between;}
-    .breakdown-value{font-weight:600;}
+.alert-box svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
 
-    .cta-button{display:block;width:100%;padding:1rem;border-radius:10px;border:none;background:linear-gradient(135deg,var(--primary),var(--secondary));color:var(--white);font-weight:800;cursor:pointer;margin-top:1rem;font-size:1.1rem;transition:all 0.2s;}
-    .cta-button:hover{opacity:.95;box-shadow:var(--shadow-md);}
-    .cta-button:focus-visible{outline:4px solid rgba(99, 102, 241, 0.5);outline-offset:2px;}
-    .cta-button.secondary{background:var(--white);color:var(--primary);border:2px solid var(--primary);margin-top:.75rem;}
-    .cta-button.secondary:hover{background:var(--bg);box-shadow:var(--shadow-sm);}
-    .cta-button.secondary:focus-visible{outline:4px solid rgba(249, 115, 22, 0.5);outline-offset:2px;}
+.alert-info {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--secondary);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
 
-    .seller-card{background:var(--white);padding:1.5rem;border-radius:1rem;box-shadow:var(--shadow-md);border-left:4px solid var(--accent);}
-    .seller-card h3{font-family:'Archivo',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:1rem;}
-    .seller-info-content{display:flex;gap:.8rem;align-items:center;}
-    .seller-avatar{width:64px;height:64px;border-radius:50%;border:4px solid var(--accent);object-fit:cover;flex-shrink:0;}
-    .seller-details h4{font-weight:700;font-size:1.1rem;margin-bottom:.1rem;}
-    .seller-details p{font-size:.9rem;line-height:1.3;}
-    
-    .trust-badges{padding:1.5rem;background:var(--white);border-radius:1rem;box-shadow:var(--shadow-sm);border:1px solid var(--gray-light);}
-    .trust-badges h3{font-family:'Archivo',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.8rem;}
-    .trust-badge-item{display:flex;align-items:center;gap:.75rem;padding:.5rem 0;color:var(--gray-dark);font-size:.95rem;}
-    /* Updated checkmark icon styling */
-    .trust-badge-item i{color:var(--success);font-size:1.1rem;}
-    
-    .included-list-grid{display:grid;grid-template-columns:1fr;gap:.5rem;}
-    .included-item{display:flex;gap:.75rem;padding:.8rem;background:var(--gray-light);border-radius:10px;align-items:center;font-size:.95rem;}
-    /* Updated included item icon styling */
-    .included-item i{font-size:1.2rem;color:var(--secondary);}
+.alert-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
 
-    footer{background:var(--text);color:var(--white);padding:2.5rem 5%;margin-top:3rem;text-align:center}
-    .footer-container{max-width:1400px;margin:0 auto;}
-    .footer-container a{color:inherit;text-decoration:none;transition:color 0.2s;}
-    .footer-container a:hover{color:var(--primary);}
-    .similar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-top:1.5rem}
-    
-    .similar-card{background:var(--white);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.2s, transform 0.2s;cursor:pointer;border:1px solid var(--gray-light);}
-    .similar-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
-    
-    .modal-content{background:var(--white);padding:1.75rem;border-radius:1rem;max-width:520px;width:92%;position:relative;box-shadow:var(--shadow-lg);border:1px solid var(--gray-light);}
-    .modal-content h3{font-family:'Archivo',sans-serif;font-size:1.5rem;margin-bottom:.5rem;}
-    #closeModal{position:absolute;right:1rem;top:1rem;border:none;background:transparent;font-size:24px;cursor:pointer;color:var(--gray-dark);}
-    #messageText{width:100%;min-height:140px;padding:.8rem;border:1px solid var(--gray-medium);border-radius:8px;margin-top:.8rem;resize:vertical;}
+.alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
 
-    @media(max-width:1024px){.detail-grid{grid-template-columns:1fr}.sidebar{position:static;margin-top:1rem;}}
-    @media(max-width:640px){.main-image-container{height:280px}.listing-title{font-size:1.8rem}.detail-grid{gap:1rem;}}
-  </style>
+
+
+
+
+
+
+
+
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--gray-700);
+        font-size: 0.875rem;
+    }
+
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.9375rem;
+        transition: all 0.2s;
+        outline: none;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9375rem;
+        font-family: 'Inter', sans-serif;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+    }
+
+    .btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: var(--text);
+        border: 2px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+        background: var(--gray-50);
+    }
+
+    /* Footer */
+    footer {
+        background: var(--gray-900);
+        color: var(--white);
+        padding: 2.5rem 5% 1.5rem;
+        margin-top: 4rem;
+        text-align: center;
+    }
+
+    .footer-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .footer-container a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.2s;
+        font-size: 0.875rem;
+        opacity: 0.8;
+    }
+
+    .footer-container a:hover {
+        color: var(--primary);
+        opacity: 1;
+    }
+
+    .footer-container small {
+        display: block;
+        margin-top: 1rem;
+        opacity: 0.7;
+        font-size: 0.8125rem;
+    }
+
+    /* Similar Listings */
+    .similar-listings {
+        max-width: 1400px;
+        margin: 3rem auto 0;
+        padding: 0 5%;
+    }
+
+    .similar-listings h2 {
+        font-family: 'Archivo', sans-serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--gray-900);
+    }
+
+    .similar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .similar-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .similar-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-4px);
+        border-color: var(--primary);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+            position: static;
+            margin-top: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .nav-container {
+            height: 64px;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+        }
+
+        .back-btn {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .main-image-container {
+            height: 280px;
+        }
+
+        .listing-title {
+            font-size: 1.5rem;
+        }
+
+        .detail-grid {
+            gap: 1.5rem;
+        }
+
+        .section {
+            padding: 1.25rem 1.5rem;
+        }
+
+        .section h2 {
+            font-size: 1.125rem;
+        }
+
+        .metrics-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .price-amount {
+            font-size: 2rem;
+        }
+
+        .modal-content {
+            padding: 2rem;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .detail-container {
+            padding: 0 4%;
+        }
+
+        .listing-meta {
+            font-size: 0.8125rem;
+            gap: 1rem;
+        }
+
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .similar-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .breadcrumb {
+            font-size: 0.8125rem;
+        }
+    }
+</style>
+
+
+
+
+
 </head>
 <body>
   <nav role="navigation">
     <div class="nav-container">
       <a class="logo" href="index.html">Systemly</a>
-      <a class="back-btn" href="marketplace.html" aria-label="Back to Marketplace">Back to Marketplace</a>
+      <a class="back-btn" href="marketplace.html" aria-label="Back to Marketplace">
+    <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+    </svg>
+    Back to Marketplace
+</a>
     </div>
   </nav>
 
@@ -514,15 +1486,38 @@
           <div class="listing-category-badge" id="categoryBadge">Loading...</div>
           <h1 class="listing-title" id="listingTitle">Loading…</h1>
           <div class="listing-meta">
-            <div><i class="fa-solid fa-calendar-alt" aria-hidden="true"></i> Listed: <span id="listingDate">Loading…</span></div>
-            <div><i class="fa-solid fa-eye" aria-hidden="true"></i> Views: <span id="listingViews">0</span></div>
-            <div><i class="fa-solid fa-tag" aria-hidden="true"></i> ID: <span id="listingId">—</span></div>
-            <div style="margin-left:auto;"><span id="statusBadge" style="font-weight:700"></span></div>
-          </div>
+    <div>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        Listed: <span id="listingDate">Loading…</span>
+    </div>
+    <div>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>
+        Views: <span id="listingViews">0</span>
+    </div>
+    <div>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+        </svg>
+        ID: <span id="listingId">—</span>
+    </div>
+    <div style="margin-left:auto;">
+        <span id="statusBadge" style="font-weight:700"></span>
+    </div>
+</div>
         </header>
 
         <section class="section" id="descriptionBlock">
-          <h2><i class="fa-solid fa-file-lines" aria-hidden="true"></i> Overview</h2>
+          <h2>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+    </svg>
+    Overview
+</h2>
           <h3>Short Summary</h3>
           <p id="shortDescription">Loading…</p>
           <h3 style="margin-top:.6rem">Detailed Description</h3>
@@ -530,7 +1525,12 @@
         </section>
 
        <section class="section key-metrics" aria-label="Key financial and traffic metrics">
-  <h2><i class="fa-solid fa-chart-bar" aria-hidden="true"></i> Key Metrics</h2>
+  <h2>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+    </svg>
+    Key Metrics
+</h2>
   <div class="metrics-grid" style="margin-top:.6rem">
     <div class="metric-card">
       <div class="metric-label">Monthly Revenue</div>
@@ -552,32 +1552,63 @@
 </section>
         
         <section class="section" id="highlightsSection">
-          <h2><i class="fa-solid fa-star" aria-hidden="true"></i> Key Highlights</h2>
+          <h2>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+    </svg>
+    Key Highlights
+</h2>
           <div id="keyHighlights">Loading…</div>
         </section>
 
         <section class="section" id="operationsSection">
-          <h2><i class="fa-solid fa-cogs" aria-hidden="true"></i> Operations & Handover</h2>
+          <h2>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+    </svg>
+    Operations & Handover
+</h2>
           <div id="operations">Loading…</div>
         </section>
 
         <section class="section" id="customersSection">
-          <h2><i class="fa-solid fa-users" aria-hidden="true"></i> Customer Profile</h2>
+          <h2>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+    </svg>
+    Customer Profile
+</h2>
           <div id="customers">Loading…</div>
         </section>
 
         <section class="section" id="financialsSection">
-          <h2><i class="fa-solid fa-dollar-sign" aria-hidden="true"></i> Financials Summary</h2>
+          <h2>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    Financials Summary
+</h2>
           <div id="financials">Loading…</div>
         </section>
         
         <section class="section whats-included">
-          <h2><i class="fa-solid fa-box-open" aria-hidden="true"></i> What's Included</h2>
+          <h2>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+    </svg>
+    What's Included
+</h2>
           <div id="includedList" class="included-list-grid"></div>
         </section>
 
         <section class="section additional-details">
-  <h2><i class="fa-solid fa-laptop-code" aria-hidden="true"></i> Technical & Business Details</h2>
+  <h2>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+    </svg>
+    Technical & Business Details
+</h2>
   <div class="detail-grid-2col" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.6rem;margin-top:.6rem">
     <!-- Category-specific fields will be populated here dynamically -->
     <div class="detail-item">
@@ -632,61 +1663,315 @@
 </section>
 
         <section class="section" id="additionalNotesSection">
-          <h2><i class="fa-solid fa-clipboard-list" aria-hidden="true"></i> Additional Notes</h2>
+          <h2>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+    </svg>
+    Additional Notes
+</h2>
           <div id="additionalNotes">Loading…</div>
         </section>
       </div>
 
       <aside class="sidebar">
-        <section class="price-card" aria-label="Pricing and Purchase Options">
-          <div class="price-label">Asking Price</div>
-          <div class="price-amount" id="priceAmount">$0</div>
-          <div class="price-subtitle" id="priceSubtitle">One-time purchase, Negotiable</div>
 
-          <div class="price-breakdown">
-            <div title="Asking Price divided by Annual Profit">
-                <div class="breakdown-label">Profit Multiple (x)</div>
-                <div id="priceProfitMultiple" class="breakdown-value">N/A</div>
-            </div>
-            <div title="Asking Price divided by Annual Revenue">
-                <div class="breakdown-label">Revenue Multiple (x)</div>
-                <div id="priceRevenueMultiple" class="breakdown-value">N/A</div>
-            </div>
-            <div>
-                <div class="breakdown-label">Est. Profit Margin</div>
-                <div id="priceMargin" class="breakdown-value">N/A</div>
-            </div>
-          </div>
+<!-- Make Offer Side Panel -->
+<div class="panel-overlay" id="offerPanelOverlay" onclick="closeMakeOfferModal()"></div>
+<div class="side-panel" id="makeOfferPanel">
+  <div class="panel-header">
+    <h2>💰 Make an Offer</h2>
+    <button class="panel-close" onclick="closeMakeOfferModal()" aria-label="Close panel">×</button>
+  </div>
+  
+  <div class="panel-content">
+    <div class="panel-info-box">
+      <div class="listing-name" id="offerListingName">Loading...</div>
+      <div class="listing-price">Current Price: <span id="currentAskingPrice">₱0</span></div>
+    </div>
 
-<button id="buyNowBtn" class="cta-button" aria-label="Make an offer on this listing">
-  💰 Make Offer
-</button>
-<button id="contactBtn" class="cta-button secondary" aria-label="Send message to seller">
-  ✉️ Message Seller
-</button>
-        </section>
+    <form id="offerForm" onsubmit="submitOffer(event)">
+      <input type="hidden" id="offerListingId">
+      <input type="hidden" id="offerSellerId">
+      <input type="hidden" id="offerSellerEmail">
+      <input type="hidden" id="offerLicenseType">
 
-        <section class="seller-card" aria-label="Seller Information">
-          <h3><i class="fa-solid fa-user-tie" aria-hidden="true"></i> Seller Information</h3>
-          <div class="seller-info-content">
-            <img src="https://i.pravatar.cc/100" alt="Seller profile avatar" class="seller-avatar" id="sellerAvatar">
-            <div class="seller-details">
-              <h4 id="sellerName">Loading…</h4>
-              <p id="sellerEmail" style="color:var(--gray-medium)">Contact via form</p>
-              <p id="sellerRole" style="font-weight:700; color:var(--accent)">Verified Marketplace Seller</p>
-            </div>
-          </div>
-        </section>
-        
-        <section class="trust-badges" aria-label="Platform Security and Trust Features">
-  <h3><i class="fa-solid fa-shield-alt" aria-hidden="true"></i> Trust & Security</h3>
-  <div class="trust-badge-items">
-    <div class="trust-badge-item"><i class="fa-solid fa-check" aria-hidden="true"></i> PayMongo Secure Payments</div>
-    <div class="trust-badge-item"><i class="fa-solid fa-check" aria-hidden="true"></i> Verified Seller Profiles</div>
-    <div class="trust-badge-item"><i class="fa-solid fa-check" aria-hidden="true"></i> Transaction Protection</div>
-    <div class="trust-badge-item"><i class="fa-solid fa-check" aria-hidden="true"></i> Post-Sale Support & Handover</div>
+      <div class="form-group">
+        <label class="form-label">Your Offer Amount (₱) *</label>
+        <input type="number" id="offerAmount" class="form-input" required min="1000" step="100" placeholder="Enter your offer amount">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Message to Seller (Optional)</label>
+        <textarea id="offerMessage" class="form-textarea" rows="5" placeholder="Explain your offer or ask questions..."></textarea>
+      </div>
+      
+      <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+        <button type="button" class="btn btn-secondary" onclick="closeMakeOfferModal()" style="flex: 1;">Cancel</button>
+        <button type="submit" class="btn btn-primary" style="flex: 2;">
+          <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+          </svg>
+          Submit Offer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Message Seller Side Panel -->
+<div class="panel-overlay" id="messagePanelOverlay" onclick="closeMessageSellerModal()"></div>
+<div class="side-panel" id="messageSellerPanel">
+  <div class="panel-header">
+    <h2>✉️ Message Seller</h2>
+    <button class="panel-close" onclick="closeMessageSellerModal()" aria-label="Close panel">×</button>
+  </div>
+  
+  <div class="panel-content">
+    <div class="panel-info-box">
+      <div class="listing-name" id="messageListingName">Loading...</div>
+    </div>
+
+    <form id="messageForm" onsubmit="sendMessage(event)">
+      <input type="hidden" id="messageListingId">
+      <input type="hidden" id="messageSellerId">
+      <input type="hidden" id="messageSellerEmail">
+      
+      <div class="form-group">
+        <label class="form-label">Subject *</label>
+        <input type="text" id="messageSubject" class="form-input" required placeholder="What would you like to ask?">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Your Message *</label>
+        <textarea id="messageText" class="form-textarea" rows="8" required placeholder="Type your message here..."></textarea>
+      </div>
+      
+      <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+        <button type="button" class="btn btn-secondary" onclick="closeMessageSellerModal()" style="flex: 1;">Cancel</button>
+        <button type="submit" class="btn btn-primary" style="flex: 2;">
+          <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+          </svg>
+          Send Message
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- PRICING & LICENSE INFO (FLIPPA STYLE) -->
+<section class="price-card" aria-label="Pricing Information">
+  <div class="price-label">Starting Price</div>
+  <div class="price-amount" id="priceAmount">₱0</div>
+  <div class="price-subtitle" id="priceSubtitle">Select a license below</div>
+  
+  <!-- License Options Dropdown -->
+  <div style="margin: 1.5rem 0;">
+    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--gray-700);">
+      License Type
+    </label>
+    <select id="licenseTypeSelect" class="form-input" style="width: 100%; padding: 0.75rem; font-size: 0.9375rem;" onchange="handleLicenseChange()">
+      <option value="">-- Select License --</option>
+      <option value="inclusive" id="inclusiveOption" style="display:none;">Inclusive License</option>
+      <option value="exclusive" id="exclusiveOption" style="display:none;">Exclusive Rights</option>
+    </select>
+  </div>
+  
+  <!-- License Description -->
+  <div id="licenseDescription" style="display:none; background: var(--gray-50); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; color: var(--gray-700); border-left: 3px solid var(--primary);"></div>
+  
+  <!-- Action Buttons -->
+  <button class="cta-button" id="makeOfferBtn" disabled onclick="handleMakeOffer()" style="opacity: 0.5;">
+    <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    Make an Offer
+  </button>
+  
+  <button class="cta-button secondary" onclick="handleContactSeller()">
+    <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+    </svg>
+    Contact Seller
+  </button>
+  
+  <!-- Price Breakdown -->
+  <div class="price-breakdown" id="priceBreakdown" style="display:none;">
+    <div>
+      <span class="breakdown-label">Profit Multiple</span>
+      <span class="breakdown-value" id="priceProfitMultiple">—</span>
+    </div>
+    <div>
+      <span class="breakdown-label">Revenue Multiple</span>
+      <span class="breakdown-value" id="priceRevenueMultiple">—</span>
+    </div>
+    <div>
+      <span class="breakdown-label">Profit Margin</span>
+      <span class="breakdown-value" id="priceMargin">—</span>
+    </div>
   </div>
 </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <section class="seller-card" aria-label="Seller Information">
+  <h3>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+    </svg>
+    Seller Information
+  </h3>
+  <div class="seller-info-content">
+    <img src="https://i.pravatar.cc/100" alt="Seller profile avatar" class="seller-avatar" id="sellerAvatar">
+    <div class="seller-details">
+      <h4 id="sellerName">Loading…</h4>
+      <p id="sellerEmail" style="color:var(--gray-500)">Contact via form</p>
+      <p id="sellerRole" style="font-weight:600; color:var(--accent); font-size: 0.8125rem;">Verified Marketplace Seller</p>
+    </div>
+  </div>
+</section>
+        
+<section class="trust-badges" aria-label="Platform Security and Trust Features">
+  <h3>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+    </svg>
+    Trust & Security
+  </h3>
+  <div class="trust-badge-items">
+    <div class="trust-badge-item">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      PayMongo Secure Payments
+    </div>
+    <div class="trust-badge-item">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      Verified Seller Profiles
+    </div>
+    <div class="trust-badge-item">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      Transaction Protection
+    </div>
+    <div class="trust-badge-item">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      Post-Sale Support & Handover
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Buying Advice -->
+<section class="trust-badges" aria-label="Buying Advice" style="border-left: 4px solid var(--secondary);">
+  <h3>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+    </svg>
+    Buying Advice
+  </h3>
+  
+  <div style="font-size: 0.875rem; color: var(--gray-700); line-height: 1.6;">
+    <p style="margin-bottom: 1rem; font-weight: 600;">Systemly's platform is free for buyers. Here are our tips for first-time buyers:</p>
+    
+    <details style="margin-bottom: 1rem; cursor: pointer;" open>
+      <summary style="font-weight: 700; padding: 0.5rem 0; color: var(--primary);">Before Making an Offer</summary>
+      <div style="padding: 0.75rem 0 0 1rem; border-left: 2px solid var(--gray-200); margin-left: 0.5rem;">
+        <div style="margin-bottom: 0.75rem;">
+          <strong>1. Look for verified sellers</strong><br>
+          Sellers should verify their email, phone, and government ID. Verified sellers have a checkmark badge.
+        </div>
+        <div style="margin-bottom: 0.75rem;">
+          <strong>2. Review financials</strong><br>
+          Always ask for verified financials. Request tax returns or dashboard access. For ecommerce, ask for transaction reports.
+        </div>
+        <div style="margin-bottom: 0.75rem;">
+          <strong>3. Review traffic & metrics</strong><br>
+          Ask sellers for Google Analytics access or backend metrics to verify performance claims.
+        </div>
+        <div style="margin-bottom: 0.75rem;">
+          <strong>4. Schedule a call</strong><br>
+          Communication is key. Speak directly with the seller to learn more. Keep all communication within Systemly for your protection.
+        </div>
+        <div style="margin-bottom: 0.75rem;">
+          <strong>5. Make the offer on Systemly</strong><br>
+          Systemly doesn't charge buyers. Making an offer here gives you access to our post-sales support team.
+        </div>
+      </div>
+    </details>
+    
+    <details style="margin-bottom: 1rem; cursor: pointer;">
+      <summary style="font-weight: 700; padding: 0.5rem 0; color: var(--success);">After a Successful Offer</summary>
+      <div style="padding: 0.75rem 0 0 1rem; border-left: 2px solid var(--gray-200); margin-left: 0.5rem;">
+        <div style="margin-bottom: 0.75rem;">
+          <strong>1. Agreements & Contracts</strong><br>
+          Consider working with a legal professional or using template agreements for asset transfer.
+        </div>
+        <div style="margin-bottom: 0.75rem;">
+          <strong>2. Conduct Due Diligence</strong><br>
+          Verify all claims, review code quality, check for liabilities, and validate revenue sources before finalizing.
+        </div>
+        <div style="margin-bottom: 0.75rem;">
+          <strong>3. Secure Transfer Process</strong><br>
+          Use Systemly's recommended transfer process. Never pay outside the platform without proper agreements.
+        </div>
+      </div>
+    </details>
+    
+    <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+      <a href="mailto:support@systemly.com" style="color: var(--primary); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem;">
+        <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        Need help? Contact Support
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       </aside>
     </div>
   </main>
@@ -709,83 +1994,28 @@
   </footer>
 
 <!-- Make Offer Modal -->
-<div class="modal" id="makeOfferModal">
-  <div class="modal-content">
-    <button class="close-modal" onclick="closeMakeOfferModal()">×</button>
-    
-    <div class="modal-header">
-      <div class="modal-icon">💰</div>
-      <h2>Make an Offer</h2>
-      <p id="offerListingName" style="color: #6B7280;"></p>
-    </div>
-
-    <form id="offerForm" onsubmit="submitOffer(event)">
-      <input type="hidden" id="offerListingId">
-      <input type="hidden" id="offerSellerId">
-      <input type="hidden" id="offerSellerEmail">
-      
-      <div class="form-group">
-        <label class="form-label">Your Offer Amount (₱) *</label>
-        <input type="number" id="offerAmount" class="form-input" required min="1000" step="100" placeholder="Enter your offer amount">
-        <small style="color: #6B7280; font-size: 0.85rem;">Current asking price: <span id="currentAskingPrice"></span></small>
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label">Message to Seller (Optional)</label>
-        <textarea id="offerMessage" class="form-textarea" rows="4" placeholder="Add a message to explain your offer..."></textarea>
-      </div>
-      
-      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-        <button type="button" class="btn btn-secondary" onclick="closeMakeOfferModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary">
-          <i class="fa-solid fa-paper-plane"></i> Submit Offer
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Message Seller Modal -->
-<div class="modal" id="messageSellerModal">
-  <div class="modal-content">
-    <button class="close-modal" onclick="closeMessageSellerModal()">×</button>
-    
-    <div class="modal-header">
-      <div class="modal-icon">✉️</div>
-      <h2>Message Seller</h2>
-      <p id="messageListingName" style="color: #6B7280;"></p>
-    </div>
-
-    <form id="messageForm" onsubmit="sendMessage(event)">
-      <input type="hidden" id="messageListingId">
-      <input type="hidden" id="messageSellerId">
-      <input type="hidden" id="messageSellerEmail">
-      
-      <div class="form-group">
-        <label class="form-label">Subject *</label>
-        <input type="text" id="messageSubject" class="form-input" required placeholder="What would you like to ask?">
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label">Your Message *</label>
-        <textarea id="messageText" class="form-textarea" rows="6" required placeholder="Type your message here..."></textarea>
-      </div>
-      
-      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-        <button type="button" class="btn btn-secondary" onclick="closeMessageSellerModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary">
-          <i class="fa-solid fa-paper-plane"></i> Send Message
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
+<!-- Make Offer Modal -->
 
 
-<!-- Image Zoom Modal -->
+<!-- Enhanced Image Zoom Modal -->
 <div id="imageZoomModal" class="image-zoom-modal">
     <span class="zoom-close" onclick="closeImageZoom()">×</span>
     <img id="zoomedImage" alt="Zoomed listing image">
+
+    <div class="zoom-controls">
+    <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out (Scroll Down / Shift+Click)">-</button>
+    <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom (1x)">
+        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+        </svg>
+    </button>
+    <button class="zoom-btn" onclick="zoomIn()" title="Zoom In (Scroll Up / Click)">+</button>
+</div>
+<div style="position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); color: white; font-size: 0.875rem; background: rgba(0,0,0,0.7); padding: 0.5rem 1rem; border-radius: 20px; z-index: 10001;">
+     Scroll wheel to zoom • Click & drag to pan
+</div>
+
+    </div>
 </div>
 
 
@@ -852,6 +2082,415 @@ async function getCurrentUser() {
     });
   });
 }
+
+
+
+// ============================================
+// LICENSE SELECTION SYSTEM
+// ============================================
+
+let selectedLicenseType = null;
+
+// Display license options based on listing data
+function displayLicenseOptions(data) {
+  const inclusiveOption = document.getElementById('inclusiveOption');
+  const exclusiveOption = document.getElementById('exclusiveOption');
+  const priceAmount = document.getElementById('priceAmount');
+  
+  // Check for variants array (new structure)
+  let hasInclusive = false;
+  let hasExclusive = false;
+  let inclusivePrice = 0;
+  let exclusivePrice = 0;
+  
+  if (data.variants && Array.isArray(data.variants)) {
+    data.variants.forEach(variant => {
+      if (variant.type === 'inclusive' && variant.price > 0) {
+        hasInclusive = true;
+        inclusivePrice = variant.price;
+        currentListingData.inclusiveDescription = variant.description;
+        currentListingData.inclusiveNotes = variant.notes;
+      }
+      if (variant.type === 'exclusive' && variant.price > 0) {
+        hasExclusive = true;
+        exclusivePrice = variant.price;
+        currentListingData.exclusiveDescription = variant.description;
+        currentListingData.exclusiveNotes = variant.notes;
+        currentListingData.exclusiveSold = !variant.available;
+      }
+    });
+  } 
+  // Fallback to old structure
+  else {
+    if (data.inclusivePrice && data.inclusivePrice > 0) {
+      hasInclusive = true;
+      inclusivePrice = data.inclusivePrice;
+      currentListingData.inclusiveDescription = data.inclusiveDescription;
+      currentListingData.inclusiveNotes = data.inclusiveNotes;
+    }
+    if (data.exclusivePrice && data.exclusivePrice > 0) {
+      hasExclusive = true;
+      exclusivePrice = data.exclusivePrice;
+      currentListingData.exclusiveDescription = data.exclusiveDescription;
+      currentListingData.exclusiveNotes = data.exclusiveNotes;
+      currentListingData.exclusiveSold = data.exclusiveSold;
+    }
+  }
+  
+  // Show/hide dropdown options
+  if (hasInclusive && inclusiveOption) {
+    inclusiveOption.style.display = 'block';
+    inclusiveOption.textContent = `Inclusive License - ₱${toNumber(inclusivePrice).toLocaleString()}`;
+    currentListingData.inclusivePrice = inclusivePrice;
+  }
+  
+  if (hasExclusive && exclusiveOption) {
+    if (currentListingData.exclusiveSold) {
+      exclusiveOption.style.display = 'block';
+      exclusiveOption.disabled = true;
+      exclusiveOption.textContent = `Exclusive Rights - SOLD OUT`;
+    } else {
+      exclusiveOption.style.display = 'block';
+      exclusiveOption.textContent = `Exclusive Rights - ₱${toNumber(exclusivePrice).toLocaleString()}`;
+      currentListingData.exclusivePrice = exclusivePrice;
+    }
+  }
+  
+  // Set default price display
+  if (hasInclusive) {
+    if (priceAmount) priceAmount.textContent = `₱${toNumber(inclusivePrice).toLocaleString()}`;
+  } else if (hasExclusive && !currentListingData.exclusiveSold) {
+    if (priceAmount) priceAmount.textContent = `₱${toNumber(exclusivePrice).toLocaleString()}`;
+  }
+  
+  // Update metrics
+  safeSetText("metricRevenue", `₱${toNumber(data.monthlyRevenue).toLocaleString()}`);
+  safeSetText("metricProfit", `₱${toNumber(data.monthlyProfit).toLocaleString()}`);
+}
+
+
+// Handle license dropdown change
+window.handleLicenseChange = function() {
+  const select = document.getElementById('licenseTypeSelect');
+  const selectedValue = select.value;
+  const descriptionDiv = document.getElementById('licenseDescription');
+  const makeOfferBtn = document.getElementById('makeOfferBtn');
+  const priceAmount = document.getElementById('priceAmount');
+  const priceSubtitle = document.getElementById('priceSubtitle');
+  
+  if (!selectedValue) {
+    descriptionDiv.style.display = 'none';
+    makeOfferBtn.disabled = true;
+    makeOfferBtn.style.opacity = '0.5';
+    selectedLicenseType = null;
+    return;
+  }
+  
+  selectedLicenseType = selectedValue;
+  
+  if (selectedValue === 'inclusive') {
+    const price = currentListingData.inclusivePrice;
+    const description = currentListingData.inclusiveDescription || 'Standard license with resale rights';
+    const notes = currentListingData.inclusiveNotes;
+    
+    priceAmount.textContent = `₱${toNumber(price).toLocaleString()}`;
+    priceSubtitle.textContent = 'Inclusive License';
+    descriptionDiv.innerHTML = `<strong>What's Included:</strong><br>${description}${notes ? '<br><em>' + notes + '</em>' : ''}`;
+    descriptionDiv.style.display = 'block';
+    
+    makeOfferBtn.disabled = false;
+    makeOfferBtn.style.opacity = '1';
+    
+    updatePricingDisplay(price, 'Inclusive License');
+  } 
+  else if (selectedValue === 'exclusive') {
+    const price = currentListingData.exclusivePrice;
+    const description = currentListingData.exclusiveDescription || 'Full ownership transfer with exclusive rights';
+    const notes = currentListingData.exclusiveNotes;
+    
+    priceAmount.textContent = `₱${toNumber(price).toLocaleString()}`;
+    priceSubtitle.textContent = 'Exclusive Rights';
+    descriptionDiv.innerHTML = `<strong>What's Included:</strong><br>${description}${notes ? '<br><em>' + notes + '</em>' : ''}`;
+    descriptionDiv.style.display = 'block';
+    descriptionDiv.style.borderLeftColor = 'var(--warning)';
+    
+    makeOfferBtn.disabled = false;
+    makeOfferBtn.style.opacity = '1';
+    
+    updatePricingDisplay(price, 'Exclusive Rights');
+  }
+}
+
+// Handle make offer button click
+window.handleMakeOffer = function() {
+  // ✅ CLOSE IMAGE ZOOM FIRST
+  window.closeImageZoom();
+  
+  if (!selectedLicenseType) {
+    alert('❗ Please select a license type first');
+    return;
+  }
+  
+  if (currentListingData) {
+    const selectedPrice = selectedLicenseType === 'inclusive' 
+      ? currentListingData.inclusivePrice 
+      : currentListingData.exclusivePrice;
+      
+    openMakeOfferModal(
+      listingId,
+      currentListingData.systemName || currentListingData.title,
+      selectedPrice,
+      currentListingData.userId,
+      currentListingData.userEmail,
+      selectedLicenseType
+    );
+  }
+}
+
+// Handle contact seller button click
+window.handleContactSeller = function() {
+  // ✅ CLOSE IMAGE ZOOM FIRST
+  window.closeImageZoom();
+  
+  if (currentListingData) {
+    openMessageSellerModal(
+      listingId,
+      currentListingData.systemName || currentListingData.title,
+      currentListingData.userId,
+      currentListingData.userEmail
+    );
+  }
+}
+
+// Handle contact seller button click
+window.handleContactSeller = function() {
+  if (currentListingData) {
+    openMessageSellerModal(
+      listingId,
+      currentListingData.systemName || currentListingData.title,
+      currentListingData.userId,
+      currentListingData.userEmail
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Select license type
+
+
+// Update pricing display in sidebar
+function updatePricingDisplay(price, licenseType) {
+  // Update main price display
+  const priceAmount = document.getElementById('priceAmount');
+  if (priceAmount) {
+    priceAmount.textContent = `₱${toNumber(price).toLocaleString()}`;
+  }
+  
+  const priceSubtitle = document.getElementById('priceSubtitle');
+  if (priceSubtitle) {
+    priceSubtitle.textContent = licenseType;
+  }
+  
+  // Show price breakdown
+  const priceBreakdown = document.getElementById('priceBreakdown');
+  if (priceBreakdown && currentListingData) {
+    const { profitMultiple, revenueMultiple } = calcMultiples(
+      price,
+      currentListingData.monthlyRevenue,
+      currentListingData.monthlyProfit
+    );
+    
+    const profitEl = document.getElementById('priceProfitMultiple');
+    const revenueEl = document.getElementById('priceRevenueMultiple');
+    const marginEl = document.getElementById('priceMargin');
+    
+    if (profitEl) profitEl.textContent = profitMultiple;
+    if (revenueEl) revenueEl.textContent = revenueMultiple;
+    
+    if (marginEl && currentListingData.monthlyRevenue > 0) {
+      const margin = ((currentListingData.monthlyProfit / currentListingData.monthlyRevenue) * 100).toFixed(1);
+      marginEl.textContent = `${margin}%`;
+    }
+    
+    priceBreakdown.style.display = 'flex';
+  }
+}
+// Image zoom functions
+// ============================================
+// ENHANCED IMAGE ZOOM SYSTEM
+// ============================================
+
+let currentZoomLevel = 1;
+let isDragging = false;
+let startX, startY, translateX = 0, translateY = 0;
+
+window.zoomIn = function() {
+  const img = document.getElementById('zoomedImage');
+  if (!img) return;
+  
+  currentZoomLevel = Math.min(currentZoomLevel + 0.5, 5); // Max 5x zoom
+  img.style.transform = `scale(${currentZoomLevel}) translate(${translateX}px, ${translateY}px)`;
+  img.style.cursor = currentZoomLevel > 1 ? 'move' : 'zoom-in';
+  console.log('🔍 Zoom level:', currentZoomLevel);
+}
+
+window.zoomOut = function() {
+  const img = document.getElementById('zoomedImage');
+  if (!img) return;
+  
+  currentZoomLevel = Math.max(currentZoomLevel - 0.5, 1); // Min 1x zoom
+  
+  if (currentZoomLevel === 1) {
+    translateX = 0;
+    translateY = 0;
+  }
+  
+  img.style.transform = `scale(${currentZoomLevel}) translate(${translateX}px, ${translateY}px)`;
+  img.style.cursor = currentZoomLevel > 1 ? 'move' : 'zoom-in';
+  console.log('🔍 Zoom level:', currentZoomLevel);
+}
+
+window.resetZoom = function() {
+  const img = document.getElementById('zoomedImage');
+  if (!img) return;
+  
+  currentZoomLevel = 1;
+  translateX = 0;
+  translateY = 0;
+  img.style.transform = 'scale(1) translate(0, 0)';
+  img.style.cursor = 'zoom-in';
+  console.log('🔍 Zoom reset');
+}
+
+// Mouse wheel zoom
+function handleMouseWheel(e) {
+  e.preventDefault();
+  
+  if (e.deltaY < 0) {
+    window.zoomIn();
+  } else {
+    window.zoomOut();
+  }
+}
+
+// Drag to pan when zoomed
+function handleMouseDown(e) {
+  if (currentZoomLevel <= 1) return;
+  
+  isDragging = true;
+  startX = e.clientX - translateX;
+  startY = e.clientY - translateY;
+  
+  const img = document.getElementById('zoomedImage');
+  if (img) img.style.cursor = 'grabbing';
+}
+
+function handleMouseMove(e) {
+  if (!isDragging || currentZoomLevel <= 1) return;
+  
+  translateX = e.clientX - startX;
+  translateY = e.clientY - startY;
+  
+  const img = document.getElementById('zoomedImage');
+  if (img) {
+    img.style.transform = `scale(${currentZoomLevel}) translate(${translateX}px, ${translateY}px)`;
+  }
+}
+
+function handleMouseUp() {
+  isDragging = false;
+  const img = document.getElementById('zoomedImage');
+  if (img && currentZoomLevel > 1) img.style.cursor = 'move';
+}
+
+// Close zoom modal
+window.closeImageZoom = function() {
+  const modal = document.getElementById('imageZoomModal');
+  if (modal) {
+    modal.classList.remove('active');
+    
+    // Reset zoom state
+    currentZoomLevel = 1;
+    translateX = 0;
+    translateY = 0;
+    isDragging = false;
+    
+    const img = document.getElementById('zoomedImage');
+    if (img) {
+      img.style.transform = 'scale(1) translate(0, 0)';
+      img.style.cursor = 'zoom-in';
+    }
+  }
+}
+
+// Open zoom modal and attach events
+function openImageZoom(imageSrc) {
+  const modal = document.getElementById('imageZoomModal');
+  const zoomedImage = document.getElementById('zoomedImage');
+  
+  if (modal && zoomedImage) {
+    zoomedImage.src = imageSrc;
+    modal.classList.add('active');
+    
+    // Reset zoom
+    currentZoomLevel = 1;
+    translateX = 0;
+    translateY = 0;
+    zoomedImage.style.transform = 'scale(1) translate(0, 0)';
+    
+    // Attach zoom events
+    zoomedImage.addEventListener('wheel', handleMouseWheel, { passive: false });
+    zoomedImage.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    
+    // Click to zoom in/out
+    zoomedImage.onclick = (e) => {
+      if (e.shiftKey) {
+        window.zoomOut();
+      } else {
+        window.zoomIn();
+      }
+    };
+    
+    console.log('🖼️ Image zoom opened. Use scroll wheel or click to zoom!');
+  }
+}
+
+console.log('✅ Enhanced zoom system initialized');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Toast notification
 function showToast(message, type = 'info') {
@@ -1056,6 +2695,7 @@ function populateCategorySpecificFields(data) {
 }
 
 // Populate included list
+// Populate included list from seller's license description
 function populateIncludedList(data) {
   const includedListEl = getEl("includedList");
   if (!includedListEl) return;
@@ -1063,29 +2703,51 @@ function populateIncludedList(data) {
   includedListEl.innerHTML = "";
   const includedItems = [];
 
-  // Parse whatsIncluded field
-  if (data.whatsIncluded) {
+  // ✅ NEW: Get description from variants array first (new structure)
+  if (data.variants && Array.isArray(data.variants) && data.variants.length > 0) {
+    data.variants.forEach(variant => {
+      if (variant.description) {
+        // Split by comma or newline
+        variant.description.split(/[,\n]/).filter(s => s.trim()).forEach(item => {
+          includedItems.push(item.trim());
+        });
+      }
+    });
+  }
+  // ✅ Fallback to old structure
+  else if (data.inclusiveDescription) {
+    data.inclusiveDescription.split(/[,\n]/).filter(s => s.trim()).forEach(item => {
+      includedItems.push(item.trim());
+    });
+  }
+  else if (data.exclusiveDescription) {
+    data.exclusiveDescription.split(/[,\n]/).filter(s => s.trim()).forEach(item => {
+      includedItems.push(item.trim());
+    });
+  }
+  // Legacy field
+  else if (data.whatsIncluded) {
     data.whatsIncluded.split('\n').filter(s => s.trim()).forEach(item => includedItems.push(item));
   }
 
-  // Icon mapping
+  // Icon mapping with SVG
   const iconMap = {
-    'source code': 'fa-solid fa-code',
-    'code': 'fa-solid fa-code',
-    'repository': 'fa-brands fa-github',
-    'github': 'fa-brands fa-github',
-    'documentation': 'fa-solid fa-book-open',
-    'docs': 'fa-solid fa-book-open',
-    'domain': 'fa-solid fa-globe',
-    'website': 'fa-solid fa-globe',
-    'social': 'fa-solid fa-share-alt',
-    'accounts': 'fa-solid fa-users',
-    'customer': 'fa-solid fa-user-friends',
-    'database': 'fa-solid fa-database',
-    'training': 'fa-solid fa-chalkboard-teacher',
-    'support': 'fa-solid fa-headset',
-    'brand': 'fa-solid fa-certificate',
-    'logo': 'fa-solid fa-palette'
+    'source code': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>',
+    'code': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>',
+    'repository': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>',
+    'github': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>',
+    'documentation': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>',
+    'docs': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>',
+    'domain': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+    'website': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+    'social': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>',
+    'accounts': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>',
+    'customer': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>',
+    'database': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>',
+    'training': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>',
+    'support': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>',
+    'brand': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>',
+    'logo': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>'
   };
 
   if (includedItems.length) {
@@ -1094,23 +2756,33 @@ function populateIncludedList(data) {
       div.className = "included-item";
       
       const lowerItem = item.toLowerCase();
-      let iconClass = 'fa-solid fa-check-circle';
+      let iconSvg = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
       
       for (const [keyword, icon] of Object.entries(iconMap)) {
         if (lowerItem.includes(keyword)) {
-          iconClass = icon;
+          iconSvg = icon;
           break;
         }
       }
       
-      div.innerHTML = `<i class="${iconClass}" aria-hidden="true"></i><div style="flex:1">${item}</div>`;
+      div.innerHTML = `${iconSvg}<div style="flex:1">${item}</div>`;
       includedListEl.appendChild(div);
     });
   } else {
     // Default items if none specified
     includedListEl.innerHTML = `
-      <div class="included-item"><i class="fa-solid fa-check-circle"></i><div style="flex:1">Full transfer of all digital assets</div></div>
-      <div class="included-item"><i class="fa-solid fa-headset"></i><div style="flex:1">Post-sale transition support</div></div>
+      <div class="included-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <div style="flex:1">Full transfer of all digital assets</div>
+      </div>
+      <div class="included-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <div style="flex:1">Post-sale transition support</div>
+      </div>
     `;
   }
 }
@@ -1129,15 +2801,6 @@ window.closeImageZoom = function() {
     if (modal) modal.classList.remove('active');
 };
 
-// Open image zoom modal
-function openImageZoom(imageSrc) {
-    const modal = document.getElementById('imageZoomModal');
-    const zoomedImage = document.getElementById('zoomedImage');
-    if (modal && zoomedImage) {
-        zoomedImage.src = imageSrc;
-        modal.classList.add('active');
-    }
-}
 
 // Enhanced setup image gallery with zoom and blur background
 function setupImageGallery(data) {
@@ -1161,9 +2824,18 @@ function setupImageGallery(data) {
         mainImageContainer.style.setProperty('--bg-image', `url(${images[0]})`);
       }
       
-      // Add click to zoom
-      mainImage.onclick = () => openImageZoom(images[0]);
+      // ✅ ONLY main image opens zoom - PREVENT EVENT BUBBLING
+      mainImage.onclick = (e) => {
+        e.stopPropagation();
+        openImageZoom(images[0]);
+      };
       mainImage.style.cursor = 'zoom-in';
+      
+      // ✅ REMOVE any click handlers from container
+      if (mainImageContainer) {
+        mainImageContainer.onclick = null;
+        mainImageContainer.style.cursor = 'default';
+      }
     }
     if (placeholder) placeholder.style.display = "none";
 
@@ -1175,13 +2847,17 @@ function setupImageGallery(data) {
       div.setAttribute('tabindex', '0');
       div.innerHTML = `<img src="${img}" alt="${data.systemName || "Listing"} thumbnail ${idx+1}" loading="lazy" />`;
       
-      const selectImage = () => {
+      const selectImage = (e) => {
+        e.stopPropagation(); // ✅ Prevent event bubbling
         document.querySelectorAll(".thumbnail").forEach(t => t.classList.remove("active"));
         div.classList.add("active");
         if (mainImage) {
           mainImage.src = img;
           mainImage.alt = `${data.systemName || "Listing"} image ${idx+1}`;
-          mainImage.onclick = () => openImageZoom(img);
+          mainImage.onclick = (e) => {
+            e.stopPropagation(); // ✅ ADD THIS
+            openImageZoom(img);
+          };
           
           // Update blur background
           if (mainImageContainer) {
@@ -1192,7 +2868,10 @@ function setupImageGallery(data) {
       
       div.addEventListener("click", selectImage);
       div.addEventListener("keypress", (e) => {
-        if (e.key === 'Enter' || e.key === ' ') selectImage();
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.stopPropagation(); // ✅ Prevent event bubbling
+          selectImage(e);
+        }
       });
       
       thumbnails.appendChild(div);
@@ -1328,6 +3007,7 @@ async function loadSellerPlan(userId) {
    // ✅ Increment view count properly
 try {
   const snap = await getDoc(ref);
+
   if (snap.exists()) {
     const currentViews = snap.data().views || 0;
     await updateDoc(ref, { views: currentViews + 1 });
@@ -1338,8 +3018,11 @@ try {
 
 
     const data = snap.data();
-    // Store listing data for button handlers
-    currentListingData = data;
+    // Store listing data for button handlers (will be updated after license display)
+    currentListingData = {
+        ...data,
+        selectedLicenseType: null
+    };
 
 // Hide empty sections immediately
 hideEmptySections(data);
@@ -1375,23 +3058,12 @@ if (data.userId) {
     safeSetText("shortDescription", data.shortDescription || "A brief, compelling summary is currently missing for this listing.");
     safeSetHTML("detailedDescription", data.detailedDescription || "No detailed description provided.");
 
-    // Metric values
-    const askingPrice = toNumber(data.askingPrice);
-    const monthlyRevenue = toNumber(data.monthlyRevenue);
-    const monthlyProfit = toNumber(data.monthlyProfit);
-
-    safeSetText("priceAmount", `₱${askingPrice.toLocaleString()}`);
-    safeSetText("metricRevenue", `₱${monthlyRevenue.toLocaleString()}`);
-    safeSetText("metricProfit", `₱${monthlyProfit.toLocaleString()}`);
+// License & Pricing Configuration
+    displayLicenseOptions(data);
+    
+    // Metric values (non-pricing)
     safeSetText("metricAge", formatSystemAge(data.systemAge));
     safeSetText("metricSupport", formatSupportPeriod(data.supportPeriod));
-
-    // Calculate Multiples
-    const { profitMultiple, revenueMultiple } = calcMultiples(askingPrice, monthlyRevenue, monthlyProfit);
-    
-    safeSetText("priceProfitMultiple", profitMultiple);
-    safeSetText("priceRevenueMultiple", revenueMultiple);
-    safeSetText("priceMargin", monthlyRevenue > 0 ? `${((monthlyProfit / monthlyRevenue) * 100).toFixed(1)}%` : "N/A");
 
     // Technical & Business Details - Universal Fields
     safeSetText("detailCategory", formatCategoryName(data.category));
@@ -1495,7 +3167,9 @@ if (data.userId) {
 // OFFER FUNCTIONS
 // ============================================
 
-window.openMakeOfferModal = function(listingId, listingName, askingPrice, sellerId, sellerEmail) {
+window.openMakeOfferModal = function(listingId, listingName, askingPrice, sellerId, sellerEmail, licenseType) {
+  window.closeImageZoom();
+  
   if (!currentUser) {
     if (confirm('Sign in to make an offer!\n\nClick OK to go to login page.')) {
       window.location.href = 'login.html';
@@ -1509,18 +3183,25 @@ window.openMakeOfferModal = function(listingId, listingName, askingPrice, seller
   }
 
   document.getElementById('offerListingId').value = listingId;
-  document.getElementById('offerListingName').textContent = listingName;
+  document.getElementById('offerListingName').textContent = listingName + ' (' + (licenseType === 'inclusive' ? 'Inclusive License' : 'Exclusive Rights') + ')';
   document.getElementById('currentAskingPrice').textContent = '₱' + parseInt(askingPrice).toLocaleString();
   document.getElementById('offerSellerId').value = sellerId;
   document.getElementById('offerSellerEmail').value = sellerEmail;
+  document.getElementById('offerLicenseType').value = licenseType;
+  
   document.getElementById('offerAmount').value = '';
   document.getElementById('offerMessage').value = '';
   
-  document.getElementById('makeOfferModal').classList.add('active');
+  // Open side panel with overlay
+  document.getElementById('offerPanelOverlay').classList.add('active');
+  document.getElementById('makeOfferPanel').classList.add('active');
+  document.body.style.overflow = 'hidden'; // Prevent background scrolling
 }
 
 window.closeMakeOfferModal = function() {
-  document.getElementById('makeOfferModal').classList.remove('active');
+  document.getElementById('offerPanelOverlay').classList.remove('active');
+  document.getElementById('makeOfferPanel').classList.remove('active');
+  document.body.style.overflow = ''; // Restore scrolling
 }
 
 // ============================================
@@ -1553,6 +3234,7 @@ window.submitOffer = async function(event) {
       buyerName: userData.name,
       offerAmount: parseFloat(document.getElementById('offerAmount').value),
       message: document.getElementById('offerMessage').value || '',
+      licenseType: document.getElementById('offerLicenseType').value, // ✅ ADD THIS LINE
       status: 'pending',
       createdAt: serverTimestamp()
     };
@@ -1583,6 +3265,8 @@ window.submitOffer = async function(event) {
 // ============================================
 
 window.openMessageSellerModal = function(listingId, listingName, sellerId, sellerEmail) {
+  window.closeImageZoom();
+  
   if (!currentUser) {
     if (confirm('Sign in to message the seller!\n\nClick OK to go to login page.')) {
       window.location.href = 'login.html';
@@ -1597,11 +3281,16 @@ window.openMessageSellerModal = function(listingId, listingName, sellerId, selle
   document.getElementById('messageSubject').value = 'Inquiry about ' + listingName;
   document.getElementById('messageText').value = '';
   
-  document.getElementById('messageSellerModal').classList.add('active');
+  // Open side panel with overlay
+  document.getElementById('messagePanelOverlay').classList.add('active');
+  document.getElementById('messageSellerPanel').classList.add('active');
+  document.body.style.overflow = 'hidden'; // Prevent background scrolling
 }
 
 window.closeMessageSellerModal = function() {
-  document.getElementById('messageSellerModal').classList.remove('active');
+  document.getElementById('messagePanelOverlay').classList.remove('active');
+  document.getElementById('messageSellerPanel').classList.remove('active');
+  document.body.style.overflow = ''; // Restore scrolling
 }
 
 // ============================================
@@ -1650,44 +3339,65 @@ window.sendMessage = async function(event) {
     submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
   }
 }
+
+
+
+
 // ============================================
 // Button Click Handlers
 // ============================================
 
-const contactBtn = getEl("contactBtn");
-const buyNowBtn = getEl("buyNowBtn");
-
 let currentListingData = null;
 
-if (contactBtn) {
-  contactBtn.addEventListener("click", () => {
-    if (currentListingData) {
+// Wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', function() {
+  const contactBtn = document.getElementById("contactBtn");
+  const buyNowBtn = document.getElementById("buyNowBtn");
+  const makeOfferBtn = document.getElementById("makeOfferBtn");
+
+  console.log('🔧 Initializing button handlers...');
+  console.log('Contact button:', contactBtn);
+  console.log('Buy Now button:', buyNowBtn);
+  console.log('Make Offer button:', makeOfferBtn);
+
+  // Contact Seller button (in sidebar)
+  if (contactBtn) {
+    contactBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
+      console.log('📧 Contact button clicked. Data:', currentListingData);
+      
+      if (!currentListingData) {
+        alert('⏳ Please wait for listing to finish loading');
+        return;
+      }
+      
       openMessageSellerModal(
         listingId,
         currentListingData.systemName || currentListingData.title,
         currentListingData.userId,
         currentListingData.userEmail
       );
-    }
-  });
-}
+    }, true); // Use capture phase
+  }
 
-if (buyNowBtn) {
-  buyNowBtn.addEventListener("click", () => {
-    if (currentListingData) {
-      openMakeOfferModal(
-        listingId,
-        currentListingData.systemName || currentListingData.title,
-        currentListingData.askingPrice,
-        currentListingData.userId,
-        currentListingData.userEmail
-      );
-    }
-  });
-}
-console.log('✅ Offers & Messages system initialized');
+  // Make Offer button (in sidebar, disabled until license selected)
+  if (makeOfferBtn) {
+    makeOfferBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
+      console.log('💰 Make Offer button clicked (from sidebar)');
+      window.handleMakeOffer(); // Calls the existing handler
+    }, true);
+  }
 
-// Load listing immediately (don't wait for auth)
+  console.log('✅ Button handlers initialized');
+});
+
 loadListingDetails();
 
 // Initialize user authentication in parallel
@@ -1707,6 +3417,3 @@ getCurrentUser().then(() => {
 </script>
 </body>
 </html>
-
-
-
