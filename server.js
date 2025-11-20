@@ -7,7 +7,23 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ============================================
-// 🔧 FIX 1: Add timeout configuration
+// FIREBASE ADMIN INITIALIZATION (ONE TIME ONLY)
+// ============================================
+const admin = require('firebase-admin');
+
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: "systemly-db",
+      clientEmail: "firebase-adminsdk-vvpdy@systemly-db.iam.gserviceaccount.com",
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+    })
+  });
+  console.log('✅ Firebase Admin initialized');
+}
+
+// ============================================
+// TIMEOUT CONFIGURATION
 // ============================================
 app.use((req, res, next) => {
   req.setTimeout(300000); // 5 minutes
@@ -31,7 +47,6 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false
   },
-  // ✅ Add connection timeout
   connectionTimeoutMillis: 10000,
   query_timeout: 30000
 });
@@ -102,7 +117,7 @@ async function initDatabase() {
 initDatabase();
 
 // ============================================
-// 🔧 FIX 2: Increase multer limits
+// MULTER CONFIGURATION
 // ============================================
 const storage = multer.memoryStorage();
 const upload = multer({ 
@@ -114,9 +129,9 @@ const upload = multer({
 });
 
 // ============================================
-// 🔧 FIX 3: Increase body parser limits
+// BODY PARSER CONFIGURATION
 // ============================================
-app.use(express.json({ limit: '150mb' })); // Increased from 10mb
+app.use(express.json({ limit: '150mb' }));
 app.use(express.urlencoded({ extended: true, limit: '150mb' }));
 
 // Health check
@@ -255,7 +270,7 @@ app.get('/api/download/:id', async (req, res) => {
 });
 
 // ============================================
-// 🔧 FIX 4: Enhanced upload endpoint with better error handling
+// OFFER FILE UPLOAD ENDPOINT
 // ============================================
 app.post('/api/upload-offer-files', upload.array('files', 10), async (req, res) => {
   console.log('📥 Received upload request');
@@ -277,7 +292,6 @@ app.post('/api/upload-offer-files', upload.array('files', 10), async (req, res) 
       whatsIncluded
     } = req.body;
 
-    // ✅ Validate required fields
     if (!offerId) {
       console.error('❌ Missing offerId');
       return res.status(400).json({ success: false, error: 'offerId is required' });
@@ -292,7 +306,6 @@ app.post('/api/upload-offer-files', upload.array('files', 10), async (req, res) 
 
     console.log(`📤 Processing ${files.length} files for offer ${offerId}`);
 
-    // Store each file in database with transaction
     const client = await pool.connect();
     const fileRecords = [];
     
@@ -352,7 +365,11 @@ app.post('/api/upload-offer-files', upload.array('files', 10), async (req, res) 
   }
 });
 
-// Admin: Get file reviews
+// ============================================
+// ADMIN ENDPOINTS
+// ============================================
+
+// Admin: Get all file reviews
 app.get('/api/admin/file-reviews', async (req, res) => {
   try {
     const result = await pool.query(
@@ -399,6 +416,7 @@ app.get('/api/admin/file-reviews', async (req, res) => {
   }
 });
 
+// Admin: Get files for specific offer
 app.get('/api/admin/file-review/:offerId', async (req, res) => {
   try {
     const { offerId } = req.params;
@@ -430,6 +448,7 @@ app.get('/api/admin/file-review/:offerId', async (req, res) => {
   }
 });
 
+// Admin: View file content
 app.get('/api/admin/view-file/:offerId/:filename', async (req, res) => {
   try {
     const { offerId, filename } = req.params;
@@ -464,6 +483,7 @@ app.get('/api/admin/view-file/:offerId/:filename', async (req, res) => {
   }
 });
 
+// Admin: Download file
 app.get('/api/admin/download-file/:offerId/:filename', async (req, res) => {
   try {
     const { offerId, filename } = req.params;
@@ -495,6 +515,7 @@ app.get('/api/admin/download-file/:offerId/:filename', async (req, res) => {
   }
 });
 
+// Admin: Approve files
 app.post('/api/admin/approve-files/:offerId', async (req, res) => {
   try {
     const { offerId } = req.params;
@@ -508,18 +529,7 @@ app.post('/api/admin/approve-files/:offerId', async (req, res) => {
       [offerId]
     );
 
-    // ✅ ALSO UPDATE FIREBASE
-    const admin = require('firebase-admin');
-    if (!admin.apps.length) {
-      admin.initializeApp({
-        credential: admin.credential.cert({
-          projectId: "systemly-db",
-          clientEmail: "firebase-adminsdk-vvpdy@systemly-db.iam.gserviceaccount.com",
-          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-        })
-      });
-    }
-    
+    // Update Firebase
     const db = admin.firestore();
     await db.collection('offers').doc(offerId).update({
       status: 'admin-approved',
@@ -542,6 +552,7 @@ app.post('/api/admin/approve-files/:offerId', async (req, res) => {
   }
 });
 
+// Admin: Reject files
 app.post('/api/admin/reject-files/:offerId', async (req, res) => {
   try {
     const { offerId } = req.params;
@@ -557,18 +568,7 @@ app.post('/api/admin/reject-files/:offerId', async (req, res) => {
       [offerId, reason || 'No reason provided']
     );
 
-    // ✅ ALSO UPDATE FIREBASE
-    const admin = require('firebase-admin');
-    if (!admin.apps.length) {
-      admin.initializeApp({
-        credential: admin.credential.cert({
-          projectId: "systemly-db",
-          clientEmail: "firebase-adminsdk-vvpdy@systemly-db.iam.gserviceaccount.com",
-          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-        })
-      });
-    }
-    
+    // Update Firebase
     const db = admin.firestore();
     await db.collection('offers').doc(offerId).update({
       status: 'admin-rejected',
@@ -592,6 +592,7 @@ app.post('/api/admin/reject-files/:offerId', async (req, res) => {
   }
 });
 
+// Get file review by offer ID
 app.get('/api/file-reviews/offer/:offerId', async (req, res) => {
   try {
     const { offerId } = req.params;
@@ -660,7 +661,7 @@ app.get('/api/file-reviews/offer/:offerId', async (req, res) => {
 });
 
 // ============================================
-// 🔧 FIX 5: Add server timeout configuration
+// START SERVER
 // ============================================
 const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
@@ -673,4 +674,3 @@ const server = app.listen(PORT, () => {
 server.timeout = 300000; // 5 minutes
 server.keepAliveTimeout = 300000;
 server.headersTimeout = 300000;
-
