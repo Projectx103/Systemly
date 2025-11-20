@@ -1868,12 +1868,8 @@ onSnapshot(userDocRef, async (docSnap) => {
   console.error('❌ Error in user snapshot:', error);
 });
       
-      // Set up polling for file reviews
-      setInterval(async () => {
-        await loadOffers();
-        renderOffers();
-        updateStats();
-      }, 10000);
+   
+   
       
     } else {
       console.log('📝 Creating new buyer user document...');
