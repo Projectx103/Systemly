@@ -6,6 +6,15 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ============================================
+// 🔧 FIX 1: Add timeout configuration
+// ============================================
+app.use((req, res, next) => {
+  req.setTimeout(300000); // 5 minutes
+  res.setTimeout(300000);
+  next();
+});
+
 // CORS configuration
 app.use(cors({
   origin: ['https://projectx103.github.io', 'http://localhost:3000'],
@@ -21,7 +30,10 @@ const pool = new Pool({
   port: 15498,
   ssl: {
     rejectUnauthorized: false
-  }
+  },
+  // ✅ Add connection timeout
+  connectionTimeoutMillis: 10000,
+  query_timeout: 30000
 });
 
 // Test connection
@@ -38,7 +50,6 @@ pool.connect((err, client, release) => {
 async function initDatabase() {
   const client = await pool.connect();
   try {
-    // Original transactions table
     await client.query(`
       CREATE TABLE IF NOT EXISTS transactions (
         id SERIAL PRIMARY KEY,
@@ -54,7 +65,6 @@ async function initDatabase() {
       )
     `);
 
-    // NEW: Offer files table for admin review system
     await client.query(`
       CREATE TABLE IF NOT EXISTS offer_files (
         id SERIAL PRIMARY KEY,
@@ -91,16 +101,23 @@ async function initDatabase() {
 
 initDatabase();
 
-// Multer setup
+// ============================================
+// 🔧 FIX 2: Increase multer limits
+// ============================================
 const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 100 * 1024 * 1024 } // 100MB limit for offer files
+  limits: { 
+    fileSize: 100 * 1024 * 1024, // 100MB per file
+    files: 10 // Max 10 files
+  }
 });
 
-// Middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// ============================================
+// 🔧 FIX 3: Increase body parser limits
+// ============================================
+app.use(express.json({ limit: '150mb' })); // Increased from 10mb
+app.use(express.urlencoded({ extended: true, limit: '150mb' }));
 
 // Health check
 app.get('/', (req, res) => {
@@ -115,7 +132,6 @@ app.get('/', (req, res) => {
 // ORIGINAL ENDPOINTS (Storagetest.html)
 // ============================================
 
-// Upload file
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
     const { seller_name, buyer_name } = req.body;
@@ -150,7 +166,6 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// Get buyer transactions
 app.get('/api/buyer/:buyer_name', async (req, res) => {
   try {
     const { buyer_name } = req.params;
@@ -168,7 +183,6 @@ app.get('/api/buyer/:buyer_name', async (req, res) => {
   }
 });
 
-// Get seller transactions
 app.get('/api/seller/:seller_name', async (req, res) => {
   try {
     const { seller_name } = req.params;
@@ -186,7 +200,6 @@ app.get('/api/seller/:seller_name', async (req, res) => {
   }
 });
 
-// Confirm transaction
 app.post('/api/confirm/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -215,7 +228,6 @@ app.post('/api/confirm/:id', async (req, res) => {
   }
 });
 
-// Download file
 app.get('/api/download/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -243,11 +255,13 @@ app.get('/api/download/:id', async (req, res) => {
 });
 
 // ============================================
-// NEW ENDPOINTS (Offer File Management)
+// 🔧 FIX 4: Enhanced upload endpoint with better error handling
 // ============================================
-
-// Upload files for accepted offers
 app.post('/api/upload-offer-files', upload.array('files', 10), async (req, res) => {
+  console.log('📥 Received upload request');
+  console.log('📦 Body keys:', Object.keys(req.body));
+  console.log('📁 Files count:', req.files ? req.files.length : 0);
+  
   try {
     const {
       offerId,
@@ -263,51 +277,74 @@ app.post('/api/upload-offer-files', upload.array('files', 10), async (req, res) 
       whatsIncluded
     } = req.body;
 
+    // ✅ Validate required fields
+    if (!offerId) {
+      console.error('❌ Missing offerId');
+      return res.status(400).json({ success: false, error: 'offerId is required' });
+    }
+
     const files = req.files;
 
     if (!files || files.length === 0) {
-      return res.status(400).json({ error: 'No files uploaded' });
+      console.error('❌ No files in request');
+      return res.status(400).json({ success: false, error: 'No files uploaded' });
     }
 
-    console.log(`📤 Uploading ${files.length} files for offer ${offerId}`);
+    console.log(`📤 Processing ${files.length} files for offer ${offerId}`);
 
-    // Store each file in database
+    // Store each file in database with transaction
+    const client = await pool.connect();
     const fileRecords = [];
     
-    for (const file of files) {
-      const fileBase64 = file.buffer.toString('base64');
+    try {
+      await client.query('BEGIN');
       
-      const result = await pool.query(
-        `INSERT INTO offer_files (
-          offer_id, listing_id, seller_id, buyer_id, 
-          file_name, file_data, file_type, file_size,
-          seller_name, buyer_name, buyer_email, listing_name,
-          offer_amount, instructions, whats_included,
-          status
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 'pending-admin-review') 
-        RETURNING id, file_name, file_size`,
-        [
-          offerId, listingId, sellerId, buyerId,
-          file.originalname, fileBase64, file.mimetype, file.size,
-          sellerName, buyerName, buyerEmail, listingName,
-          offerAmount, instructions, whatsIncluded
-        ]
-      );
+      for (const file of files) {
+        console.log(`  📄 Processing: ${file.originalname} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+        
+        const fileBase64 = file.buffer.toString('base64');
+        
+        const result = await client.query(
+          `INSERT INTO offer_files (
+            offer_id, listing_id, seller_id, buyer_id, 
+            file_name, file_data, file_type, file_size,
+            seller_name, buyer_name, buyer_email, listing_name,
+            offer_amount, instructions, whats_included,
+            status
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 'pending-admin-review') 
+          RETURNING id, file_name, file_size`,
+          [
+            offerId, listingId, sellerId, buyerId,
+            file.originalname, fileBase64, file.mimetype, file.size,
+            sellerName, buyerName, buyerEmail, listingName,
+            offerAmount, instructions, whatsIncluded
+          ]
+        );
+        
+        fileRecords.push(result.rows[0]);
+        console.log(`  ✅ Saved: ${file.originalname}`);
+      }
       
-      fileRecords.push(result.rows[0]);
+      await client.query('COMMIT');
+      console.log(`✅ All ${files.length} files uploaded successfully for offer ${offerId}`);
+
+      res.json({
+        success: true,
+        message: 'Files uploaded successfully',
+        fileCount: files.length,
+        files: fileRecords
+      });
+      
+    } catch (dbError) {
+      await client.query('ROLLBACK');
+      throw dbError;
+    } finally {
+      client.release();
     }
 
-    console.log(`✅ ${files.length} files uploaded successfully for offer ${offerId}`);
-
-    res.json({
-      success: true,
-      message: 'Files uploaded successfully',
-      fileCount: files.length,
-      files: fileRecords
-    });
-
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('❌ Upload error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ 
       success: false,
       error: 'Upload failed: ' + error.message 
@@ -362,7 +399,6 @@ app.get('/api/admin/file-reviews', async (req, res) => {
   }
 });
 
-// Admin: Get file details for review
 app.get('/api/admin/file-review/:offerId', async (req, res) => {
   try {
     const { offerId } = req.params;
@@ -394,10 +430,6 @@ app.get('/api/admin/file-review/:offerId', async (req, res) => {
   }
 });
 
-
-
-
-// Admin: View file content (for preview)
 app.get('/api/admin/view-file/:offerId/:filename', async (req, res) => {
   try {
     const { offerId, filename } = req.params;
@@ -416,12 +448,11 @@ app.get('/api/admin/view-file/:offerId/:filename', async (req, res) => {
 
     const file = result.rows[0];
     
-    // Return file data as JSON for preview
     res.json({
       success: true,
       filename: file.file_name,
       type: file.file_type,
-      data: file.file_data, // Base64 data
+      data: file.file_data,
       size: Buffer.from(file.file_data, 'base64').length
     });
     
@@ -433,18 +464,6 @@ app.get('/api/admin/view-file/:offerId/:filename', async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-// Admin: Download file
 app.get('/api/admin/download-file/:offerId/:filename', async (req, res) => {
   try {
     const { offerId, filename } = req.params;
@@ -476,12 +495,10 @@ app.get('/api/admin/download-file/:offerId/:filename', async (req, res) => {
   }
 });
 
-// Admin: Approve files
 app.post('/api/admin/approve-files/:offerId', async (req, res) => {
   try {
     const { offerId } = req.params;
     
-    // Update all files for this offer
     await pool.query(
       `UPDATE offer_files 
        SET status = 'admin-approved', 
@@ -506,13 +523,11 @@ app.post('/api/admin/approve-files/:offerId', async (req, res) => {
   }
 });
 
-// Admin: Reject files
 app.post('/api/admin/reject-files/:offerId', async (req, res) => {
   try {
     const { offerId } = req.params;
     const { reason } = req.body;
     
-    // Update all files for this offer
     await pool.query(
       `UPDATE offer_files 
        SET status = 'admin-rejected', 
@@ -538,14 +553,12 @@ app.post('/api/admin/reject-files/:offerId', async (req, res) => {
   }
 });
 
-
 app.get('/api/file-reviews/offer/:offerId', async (req, res) => {
   try {
     const { offerId } = req.params;
     
     console.log(`🔍 Looking for file review for offer: ${offerId}`);
     
-    // Query to get the first file review record for this offer
     const result = await pool.query(
       `SELECT DISTINCT ON (offer_id)
         offer_id as id, 
@@ -607,25 +620,17 @@ app.get('/api/file-reviews/offer/:offerId', async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-app.listen(PORT, () => {
+// ============================================
+// 🔧 FIX 5: Add server timeout configuration
+// ============================================
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📁 Original file exchange: /api/upload`);
   console.log(`📤 Offer file upload: /api/upload-offer-files`);
   console.log(`👨‍💼 Admin file reviews: /api/admin/file-reviews`);
 });
 
-
+// Set server timeouts
+server.timeout = 300000; // 5 minutes
+server.keepAliveTimeout = 300000;
+server.headersTimeout = 300000;
