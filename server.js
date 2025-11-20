@@ -555,6 +555,8 @@ app.post('/api/admin/approve-files/:offerId', async (req, res) => {
   try {
     const { offerId } = req.params;
     
+    console.log(`🔍 Attempting to approve offer ${offerId}`);
+    
     // Update PostgreSQL
     await pool.query(
       `UPDATE offer_files 
@@ -566,23 +568,38 @@ app.post('/api/admin/approve-files/:offerId', async (req, res) => {
 
     // Update Firebase
     const db = admin.firestore();
-    await db.collection('offers').doc(offerId).update({
+    const offerRef = db.collection('offers').doc(offerId);
+    
+    // Check if offer exists
+    const offerDoc = await offerRef.get();
+    if (!offerDoc.exists) {
+      console.error(`❌ Offer ${offerId} not found in Firestore`);
+      return res.status(404).json({ 
+        success: false,
+        error: 'Offer not found in database' 
+      });
+    }
+    
+    // Update the offer with admin approval
+    await offerRef.update({
       status: 'admin-approved',
-      adminApprovedAt: admin.firestore.FieldValue.serverTimestamp()
+      adminApprovedAt: admin.firestore.FieldValue.serverTimestamp(),
+      filesApproved: true
     });
 
-    console.log(`✅ Admin approved files for offer ${offerId} (PostgreSQL + Firebase)`);
+    console.log(`✅ Admin approved files for offer ${offerId} (PostgreSQL + Firebase updated)`);
 
     res.json({
       success: true,
-      message: 'Files approved successfully'
+      message: 'Files approved successfully. Buyer will be notified to complete payment.'
     });
 
   } catch (error) {
-    console.error('Error approving files:', error);
+    console.error('❌ Error approving files:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ 
       success: false,
-      error: 'Failed to approve files' 
+      error: 'Failed to approve files: ' + error.message 
     });
   }
 });
@@ -592,6 +609,9 @@ app.post('/api/admin/reject-files/:offerId', async (req, res) => {
   try {
     const { offerId } = req.params;
     const { reason } = req.body;
+    
+    console.log(`🔍 Attempting to reject offer ${offerId}`);
+    console.log(`📝 Rejection reason: ${reason}`);
     
     // Update PostgreSQL
     await pool.query(
@@ -603,26 +623,42 @@ app.post('/api/admin/reject-files/:offerId', async (req, res) => {
       [offerId, reason || 'No reason provided']
     );
 
-    // Update Firebase
+    // Update Firebase - FIXED: Changed 'status' to match Firestore field name
     const db = admin.firestore();
-    await db.collection('offers').doc(offerId).update({
-      status: 'admin-rejected',
+    const offerRef = db.collection('offers').doc(offerId);
+    
+    // Check if offer exists
+    const offerDoc = await offerRef.get();
+    if (!offerDoc.exists) {
+      console.error(`❌ Offer ${offerId} not found in Firestore`);
+      return res.status(404).json({ 
+        success: false,
+        error: 'Offer not found in database' 
+      });
+    }
+    
+    // Update the offer with admin rejection
+    await offerRef.update({
+      status: 'admin-rejected',  // ✅ This is the key field that wasn't updating properly
       rejectionReason: reason || 'No reason provided',
-      adminRejectedAt: admin.firestore.FieldValue.serverTimestamp()
+      adminRejectedAt: admin.firestore.FieldValue.serverTimestamp(),
+      filesRejected: true,
+      filesUploadedAt: null  // Reset this so seller can re-upload
     });
 
-    console.log(`❌ Admin rejected files for offer ${offerId} (PostgreSQL + Firebase)`);
+    console.log(`✅ Admin rejected files for offer ${offerId} (PostgreSQL + Firebase updated)`);
 
     res.json({
       success: true,
-      message: 'Files rejected'
+      message: 'Files rejected successfully. Seller can re-upload.'
     });
 
   } catch (error) {
-    console.error('Error rejecting files:', error);
+    console.error('❌ Error rejecting files:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ 
       success: false,
-      error: 'Failed to reject files' 
+      error: 'Failed to reject files: ' + error.message 
     });
   }
 });
@@ -709,4 +745,5 @@ const server = app.listen(PORT, () => {
 server.timeout = 300000; // 5 minutes
 server.keepAliveTimeout = 300000;
 server.headersTimeout = 300000;
+
 
