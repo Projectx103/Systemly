@@ -2570,21 +2570,25 @@ onAuthStateChanged(auth, async (user) => {
             console.error('❌ Failed to load users:', error);
         }
         
-       try {
+try {
     await loadFileReviews();
     console.log('✅ File reviews loaded');
 } catch (error) {
-    console.warn('⚠️ File reviews unavailable:', error.message);
-    const badge = document.getElementById('fileReviewBadge');
-    if (badge) badge.style.display = 'none';
-    
-    // Hide file review counts
-    const pending = document.getElementById('pendingFileReviews');
-    const approved = document.getElementById('approvedFileReviews');
-    const rejected = document.getElementById('rejectedFileReviews');
-    if (pending) pending.textContent = 'N/A';
-    if (approved) approved.textContent = 'N/A';
-    if (rejected) rejected.textContent = 'N/A';
+    console.error('❌ Failed to load file reviews:', error);
+    // Don't hide the section, just show error state
+    const container = document.getElementById('fileReviewsContainer');
+    if (container) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--error);"></i></div>
+                <h3>Failed to Load Reviews</h3>
+                <p>${error.message}</p>
+                <button class="btn btn-primary" onclick="loadFileReviews()" style="margin-top: 1rem;">
+                    🔄 Retry
+                </button>
+            </div>
+        `;
+    }
 }
         
         console.log('✅ Admin authenticated successfully');
@@ -5966,107 +5970,28 @@ window.approveFileReview = async function(reviewId) {
 }
 
 window.rejectFileReview = async function(reviewId) {
-    const review = allFileReviews.find(r => r.id === reviewId);
-    if (!review) return;
+    const reason = prompt('Provide rejection reason:');
+    if (!reason) return;
     
-    // Create modal for rejection reason
-    const modalDiv = document.createElement('div');
-    modalDiv.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 2rem;';
-    
-    modalDiv.innerHTML = `
-        <div style="background: var(--white); border-radius: 12px; max-width: 600px; width: 100%; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative;">
-            <button id="closeXBtn" style="position: absolute; top: 1rem; right: 1rem; background: var(--gray-light); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; color: var(--gray-dark); font-size: 1.5rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
-            
-            <h2 style="margin-bottom: 1rem; font-size: 1.5rem; font-weight: 700; color: var(--error); padding-right: 2.5rem;">
-                <i class="fas fa-times-circle"></i> Reject Files
-            </h2>
-            
-            <div style="background: var(--gray-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-                <div style="font-size: 0.875rem; color: var(--gray-medium); margin-bottom: 0.3rem;">Listing</div>
-                <div style="font-weight: 600; color: var(--text);">${review.listingName}</div>
-                <div style="font-size: 0.875rem; color: var(--gray-medium);">Seller: ${review.sellerName}</div>
-            </div>
-            
-            <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 6px; border-left: 4px solid var(--error); margin-bottom: 1.5rem;">
-                <div style="font-size: 0.875rem; color: var(--error); line-height: 1.6;">
-                    <strong>⚠️ Warning:</strong> The seller will need to re-upload files. They will be notified of the rejection reason.
-                </div>
-            </div>
-            
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem;">Reason for Rejection <span style="color: var(--error);">*</span></label>
-                <textarea id="rejectionReason" placeholder="Explain why the files are being rejected (e.g., missing source code, incomplete documentation, files corrupted)..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9375rem; min-height: 120px; resize: vertical;"></textarea>
-            </div>
-            
-            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-                <button id="cancelBtn" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--white); color: var(--gray-700); border: 1px solid var(--border); font-family: 'Sarabun', sans-serif; transition: all 0.2s;">
-                    Cancel
-                </button>
-                <button id="confirmBtn" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--error); color: var(--white); border: none; font-family: 'Sarabun', sans-serif; transition: all 0.2s;">
-                    <i class="fas fa-times-circle"></i> Reject Files
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modalDiv);
-    
-    // Event listeners
-    const closeBtn = modalDiv.querySelector('#closeXBtn');
-    const cancelBtn = modalDiv.querySelector('#cancelBtn');
-    const confirmBtn = modalDiv.querySelector('#confirmBtn');
-    
-    closeBtn.addEventListener('click', () => modalDiv.remove());
-    cancelBtn.addEventListener('click', () => modalDiv.remove());
-    
-    confirmBtn.addEventListener('click', async () => {
-        const reason = document.getElementById('rejectionReason').value.trim();
+    try {
+        const response = await fetch(`https://systemly.onrender.com/api/admin/reject-files/${reviewId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason })
+        });
         
-        if (!reason) {
-            alert('Please provide a reason for rejection');
-            return;
-        }
+        const result = await response.json();
         
-        try {
-            confirmBtn.disabled = true;
-            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting...';
-            
-            const response = await fetch(`https://systemly.onrender.com/api/admin/reject-files/${reviewId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ reason })
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                modalDiv.remove();
-                alert('❌ Files rejected successfully. Seller will be notified and can re-upload.');
-                await loadFileReviews();
-            } else {
-                throw new Error(result.error);
-            }
-        } catch (error) {
-            console.error('Error rejecting files:', error);
-            alert('Failed to reject files: ' + error.message);
-            confirmBtn.disabled = false;
-            confirmBtn.innerHTML = '<i class="fas fa-times-circle"></i> Reject Files';
+        if (result.success) {
+            alert('❌ Files rejected. Seller will be notified.');
+            await loadFileReviews();
+        } else {
+            throw new Error(result.error);
         }
-    });
-    
-    // Hover effects
-    closeBtn.addEventListener('mouseenter', () => {
-        closeBtn.style.background = 'var(--gray-medium)';
-        closeBtn.style.color = 'var(--white)';
-    });
-    closeBtn.addEventListener('mouseleave', () => {
-        closeBtn.style.background = 'var(--gray-light)';
-        closeBtn.style.color = 'var(--gray-dark)';
-    });
-    
-    modalDiv.addEventListener('click', (e) => {
-        if (e.target === modalDiv) modalDiv.remove();
-    });
+    } catch (error) {
+        console.error('Error rejecting files:', error);
+        alert('Failed to reject files: ' + error.message);
+    }
 }
 
 window.closeFileReviewModal = function() {
