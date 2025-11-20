@@ -6,20 +6,53 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ============================================
-// FIREBASE ADMIN INITIALIZATION (ONE TIME ONLY)
-// ============================================
 const admin = require('firebase-admin');
 
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+      type: "service_account",
+      project_id: "systemly-db",
+      private_key_id: "50cced1e129b6c21cce4cc83d04e5b0b0ed5880b",
+      private_key: `-----BEGIN PRIVATE KEY-----
+MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCcs/JWDtXIQk3s
+4SrdT32OJR3gxL0zPkFl6A5qcoo6aOw6wn5iGH0bXl5F4Av8srkKfm+R73gfKQyI
+VLMKtQEIpxhU5LHrp5KSRT8g5r7HTn2U+7eZhGhfz9sub/z9Wn4Z6+ajHUpAABE/
+lem+YvpswCfdXqFaKF9WnOx62Z9GKdHrCkEj3waAFEkwa56NvwDn/oLdIiia6x7g
+i2iuXS7pSEfHGtd49TqwzjwtvytaUanyDBW/pHvZqJ6ciXPJDpvSv7+S5C8b0B6g
+UspGQkQ2VxmtAPezUHHGL1poaAdGnNnBr3SzoGJSfwpQecJYTgtfwvgiMaOu3HUm
+fjgP6ULzAgMBAAECggEAL90/Hk41uo+WIc69OxA2t55au/ccG3TeoPP6w0TtN94o
+meIinHACdsOiZBGFV9B3eN8Z0SemN05gh5vnfFPBVxVC91tLhUGQIaGJINGaYGJ3
+NXSVpgytnOZueoa2beSgM+a8cgJWVaovmo598StmdqVTB+kJu/Is/NW93eBvKAzP
+uFSbTmYgFuWlmr2Qy9o+7VzB3jpFloylSutGLMJvjx/6BcCeaLa8YGAVzil/Z1Dr
+j2bKDosubUIitBhKhE6ND71aG6N4kDoVxC0MUuKAJwMwaqWq48H3RTHe/Mli+jxa
+IYU1rqB2VaUewdM2p9OC1+WdYtL3MdqjVoivln6VsQKBgQDIovLPFqcuCPGoSUmd
+ebmF0PizJuRBb/3GlOYUNKyO4/Hj1CHhDN7DlNV77OI1dUGsIZ3ywsvwka8CoF6M
+ryNqnCPe/xrq7ubeoK+uC0mLj1bDtvnNlt76DM30SPHfaMnuHcP0VhRKg8VScp/+
+WmGfWOQdo5Wp5gwMPQdn3PZHtwKBgQDH8YJjNEGB5ljsCwcngJUV6ZORn7t2dwqO
+S0fOeiR8Fz9OKTaMxbHh9Kdp9BcGnJlHCXZhH2j9jbDRVe4ZMutakUyxYAYV9jGU
+77fFJD+omKKuIIKhaNSq6hcLV371DMQoabCH9sBiuJu8oy1r99wR2ZfpgK0wVGPL
+cfFMxPdGpQKBgQCUA4JVPEUBNR/yIn7oadBv5AZVRC/IBrKVOWuzJFjY4Vil1u1X
+dYMxji8gSVVoUqSsM/CuEv8Y7qDJsz2NU/cwwxfDfzeAcdZoDusL3s/W4VwE7ovD
+G7ZLif62ZMnrIwc1X0gcjRRTFHsRo/ZcUpkKUS2YoAHdYRUqQiugd+ZIaQKBgQC2
+EYfoCke0oCtNFmW3ZPFdeMs2CjxMje4A0TBcJwFeNlUhOYpA+i0XUw+3/duR27v/
+4e/4VP/oE8R1e0hLjgCfAjzSMFyaVwujUf8H+BA32HYbFeOeU7WExZGidFRZlPxy
+yHtF9D4QJ4c5aWYNMTEm1/vrV49duRr+wY03mQyLOQKBgQCoOSNo3NZTPpMr91y0
+FiVk096O8+U87rCFft2gYIQfvWxnw7QqQCJtihOcUjK1J0eQBlrcl8cJps3+hbxD
+0I5TEW6jnpl1m2ZF6Ip7oOVoj1HejB/uj4HI07W9gB3sHiq+T9DhpKZKkEGP1E0d
+FpmuPdbG4Pgc67bsOs/BXTx+xQ==
+-----END PRIVATE KEY-----`,
+      client_email: "firebase-adminsdk-fbsvc@systemly-db.iam.gserviceaccount.com",
+      client_id: "117556834623041686298",
+      auth_uri: "https://accounts.google.com/o/oauth2/auth",
+      token_uri: "https://oauth2.googleapis.com/token",
+      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+      client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40systemly-db.iam.gserviceaccount.com",
+      universe_domain: "googleapis.com"
     }),
-    databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`
+    databaseURL: "https://systemly-db.firebaseio.com"
   });
+
   console.log('✅ Firebase Admin initialized');
 }
 
