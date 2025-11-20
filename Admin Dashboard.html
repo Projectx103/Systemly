@@ -712,6 +712,17 @@
             cursor: not-allowed;
         }
 
+.action-btn.approve {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+.action-btn.approve:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+
 
 /* User Management Action Buttons */
 .users-table td:last-child {
@@ -3852,9 +3863,9 @@ document.addEventListener('keydown', function(e) {
     <button class="action-btn view" onclick="viewListing('${listing.id}')">
         <i class="fas fa-eye"></i> View Details
     </button>
-    <button class="action-btn approve" onclick="approveListing('${listing.id}')">
-        <i class="fas fa-check"></i> Approve
-    </button>
+    <button class="action-btn approve" onclick="event.stopPropagation(); approveListing('${listing.id}')" style="pointer-events: auto;">
+    <i class="fas fa-check"></i> Approve
+</button>
     <button class="action-btn reject" onclick="rejectListing('${listing.id}')">
         <i class="fas fa-times"></i> Reject
     </button>
@@ -5158,7 +5169,9 @@ ${currentListing.variants && currentListing.variants.length > 0 ? `
                     <button class="btn btn-outline" onclick="closeModal()">Close</button>
                     <button class="btn btn-outline" onclick="contactSeller()" style="color: var(--info); border-color: var(--info);">📧 Contact Seller</button>
                     <button class="action-btn reject" onclick="rejectListingFromModal()">❌ Reject</button>
-                    <button class="action-btn approve" onclick="approveListingFromModal()">✅ Approve</button>
+                    <button class="action-btn approve" onclick="approveListingFromModal()" style="pointer-events: auto; cursor: pointer;">
+    			✅ Approve
+		    </button>
                 `;
             } else if (currentListing.status === 'approved') {
                 modalFooter.innerHTML = `
@@ -5225,27 +5238,43 @@ ${currentListing.variants && currentListing.variants.length > 0 ? `
             currentListing = null;
         }
 
-        // Approve listing
-        window.approveListing = async function(listingId) {
-            if (!confirm('Are you sure you want to approve this listing? It will become publicly visible on the marketplace.')) {
-                return;
-            }
+      window.approveListing = async function(listingId) {
+    console.log('🔄 Approving listing:', listingId);
+    
+    if (!confirm('Are you sure you want to approve this listing? It will become publicly visible on the marketplace.')) {
+        return;
+    }
 
-            try {
-                await updateDoc(doc(db, 'listings', listingId), {
-                    status: 'approved',
-                    approvedAt: new Date(),
-                    approvedBy: auth.currentUser.uid
-                });
+    // Disable all approve buttons temporarily
+    const approveButtons = document.querySelectorAll('.action-btn.approve');
+    approveButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Approving...';
+    });
 
-                alert('✅ Listing approved successfully!');
-                await loadListings();
-            } catch (error) {
-                console.error('Error approving listing:', error);
-                alert('Failed to approve listing. Please try again.');
-            }
-        }
+    try {
+        await updateDoc(doc(db, 'listings', listingId), {
+            status: 'approved',
+            approvedAt: new Date(),
+            approvedBy: auth.currentUser.uid
+        });
 
+        console.log('✅ Listing approved successfully');
+        alert('✅ Listing approved successfully!');
+        await loadListings();
+    } catch (error) {
+        console.error('❌ Error approving listing:', error);
+        alert('Failed to approve listing: ' + error.message);
+        
+        // Re-enable buttons on error
+        approveButtons.forEach(btn => {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.innerHTML = '<i class="fas fa-check"></i> Approve';
+        });
+    }
+}
         // Reject listing
         window.rejectListing = async function(listingId) {
             const reason = prompt('Please provide a reason for rejection (optional):');
@@ -5314,10 +5343,14 @@ ${currentListing.variants && currentListing.variants.length > 0 ? `
 
         // Modal action wrappers
         window.approveListingFromModal = async function() {
-            if (!currentListing) return;
-            closeModal();
-            await approveListing(currentListing.id);
-        }
+    if (!currentListing) {
+        console.error('❌ No current listing selected');
+        return;
+    }
+    console.log('📋 Approving from modal:', currentListing.id);
+    closeModal();
+    await approveListing(currentListing.id);
+}
 
         window.rejectListingFromModal = async function() {
             if (!currentListing) return;
@@ -5944,24 +5977,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 window.approveFileReview = async function(reviewId) {
-    if (!confirm('Approve these files? Buyer will be notified to proceed with payment.')) return;
+    if (!confirm('✅ Approve these files?\n\n• PostgreSQL will be updated\n• Firebase offer status will change\n• Buyer will be notified\n\nThis action cannot be undone.')) return;
     
     try {
+        console.log(`🔄 Attempting to approve offer ${reviewId}...`);
+        
         const response = await fetch(`https://systemly.onrender.com/api/admin/approve-files/${reviewId}`, {
-            method: 'POST'
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
         
+        console.log('Response status:', response.status);
         const result = await response.json();
+        console.log('Response data:', result);
         
         if (result.success) {
-            alert('✅ Files approved! Buyer will be notified.');
-            await loadFileReviews();
+            alert('✅ Files approved successfully!\n\n• PostgreSQL updated\n• Firebase offer updated\n• Status changed to: admin-approved');
+            await loadFileReviews(); // Refresh the list
         } else {
-            throw new Error(result.error);
+            throw new Error(result.error || 'Approval failed');
         }
     } catch (error) {
-        console.error('Error approving files:', error);
-        alert('Failed to approve files: ' + error.message);
+        console.error('❌ Error approving files:', error);
+        alert('Failed to approve files: ' + error.message + '\n\nCheck the browser console for details.');
     }
 }
 
