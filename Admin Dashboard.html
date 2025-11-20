@@ -712,6 +712,41 @@
             cursor: not-allowed;
         }
 
+
+/* User Management Action Buttons */
+.users-table td:last-child {
+    min-width: 400px;
+}
+
+.action-btn {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.action-btn i {
+    font-size: 0.9rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /* Modal */
         .modal {
             display: none;
@@ -1564,7 +1599,7 @@
                         </select>
                     </div>
                     <div class="search-box">
-                        <span class="search-icon">🔍</span>
+                        <span class="search-icon"></span>
                         <input type="text" class="search-input" id="searchInput" placeholder="Search listings..." oninput="applyFilters()">
                     </div>
                 </div>
@@ -1601,36 +1636,59 @@
         </div>
         <div class="top-actions">
             <button class="btn btn-outline" onclick="refreshAnalytics()">
-                🔄 Refresh
+                Refresh
             </button>
             <button class="btn btn-primary" onclick="exportAnalytics()">
-                📥 Export Report
+                 Export Report
             </button>
         </div>
     </div>
 
-    <div class="analytics-summary">
-        <div class="summary-item">
-            <div class="summary-label">Total Revenue</div>
-            <div class="summary-value" style="color: var(--success);" id="analyticsRevenue">$0</div>
-            <div class="summary-trend" style="color: var(--success);" id="revenueTrend">Calculating...</div>
+   <div class="analytics-summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="summary-item" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); border-left: 4px solid var(--success); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; right: 0; font-size: 4rem; opacity: 0.1; color: var(--success);">
+            <i class="fas fa-money-bill-wave"></i>
         </div>
-        <div class="summary-item">
-            <div class="summary-label">Total Listings Value</div>
-            <div class="summary-value" style="color: var(--info);" id="analyticsListingsValue">$0</div>
-            <div class="summary-trend" style="color: var(--success);" id="listingsValueTrend">Calculating...</div>
-        </div>
-        <div class="summary-item">
-            <div class="summary-label">Avg Listing Price</div>
-            <div class="summary-value" style="color: var(--primary);" id="analyticsAvgPrice">$0</div>
-            <div class="summary-trend" style="color: var(--success);" id="avgPriceTrend">Calculating...</div>
-        </div>
-        <div class="summary-item">
-            <div class="summary-label">Approval Rate</div>
-            <div class="summary-value" style="color: var(--secondary);" id="analyticsApprovalRate">0%</div>
-            <div class="summary-trend" style="color: var(--success);" id="approvalRateTrend">Calculating...</div>
+        <div class="summary-label" style="font-size: 0.85rem; color: var(--gray-dark); margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Revenue</div>
+        <div class="summary-value" style="color: var(--success); font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem;" id="analyticsRevenue">₱0</div>
+        <div class="summary-trend" style="color: var(--success); font-size: 0.85rem; display: flex; align-items: center; gap: 0.3rem;" id="revenueTrend">
+            <i class="fas fa-arrow-up"></i> Calculating...
         </div>
     </div>
+    
+    <div class="summary-item" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05)); border-left: 4px solid var(--info); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; right: 0; font-size: 4rem; opacity: 0.1; color: var(--info);">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="summary-label" style="font-size: 0.85rem; color: var(--gray-dark); margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Listings Value</div>
+        <div class="summary-value" style="color: var(--info); font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem;" id="analyticsListingsValue">₱0</div>
+        <div class="summary-trend" style="color: var(--success); font-size: 0.85rem; display: flex; align-items: center; gap: 0.3rem;" id="listingsValueTrend">
+            <i class="fas fa-arrow-up"></i> Calculating...
+        </div>
+    </div>
+    
+    <div class="summary-item" style="background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(249, 115, 22, 0.05)); border-left: 4px solid var(--primary); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; right: 0; font-size: 4rem; opacity: 0.1; color: var(--primary);">
+            <i class="fas fa-tag"></i>
+        </div>
+        <div class="summary-label" style="font-size: 0.85rem; color: var(--gray-dark); margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Avg Listing Price</div>
+        <div class="summary-value" style="color: var(--primary); font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem;" id="analyticsAvgPrice">₱0</div>
+        <div class="summary-trend" style="color: var(--success); font-size: 0.85rem; display: flex; align-items: center; gap: 0.3rem;" id="avgPriceTrend">
+            <i class="fas fa-minus"></i> Calculating...
+        </div>
+    </div>
+    
+    <div class="summary-item" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05)); border-left: 4px solid var(--secondary); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; right: 0; font-size: 4rem; opacity: 0.1; color: var(--secondary);">
+            <i class="fas fa-percentage"></i>
+        </div>
+        <div class="summary-label" style="font-size: 0.85rem; color: var(--gray-dark); margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Approval Rate</div>
+        <div class="summary-value" style="color: var(--secondary); font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem;" id="analyticsApprovalRate">0%</div>
+        <div class="summary-trend" style="color: var(--success); font-size: 0.85rem; display: flex; align-items: center; gap: 0.3rem;" id="approvalRateTrend">
+            <i class="fas fa-check"></i> Calculating...
+        </div>
+    </div>
+</div>
 
     <div class="charts-grid">
         <div class="chart-card">
@@ -1673,10 +1731,10 @@
                     </div>
                     <div class="top-actions">
                         <button class="btn btn-outline" onclick="refreshUsers()">
-                            🔄 Refresh
+                             Refresh
                         </button>
                         <button class="btn btn-primary" onclick="exportUsers()">
-                            📥 Export Users
+                             Export Users
                         </button>
                     </div>
                 </div>
@@ -1688,7 +1746,7 @@
                                 <div class="stat-number" id="totalUsers">0</div>
                                 <div class="stat-label">Total Users</div>
                             </div>
-                            <div class="stat-icon users">👥</div>
+                            <div class="stat-icon users"><i class="fas fa-users"></i></div>
                         </div>
                         <div class="stat-change positive">↗ +24 this month</div>
                     </div>
@@ -1698,7 +1756,7 @@
                                 <div class="stat-number" id="activeSellers">0</div>
                                 <div class="stat-label">Active Sellers</div>
                             </div>
-                            <div class="stat-icon approved">💼</div>
+                            <div class="stat-icon approved"><i class="fas fa-briefcase"></i></div>
                         </div>
                         <div class="stat-change positive">↗ +8 this week</div>
                     </div>
@@ -1708,7 +1766,7 @@
                                 <div class="stat-number" id="activeBuyers">0</div>
                                 <div class="stat-label">Active Buyers</div>
                             </div>
-                            <div class="stat-icon total">🛒</div>
+                            <div class="stat-icon total"><i class="fas fa-shopping-cart"></i></div>
                         </div>
                         <div class="stat-change positive">↗ +16 this week</div>
                     </div>
@@ -1718,7 +1776,7 @@
                                 <div class="stat-number" id="suspendedUsers">0</div>
                                 <div class="stat-label">Suspended</div>
                             </div>
-                            <div class="stat-icon rejected">🚫</div>
+                            <div class="stat-icon rejected"><i class="fas fa-user-slash"></i></div>
                         </div>
                         <div class="stat-change negative">2 accounts</div>
                     </div>
@@ -2024,7 +2082,21 @@
   </div>
 </div>
 
-
+<!-- User Action Modals -->
+<div class="modal" id="userActionModal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="userActionModalTitle">User Action</h2>
+            <button class="close-modal" onclick="closeUserActionModal()">×</button>
+        </div>
+        <div class="modal-body" id="userActionModalBody">
+            <!-- Dynamic content -->
+        </div>
+        <div class="modal-footer" id="userActionModalFooter">
+            <!-- Dynamic buttons -->
+        </div>
+    </div>
+</div>
 
 
 
@@ -2035,8 +2107,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, getDocs, doc, updateDoc, orderBy, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+        import { getFirestore, collection, query, getDocs, doc, updateDoc, orderBy, where, deleteDoc, getDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyD3PQ5oWrzAXOHnb7wrmpRhL9DWIB7w9rE",
@@ -2161,9 +2232,9 @@ function updateAnalytics() {
     document.getElementById('analyticsRevenue').textContent = 
         `₱${(analytics.totalRevenue / 1000).toFixed(1)}K`;
     document.getElementById('analyticsListingsValue').textContent = 
-        `$${(analytics.totalListingsValue / 1000000).toFixed(2)}M`;
+        `₱${(analytics.totalListingsValue / 1000000).toFixed(2)}M`;
     document.getElementById('analyticsAvgPrice').textContent = 
-        `$${(analytics.avgPrice / 1000).toFixed(1)}K`;
+        `₱${(analytics.avgPrice / 1000).toFixed(1)}K`;
     document.getElementById('analyticsApprovalRate').textContent = 
         `${analytics.approvalRate.toFixed(1)}%`;
     
@@ -2293,7 +2364,7 @@ function updateCharts(analytics) {
         priceChart = new Chart(priceCtx, {
             type: 'bar',
             data: {
-                labels: ['₱0-10K', '$10K-50K', '$50K-100K', '$100K-500K', '$500K+'],
+                labels: ['₱0-10K', '₱10K-50K', '₱50K-100K', '₱100K-500K', '₱500K+'],
                 datasets: [{
                     label: 'Listings',
                     data: Object.values(analytics.priceRanges),
@@ -2436,8 +2507,6 @@ ${analytics.monthlyData.map(m => `${m.month}: ${m.count} listings`).join('\n')}
         setInterval(updateTime, 1000);
         updateTime();
 
-        // Auth check - ensure user is admin
-       // Auth check - ensure user is admin
 // Auth check - ensure user is admin
 onAuthStateChanged(auth, async (user) => {
     const authLoading = document.getElementById('authLoading');
@@ -2486,12 +2555,43 @@ onAuthStateChanged(auth, async (user) => {
         authLoading.style.display = 'none';
         mainContent.classList.add('active');
         
-        // Load data
-loadListings();
-loadUsers();
-loadFileReviews(); // ADD THIS LINE
-
-console.log('✅ Admin authenticated successfully');
+        // Load data with error handling
+        try {
+            await loadListings();
+            console.log('✅ Listings loaded');
+        } catch (error) {
+            console.error('❌ Failed to load listings:', error);
+        }
+        
+        try {
+            await loadUsers();
+            console.log('✅ Users loaded');
+        } catch (error) {
+            console.error('❌ Failed to load users:', error);
+        }
+        
+try {
+    await loadFileReviews();
+    console.log('✅ File reviews loaded');
+} catch (error) {
+    console.error('❌ Failed to load file reviews:', error);
+    // Don't hide the section, just show error state
+    const container = document.getElementById('fileReviewsContainer');
+    if (container) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--error);"></i></div>
+                <h3>Failed to Load Reviews</h3>
+                <p>${error.message}</p>
+                <button class="btn btn-primary" onclick="loadFileReviews()" style="margin-top: 1rem;">
+                    🔄 Retry
+                </button>
+            </div>
+        `;
+    }
+}
+        
+        console.log('✅ Admin authenticated successfully');
         
     } catch (error) {
         console.error('Error checking admin status:', error);
@@ -2527,80 +2627,35 @@ console.log('✅ Admin authenticated successfully');
             }
         }
 
-        // Load users (mock data - integrate with your user management system)
-       // Load users from Firebase
-async function loadUsers() {
-    try {
-        // Fetch all users from Firebase
-        const usersQuery = query(collection(db, 'users'));
-        const usersSnapshot = await getDocs(usersQuery);
-        
-        allUsers = [];
-        
-        for (const userDoc of usersSnapshot.docs) {
-            const userData = userDoc.data();
-            
-            // Count listings for this user
-            const userListingsQuery = query(
-                collection(db, 'listings'), 
-                where('userId', '==', userDoc.id)
-            );
-            const listingsSnapshot = await getDocs(userListingsQuery);
-            const listingsCount = listingsSnapshot.size;
-            
-            // Format the user data
-            allUsers.push({
-                id: userDoc.id,
-                name: userData.name || 'Unknown User',
-                email: userData.email || 'No email',
-                role: userData.role || 'buyer',
-                joined: userData.createdAt || new Date().toISOString(),
-                listings: listingsCount,
-                status: userData.status || 'active',
-                subscriptionPlan: userData.subscriptionPlan || 'free',
-                profileComplete: userData.profileComplete || false,
-                avatar: userData.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || 'User')}&background=F97316&color=fff`
-            });
-        }
-        
-        console.log('Loaded users:', allUsers);
-        updateUserStats();
-        renderUsers();
-    } catch (error) {
-        console.error('Error loading users:', error);
-        alert('Failed to load users. Please refresh the page.');
-    }
+   // ============================================
+// USER MANAGEMENT FUNCTIONS
+// ============================================
+
+
+
+// Helper function to get role badge color
+function getRoleBadgeColor(role) {
+    const colors = {
+        'seller': '#F97316',
+        'buyer': '#6366F1',
+        'admin': '#EF4444'
+    };
+    return colors[role] || '#94A3B8';
 }
 
-        // Update statistics
-        function updateStats() {
-            const total = allListings.length;
-            const pending = allListings.filter(l => l.status === 'pending').length;
-            const approved = allListings.filter(l => l.status === 'approved').length;
-            const rejected = allListings.filter(l => l.status === 'rejected').length;
-
-            document.getElementById('totalListings').textContent = total;
-            document.getElementById('pendingListings').textContent = pending;
-            document.getElementById('approvedListings').textContent = approved;
-            document.getElementById('rejectedListings').textContent = rejected;
-            document.getElementById('pendingBadge').textContent = pending;
-        }
-
-        // Update user statistics
-        // Update user statistics
-function updateUserStats() {
-    const total = allUsers.length;
-    const sellers = allUsers.filter(u => u.role === 'seller' && u.status === 'active').length;
-    const buyers = allUsers.filter(u => u.role === 'buyer' && u.status === 'active').length;
-    const suspended = allUsers.filter(u => u.status === 'suspended').length;
-
-    document.getElementById('totalUsers').textContent = total;
-    document.getElementById('activeSellers').textContent = sellers;
-    document.getElementById('activeBuyers').textContent = buyers;
-    document.getElementById('suspendedUsers').textContent = suspended;
+// Helper function to get role icon
+function getRoleIcon(role) {
+    const icons = {
+        'seller': '<i class="fas fa-store"></i>',
+        'buyer': '<i class="fas fa-shopping-bag"></i>',
+        'admin': '<i class="fas fa-crown"></i>'
+    };
+    return icons[role] || '<i class="fas fa-user"></i>';
 }
 
-       // Render users table
+
+
+// Render users table
 function renderUsers() {
     const tbody = document.getElementById('usersTableBody');
     
@@ -2641,22 +2696,66 @@ function renderUsers() {
                     <span style="font-size: 0.8rem; color: var(--gray-medium);"> listing${user.listings !== 1 ? 's' : ''}</span>
                 </td>
                 <td><span class="status-badge ${user.status}">${user.status.toUpperCase()}</span></td>
-                <td>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="action-btn view" onclick="viewUser('${user.id}')" style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
-                            View
-                        </button>
-                        ${user.status === 'active' ? `
-                            <button class="action-btn reject" onclick="suspendUser('${user.id}')" style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
-                                 Suspend
-                            </button>
-                        ` : `
-                            <button class="action-btn approve" onclick="activateUser('${user.id}')" style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
-                                 Activate
-                            </button>
-                        `}
-                    </div>
-                </td>
+<td>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+        <!-- View Profile -->
+        <button class="action-btn view" onclick="event.stopPropagation(); viewUser('${user.id}')" style="padding: 0.5rem 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+            <i class="fas fa-eye"></i>
+            <span style="font-size: 0.65rem;">View</span>
+        </button>
+        
+        <!-- Change Role -->
+        <button class="action-btn" onclick="event.stopPropagation(); changeUserRole('${user.id}', '${user.role}')" style="background: var(--secondary); color: white; border: none; padding: 0.5rem 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+            <i class="fas fa-user-tag"></i>
+            <span style="font-size: 0.65rem;">Role</span>
+        </button>
+        
+        <!-- Change Subscription -->
+        <button class="action-btn" onclick="event.stopPropagation(); changeUserSubscription('${user.id}')" style="background: var(--warning); color: white; border: none; padding: 0.5rem 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+            <i class="fas fa-crown"></i>
+            <span style="font-size: 0.65rem;">Plan</span>
+        </button>
+        
+        <!-- Activity Log -->
+        <button class="action-btn" onclick="event.stopPropagation(); viewUserActivity('${user.id}')" style="background: var(--accent); color: white; border: none; padding: 0.5rem 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+            <i class="fas fa-history"></i>
+            <span style="font-size: 0.65rem;">Activity</span>
+        </button>
+        
+        <!-- Send Email -->
+<button class="action-btn" data-user-id="${user.id}" data-user-name="${user.name}" data-user-email="${user.email}" onclick="event.stopPropagation(); sendUserNotificationWrapper(this)" style="background: var(--info); color: white; border: none; padding: 0.5rem 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+    <i class="fas fa-envelope"></i>
+    <span style="font-size: 0.65rem;">Email</span>
+</button>
+        
+        <!-- Export Data -->
+        <button class="action-btn" onclick="event.stopPropagation(); exportUserData('${user.id}')" style="background: var(--success); color: white; border: none; padding: 0.5rem 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+            <i class="fas fa-download"></i>
+            <span style="font-size: 0.65rem;">Export</span>
+        </button>
+        
+        <!-- Suspend/Activate -->
+        ${user.status === 'active' ? `
+            <button class="action-btn reject" onclick="event.stopPropagation(); suspendUser('${user.id}')" style="padding: 0.5rem 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                <i class="fas fa-ban"></i>
+                <span style="font-size: 0.65rem;">Suspend</span>
+            </button>
+        ` : `
+            <button class="action-btn approve" onclick="event.stopPropagation(); activateUser('${user.id}')" style="padding: 0.5rem 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                <i class="fas fa-check-circle"></i>
+                <span style="font-size: 0.65rem;">Activate</span>
+            </button>
+        `}
+        
+       <!-- Delete Account -->
+${user.role !== 'admin' ? `
+    <button class="action-btn" data-user-id="${user.id}" data-user-name="${user.name}" onclick="event.stopPropagation(); deleteUserAccountWrapper(this)" style="background: var(--error); color: white; border: none; padding: 0.5rem 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+        <i class="fas fa-trash-alt"></i>
+        <span style="font-size: 0.65rem;">Delete</span>
+    </button>
+` : ''}
+    </div>
+</td>
             </tr>
         `;
     }).join('');
@@ -2664,24 +2763,204 @@ function renderUsers() {
     document.getElementById('userCount').textContent = `${allUsers.length} user${allUsers.length !== 1 ? 's' : ''}`;
 }
 
-// Helper functions for role badges
-function getRoleBadgeColor(role) {
-    const colors = {
-        'seller': '#F97316',
-        'buyer': '#6366F1',
-        'admin': '#EF4444'
-    };
-    return colors[role] || '#94A3B8';
+// Wrapper for delete user account
+window.deleteUserAccountWrapper = function(button) {
+    const userId = button.getAttribute('data-user-id');
+    const userName = button.getAttribute('data-user-name');
+    deleteUserAccount(userId, userName);
 }
 
-function getRoleIcon(role) {
-    const icons = {
-        'seller': '💼',
-        'buyer': '🛒',
-        'admin': '👑'
-    };
-    return icons[role] || '👤';
+
+
+
+
+
+
+
+// Filter users
+window.filterUsers = function() {
+    const roleFilter = document.getElementById('filterUserRole')?.value || 'all';
+    const statusFilter = document.getElementById('filterUserStatus')?.value || 'all';
+    const searchText = document.getElementById('searchUsers')?.value.toLowerCase() || '';
+
+    let filtered = allUsers.filter(user => {
+        if (roleFilter !== 'all' && user.role !== roleFilter) return false;
+        if (statusFilter !== 'all' && user.status !== statusFilter) return false;
+        if (searchText && 
+            !user.name.toLowerCase().includes(searchText) && 
+            !user.email.toLowerCase().includes(searchText) &&
+            !user.id.toLowerCase().includes(searchText)) return false;
+        return true;
+    });
+
+    // Re-render with filtered users
+    const tbody = document.getElementById('usersTableBody');
+    tbody.innerHTML = filtered.map(user => {
+        const joinedDate = new Date(user.joined).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        
+        return `
+            <tr>
+                <td>
+                    <div class="user-info">
+                        <img src="${user.avatar}" alt="${user.name}" class="user-avatar">
+                        <div class="user-details">
+                            <h4>${user.name}</h4>
+                            <p>${user.email}</p>
+                            ${user.subscriptionPlan && user.subscriptionPlan !== 'free' ? 
+                                `<span style="display: inline-block; background: linear-gradient(135deg, #F97316, #6366F1); color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.7rem; margin-top: 0.3rem; font-weight: 700;">${user.subscriptionPlan.toUpperCase()}</span>` 
+                                : ''}
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="status-badge ${user.role}" style="background: ${getRoleBadgeColor(user.role)}; color: white;">
+                        ${getRoleIcon(user.role)} ${user.role.toUpperCase()}
+                    </span>
+                </td>
+                <td>${joinedDate}</td>
+                <td>
+                    <strong style="font-size: 1.1rem;">${user.listings}</strong>
+                    <span style="font-size: 0.8rem; color: var(--gray-medium);"> listing${user.listings !== 1 ? 's' : ''}</span>
+                </td>
+                <td><span class="status-badge ${user.status}">${user.status.toUpperCase()}</span></td>
+                <td>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                        <button class="action-btn view" onclick="event.stopPropagation(); viewUser('${user.id}')" title="View full profile" style="padding: 0.5rem 0.7rem;">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        
+                        <button class="action-btn" onclick="event.stopPropagation(); sendUserNotification('${user.id}', '${user.name.replace(/'/g, "\\'")}', '${user.email}')" title="Send email" style="background: var(--info); color: white; border: none; padding: 0.5rem 0.7rem;">
+    			<i class="fas fa-envelope"></i>
+			</button>
+                        
+                        <button class="action-btn" onclick="event.stopPropagation(); changeUserSubscription('${user.id}')" title="Change subscription" style="background: var(--warning); color: white; border: none; padding: 0.5rem 0.7rem;">
+                            <i class="fas fa-crown"></i>
+                        </button>
+                        
+                        <button class="action-btn" onclick="event.stopPropagation(); viewUserActivity('${user.id}')" title="View activity log" style="background: var(--accent); color: white; border: none; padding: 0.5rem 0.7rem;">
+                            <i class="fas fa-history"></i>
+                        </button>
+                        
+                        <button class="action-btn" onclick="event.stopPropagation(); sendUserNotification('${user.id}', \`${user.name}\`, '${user.email}')" title="Send email" style="background: var(--info); color: white; border: none; padding: 0.5rem 0.7rem;">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                        
+                        <button class="action-btn" onclick="event.stopPropagation(); exportUserData('${user.id}')" title="Export user data" style="background: var(--success); color: white; border: none; padding: 0.5rem 0.7rem;">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        
+                        ${user.status === 'active' ? `
+                            <button class="action-btn reject" onclick="event.stopPropagation(); suspendUser('${user.id}')" title="Suspend account" style="padding: 0.5rem 0.7rem;">
+                                <i class="fas fa-ban"></i>
+                            </button>
+                        ` : `
+                            <button class="action-btn approve" onclick="event.stopPropagation(); activateUser('${user.id}')" title="Activate account" style="padding: 0.5rem 0.7rem;">
+                                <i class="fas fa-check-circle"></i>
+                            </button>
+                        `}
+                        
+                        ${user.role !== 'admin' ? `
+                            <button class="action-btn" onclick="event.stopPropagation(); deleteUserAccount('${user.id}', '${user.name.replace(/'/g, "\\'")}' )" title="Delete account" style="background: var(--error); color: white; border: none; padding: 0.5rem 0.7rem;">
+    				<i class="fas fa-trash-alt"></i>
+				</button>
+                        ` : ''}
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    document.getElementById('userCount').textContent = `${filtered.length} user${filtered.length !== 1 ? 's' : ''}`;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Load users from Firebase
+async function loadUsers() {
+    try {
+        const usersQuery = query(collection(db, 'users'));
+        const usersSnapshot = await getDocs(usersQuery);
+        
+        allUsers = [];
+        
+        for (const userDoc of usersSnapshot.docs) {
+            const userData = userDoc.data();
+            
+            const userListingsQuery = query(
+                collection(db, 'listings'), 
+                where('userId', '==', userDoc.id)
+            );
+            const listingsSnapshot = await getDocs(userListingsQuery);
+            const listingsCount = listingsSnapshot.size;
+            
+            allUsers.push({
+                id: userDoc.id,
+                name: userData.name || 'Unknown User',
+                email: userData.email || 'No email',
+                role: userData.role || 'buyer',
+                joined: userData.createdAt || new Date().toISOString(),
+                listings: listingsCount,
+                status: userData.status || 'active',
+                subscriptionPlan: userData.subscriptionPlan || 'free',
+                profileComplete: userData.profileComplete || false,
+                avatar: userData.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || 'User')}&background=F97316&color=fff`
+            });
+        }
+        
+        console.log('✅ Loaded', allUsers.length, 'users');
+        updateUserStats();
+        renderUsers();
+    } catch (error) {
+        console.error('❌ Error loading users:', error);
+        alert('Failed to load users. Please refresh the page.');
+    }
+}
+
+// Render users table with ALL action buttons
+
+        // Update statistics
+        function updateStats() {
+            const total = allListings.length;
+            const pending = allListings.filter(l => l.status === 'pending').length;
+            const approved = allListings.filter(l => l.status === 'approved').length;
+            const rejected = allListings.filter(l => l.status === 'rejected').length;
+
+            document.getElementById('totalListings').textContent = total;
+            document.getElementById('pendingListings').textContent = pending;
+            document.getElementById('approvedListings').textContent = approved;
+            document.getElementById('rejectedListings').textContent = rejected;
+            document.getElementById('pendingBadge').textContent = pending;
+        }
+
+ 
+        // Update user statistics
+function updateUserStats() {
+    const total = allUsers.length;
+    const sellers = allUsers.filter(u => u.role === 'seller' && u.status === 'active').length;
+    const buyers = allUsers.filter(u => u.role === 'buyer' && u.status === 'active').length;
+    const suspended = allUsers.filter(u => u.status === 'suspended').length;
+
+    document.getElementById('totalUsers').textContent = total;
+    document.getElementById('activeSellers').textContent = sellers;
+    document.getElementById('activeBuyers').textContent = buyers;
+    document.getElementById('suspendedUsers').textContent = suspended;
+}
+
 
 
 // View user details with modal
@@ -2777,21 +3056,29 @@ window.viewUser = function(userId) {
         ` : '<div class="detail-section"><p style="text-align: center; color: var(--gray-medium);">No listings yet</p></div>'}
     `;
     
-    modalFooter.innerHTML = `
-        <button class="btn btn-outline" onclick="closeModal()">Close</button>
-        <button class="btn btn-outline" onclick="contactUser('${user.email}', '${user.name}')" style="color: var(--info); border-color: var(--info);">
-            📧 Email User
+  modalFooter.innerHTML = `
+    <button class="btn btn-outline" onclick="closeModal()">
+        <i class="fas fa-times"></i> Close
+    </button>
+    <button class="btn btn-outline" onclick="contactUser('${user.email}', '${user.name}')" style="color: var(--info); border-color: var(--info);">
+        <i class="fas fa-envelope"></i> Email User
+    </button>
+    <button class="btn btn-outline" onclick="changeUserRole('${user.id}', '${user.role}')" style="color: var(--secondary); border-color: var(--secondary);">
+        <i class="fas fa-user-tag"></i> Change Role
+    </button>
+    <button class="btn btn-outline" onclick="exportUserData('${user.id}')" style="color: var(--accent); border-color: var(--accent);">
+        <i class="fas fa-download"></i> Export Data
+    </button>
+    ${user.status === 'active' ? `
+        <button class="action-btn reject" onclick="suspendUserFromModal('${user.id}')">
+            <i class="fas fa-ban"></i> Suspend Account
         </button>
-        ${user.status === 'active' ? `
-            <button class="action-btn reject" onclick="suspendUserFromModal('${user.id}')">
-                🚫 Suspend Account
-            </button>
-        ` : `
-            <button class="action-btn approve" onclick="activateUserFromModal('${user.id}')">
-                ✅ Activate Account
-            </button>
-        `}
-    `;
+    ` : `
+        <button class="action-btn approve" onclick="activateUserFromModal('${user.id}')">
+            <i class="fas fa-check-circle"></i> Activate Account
+        </button>
+    `}
+`;
     
     modal.classList.add('active');
 }
@@ -2847,6 +3134,566 @@ window.activateUser = async function(userId) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// User Actions Menu
+window.showUserActionsMenu = function(event, userId) {
+    event.stopPropagation();
+    
+    // Remove existing menu
+    const existingMenu = document.getElementById('userActionsMenu');
+    if (existingMenu) {
+        existingMenu.remove();
+        return;
+    }
+    
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    const menu = document.createElement('div');
+    menu.id = 'userActionsMenu';
+    menu.style.cssText = `
+        position: fixed;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        min-width: 200px;
+        z-index: 2000;
+        overflow: hidden;
+    `;
+    
+    const rect = event.target.getBoundingClientRect();
+    menu.style.top = rect.bottom + 5 + 'px';
+    menu.style.left = Math.min(rect.left, window.innerWidth - 220) + 'px';
+    
+    menu.innerHTML = `
+    <div style="padding: 0.5rem 0;">
+        <a href="#" onclick="changeUserRole('${userId}', '${user.role}')" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s; font-size: 0.875rem;">
+            <i class="fas fa-user-tag" style="width: 16px; color: var(--secondary);"></i>
+            <span>Change Role</span>
+        </a>
+        <a href="#" onclick="changeUserSubscription('${userId}')" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s; font-size: 0.875rem;">
+            <i class="fas fa-crown" style="width: 16px; color: var(--warning);"></i>
+            <span>Change Subscription</span>
+        </a>
+        <div style="height: 1px; background: var(--border); margin: 0.5rem 0;"></div>
+        <a href="#" onclick="resetUserPassword('${userId}', '${user.email}')" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s; font-size: 0.875rem;">
+            <i class="fas fa-key" style="width: 16px; color: var(--info);"></i>
+            <span>Reset Password</span>
+        </a>
+        <a href="#" onclick="sendUserNotification('${userId}', '${user.name}', '${user.email}')" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s; font-size: 0.875rem;">
+            <i class="fas fa-envelope" style="width: 16px; color: var(--primary);"></i>
+            <span>Send Email</span>
+        </a>
+        <a href="#" onclick="viewUserActivity('${userId}')" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s; font-size: 0.875rem;">
+            <i class="fas fa-history" style="width: 16px; color: var(--accent);"></i>
+            <span>View Activity Log</span>
+        </a>
+        <div style="height: 1px; background: var(--border); margin: 0.5rem 0;"></div>
+        <a href="#" onclick="exportUserData('${userId}')" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s; font-size: 0.875rem;">
+            <i class="fas fa-download" style="width: 16px; color: var(--success);"></i>
+            <span>Export User Data</span>
+        </a>
+        ${user.role !== 'admin' ? `
+        <a href="#" onclick="deleteUserAccount('${userId}', '${user.name}')" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--error); text-decoration: none; transition: background 0.2s; font-size: 0.875rem;">
+            <i class="fas fa-trash-alt" style="width: 16px;"></i>
+            <span>Delete Account</span>
+        </a>
+        ` : ''}
+    </div>
+`;
+    
+    menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('mouseenter', function() {
+            this.style.background = 'var(--gray-50)';
+        });
+        link.addEventListener('mouseleave', function() {
+            this.style.background = '';
+        });
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const onclickAttr = this.getAttribute('onclick');
+            if (onclickAttr) {
+                document.getElementById('userActionsMenu').remove();
+                eval(onclickAttr);
+            }
+        });
+    });
+    
+    document.body.appendChild(menu);
+    
+    setTimeout(() => {
+        document.addEventListener('click', closeUserActionsMenu);
+    }, 0);
+}
+
+function closeUserActionsMenu() {
+    const menu = document.getElementById('userActionsMenu');
+    if (menu) {
+        menu.remove();
+    }
+    document.removeEventListener('click', closeUserActionsMenu);
+}
+
+// Enhanced viewUser function with full details
+window.viewUser = function(userId) {
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    const modal = document.getElementById('listingModal');
+    const modalBody = document.getElementById('modalBody');
+    const modalFooter = document.getElementById('modalFooter');
+    
+    const joinedDate = new Date(user.joined).toLocaleDateString('en-US', { 
+        weekday: 'long',
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    // Get user's listings
+    const userListings = allListings.filter(l => l.userId === userId);
+    const pendingListings = userListings.filter(l => l.status === 'pending').length;
+    const approvedListings = userListings.filter(l => l.status === 'approved').length;
+    const rejectedListings = userListings.filter(l => l.status === 'rejected').length;
+    
+    modalBody.innerHTML = `
+        <div class="detail-section">
+            <h3>User Profile</h3>
+            <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; background: var(--gray-light); padding: 1.5rem; border-radius: 12px;">
+                <img src="${user.avatar}" alt="${user.name}" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary);">
+                <div>
+                    <h2 style="margin-bottom: 0.3rem;">${user.name}</h2>
+                    <p style="color: var(--gray-medium); margin-bottom: 0.5rem;">${user.email}</p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <span class="status-badge ${user.role}" style="background: ${getRoleBadgeColor(user.role)}; color: white;">
+                            ${getRoleIcon(user.role)} ${user.role.toUpperCase()}
+                        </span>
+                        <span class="status-badge ${user.status}">${user.status.toUpperCase()}</span>
+                        ${user.subscriptionPlan && user.subscriptionPlan !== 'free' ? 
+                            `<span style="background: linear-gradient(135deg, #F97316, #6366F1); color: white; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700;">${user.subscriptionPlan.toUpperCase()} PLAN</span>` 
+                            : ''}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Account Information</h3>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">User ID</div>
+                    <div class="detail-value" style="font-size: 0.85rem; word-break: break-all;">${user.id}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Registration Date</div>
+                    <div class="detail-value">${joinedDate}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Subscription Plan</div>
+                    <div class="detail-value">${(user.subscriptionPlan || 'free').toUpperCase()}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Account Status</div>
+                    <div class="detail-value"><span class="status-badge ${user.status}">${user.status.toUpperCase()}</span></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Profile Complete</div>
+                    <div class="detail-value">${user.profileComplete ? '✅ Yes' : '⚠️ No'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Email Verified</div>
+                    <div class="detail-value">${user.emailVerified ? '✅ Verified' : '❌ Not Verified'}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Listing Statistics</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05)); padding: 1rem; border-radius: 10px; border-left: 4px solid var(--secondary);">
+                    <div style="font-size: 0.85rem; color: var(--gray-dark); margin-bottom: 0.3rem;">Total Listings</div>
+                    <div style="font-size: 1.8rem; font-weight: 900; color: var(--secondary);">${user.listings}</div>
+                </div>
+                <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05)); padding: 1rem; border-radius: 10px; border-left: 4px solid var(--warning);">
+                    <div style="font-size: 0.85rem; color: var(--gray-dark); margin-bottom: 0.3rem;">Pending</div>
+                    <div style="font-size: 1.8rem; font-weight: 900; color: var(--warning);">${pendingListings}</div>
+                </div>
+                <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); padding: 1rem; border-radius: 10px; border-left: 4px solid var(--success);">
+                    <div style="font-size: 0.85rem; color: var(--gray-dark); margin-bottom: 0.3rem;">Approved</div>
+                    <div style="font-size: 1.8rem; font-weight: 900; color: var(--success);">${approvedListings}</div>
+                </div>
+                <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05)); padding: 1rem; border-radius: 10px; border-left: 4px solid var(--error);">
+                    <div style="font-size: 0.85rem; color: var(--gray-dark); margin-bottom: 0.3rem;">Rejected</div>
+                    <div style="font-size: 1.8rem; font-weight: 900; color: var(--error);">${rejectedListings}</div>
+                </div>
+            </div>
+        </div>
+
+        ${userListings.length > 0 ? `
+        <div class="detail-section">
+            <h3>User's Listings (${userListings.length})</h3>
+            <div style="display: grid; gap: 1rem; max-height: 400px; overflow-y: auto;">
+                ${userListings.map(listing => `
+                    <div style="background: var(--gray-light); padding: 1.2rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid ${listing.status === 'approved' ? 'var(--success)' : listing.status === 'pending' ? 'var(--warning)' : 'var(--error)'};">
+                        <div style="flex: 1;">
+                            <strong style="font-size: 1.05rem;">${listing.systemName || 'Untitled'}</strong>
+                            <div style="font-size: 0.9rem; color: var(--gray-medium); margin-top: 0.3rem;">
+                                ₱${parseInt(listing.variants?.[0]?.price || listing.askingPrice || 0).toLocaleString()} • 
+                                ${listing.createdAt?.toDate ? listing.createdAt.toDate().toLocaleDateString() : 'Unknown date'}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <span class="status-badge ${listing.status || 'pending'}">${(listing.status || 'pending').toUpperCase()}</span>
+                            <button class="action-btn view" onclick="closeModal(); setTimeout(() => viewListing('${listing.id}'), 300);" style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        ` : '<div class="detail-section"><p style="text-align: center; color: var(--gray-medium);">No listings yet</p></div>'}
+    `;
+    
+    modalFooter.innerHTML = `
+        <button class="btn btn-outline" onclick="closeModal()">
+            <i class="fas fa-times"></i> Close
+        </button>
+        <button class="btn btn-outline" onclick="contactUser('${user.email}', '${user.name}')" style="color: var(--info); border-color: var(--info);">
+            <i class="fas fa-envelope"></i> Email User
+        </button>
+        <button class="btn btn-outline" onclick="changeUserRole('${user.id}', '${user.role}')" style="color: var(--secondary); border-color: var(--secondary);">
+            <i class="fas fa-user-tag"></i> Change Role
+        </button>
+        <button class="btn btn-outline" onclick="exportUserData('${user.id}')" style="color: var(--accent); border-color: var(--accent);">
+            <i class="fas fa-download"></i> Export Data
+        </button>
+        ${user.status === 'active' ? `
+            <button class="action-btn reject" onclick="suspendUserFromModal('${user.id}')">
+                <i class="fas fa-ban"></i> Suspend Account
+            </button>
+        ` : `
+            <button class="action-btn approve" onclick="activateUserFromModal('${user.id}')">
+                <i class="fas fa-check-circle"></i> Activate Account
+            </button>
+        `}
+    `;
+    
+    modal.classList.add('active');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Advanced User Management Functions
+
+window.viewUserActivity = async function(userId) {
+    try {
+        // Get user's listings
+        const userListingsQuery = query(
+            collection(db, 'listings'), 
+            where('userId', '==', userId),
+            orderBy('createdAt', 'desc')
+        );
+        const listingsSnapshot = await getDocs(userListingsQuery);
+        
+        // Get user's offers (if you have offers collection)
+        // const offersQuery = query(collection(db, 'offers'), where('buyerId', '==', userId));
+        // const offersSnapshot = await getDocs(offersQuery);
+        
+        const activityHTML = `
+            <div style="max-width: 600px;">
+                <h3 style="margin-bottom: 1rem;">Recent Activity</h3>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    ${listingsSnapshot.docs.map(doc => {
+                        const listing = doc.data();
+                        return `
+                            <div style="background: var(--gray-light); padding: 1rem; border-radius: 8px; margin-bottom: 0.75rem;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <strong>${listing.systemName}</strong>
+                                    <span class="status-badge ${listing.status}">${listing.status}</span>
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--gray-medium); margin-top: 0.3rem;">
+                                    ${listing.createdAt?.toDate ? listing.createdAt.toDate().toLocaleDateString() : 'Unknown date'}
+                                </div>
+                            </div>
+                        `;
+                    }).join('') || '<p style="text-align: center; color: var(--gray-medium);">No activity yet</p>'}
+                </div>
+            </div>
+        `;
+        
+        alert('Activity log feature - integrate with modal system');
+        console.log('User activity loaded');
+    } catch (error) {
+        console.error('Error loading user activity:', error);
+        alert('Failed to load user activity');
+    }
+}
+
+
+
+window.resetUserPassword = async function(userId, userEmail) {
+    if (!confirm(`Send password reset email to ${userEmail}?`)) return;
+    
+    try {
+        // This would require Firebase Admin SDK or Cloud Function
+        // For now, show instructions
+        alert(`Password Reset:\n\nTo reset password, the user should:\n1. Go to the login page\n2. Click "Forgot Password"\n3. Enter their email: ${userEmail}\n\nOr you can implement a Cloud Function to send reset emails from admin panel.`);
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        alert('Failed to reset password');
+    }
+}
+
+window.verifyUserEmail = async function(userId) {
+    if (!confirm('Mark this user\'s email as verified?')) return;
+    
+    try {
+        await updateDoc(doc(db, 'users', userId), {
+            'profile.verified': true,
+            verifiedAt: new Date(),
+            verifiedBy: auth.currentUser.uid
+        });
+        
+        alert('✅ User email marked as verified');
+        await loadUsers();
+    } catch (error) {
+        console.error('Error verifying user:', error);
+        alert('Failed to verify user');
+    }
+}
+
+window.viewUserTransactions = async function(userId) {
+    alert('Transaction history feature - would show:\n\n• Completed purchases\n• Sales made\n• Pending transactions\n• Transaction amounts\n• Dates\n\nImplement with your transactions collection');
+}
+
+window.sendUserNotification = async function(userId, userName, userEmail) {
+    const modalDiv = document.createElement('div');
+    modalDiv.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 2rem;';
+    
+    modalDiv.innerHTML = `
+        <div style="background: var(--white); border-radius: 12px; max-width: 600px; width: 100%; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative;">
+            <button id="closeXBtn" style="position: absolute; top: 1rem; right: 1rem; background: var(--gray-light); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; color: var(--gray-dark); font-size: 1.5rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
+            
+            <h2 style="margin-bottom: 1rem; font-size: 1.5rem; font-weight: 700; padding-right: 2.5rem;">Send Email to User</h2>
+            <div style="background: var(--gray-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--gray-medium); margin-bottom: 0.3rem;">Recipient</div>
+                <div style="font-weight: 600; color: var(--text);">${userName}</div>
+                <div style="font-size: 0.875rem; color: var(--gray-medium);">${userEmail}</div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem;">Subject <span style="color: var(--error);">*</span></label>
+                <input type="text" id="emailSubject" placeholder="Enter email subject" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9375rem;">
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem;">Message <span style="color: var(--error);">*</span></label>
+                <textarea id="emailMessage" placeholder="Type your message here..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9375rem; min-height: 150px; resize: vertical;"></textarea>
+            </div>
+            
+            <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 6px; border-left: 4px solid var(--info); margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--info); line-height: 1.6;">
+                    <strong>ℹ️ Note:</strong> This will open your default email client. Make sure you have an email client configured on your device.
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button id="cancelBtn" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--white); color: var(--gray-700); border: 1px solid var(--border); font-family: 'Sarabun', sans-serif; transition: all 0.2s;">
+                    Cancel
+                </button>
+                <button id="sendBtn" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--primary); color: var(--white); border: none; font-family: 'Sarabun', sans-serif; transition: all 0.2s;">
+                    <i class="fas fa-paper-plane"></i> Send Email
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modalDiv);
+    
+    // Get button elements
+    const closeXBtn = modalDiv.querySelector('#closeXBtn');
+    const cancelBtn = modalDiv.querySelector('#cancelBtn');
+    const sendBtn = modalDiv.querySelector('#sendBtn');
+    
+    // Close X button event
+    closeXBtn.addEventListener('click', function() {
+        modalDiv.remove();
+    });
+    
+    // Cancel button event
+    cancelBtn.addEventListener('click', function() {
+        modalDiv.remove();
+    });
+    
+    // Send button event
+    sendBtn.addEventListener('click', function() {
+        const subject = modalDiv.querySelector('#emailSubject').value;
+        const message = modalDiv.querySelector('#emailMessage').value;
+        
+        if (!subject || !message) {
+            alert('Please fill in both subject and message');
+            return;
+        }
+        
+        const mailtoLink = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hello ${userName},\n\n${message}\n\nBest regards,\nSystemly Admin Team`)}`;
+        window.location.href = mailtoLink;
+        modalDiv.remove();
+    });
+    
+    // Click outside to close
+    modalDiv.addEventListener('click', function(e) {
+        if (e.target === modalDiv) {
+            modalDiv.remove();
+        }
+    });
+    
+    // Hover effects for X button
+    closeXBtn.addEventListener('mouseenter', function() {
+        this.style.background = 'var(--gray-medium)';
+        this.style.color = 'var(--white)';
+    });
+    closeXBtn.addEventListener('mouseleave', function() {
+        this.style.background = 'var(--gray-light)';
+        this.style.color = 'var(--gray-dark)';
+    });
+    
+    // Hover effects for Cancel button
+    cancelBtn.addEventListener('mouseenter', function() {
+        this.style.borderColor = 'var(--primary)';
+        this.style.color = 'var(--primary)';
+    });
+    cancelBtn.addEventListener('mouseleave', function() {
+        this.style.borderColor = 'var(--border)';
+        this.style.color = 'var(--gray-700)';
+    });
+}
+
+window.exportUserData = async function(userId) {
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    // Get user's listings
+    const userListings = allListings.filter(l => l.userId === userId);
+    
+    const userData = {
+        profile: user,
+        listings: userListings.map(l => ({
+            id: l.id,
+            name: l.systemName,
+            status: l.status,
+            price: l.askingPrice,
+            createdAt: l.createdAt?.toDate ? l.createdAt.toDate().toISOString() : null
+        })),
+        exportedAt: new Date().toISOString(),
+        exportedBy: auth.currentUser.email
+    };
+    
+    const blob = new Blob([JSON.stringify(userData, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `user-data-${user.name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    
+    alert('📥 User data exported successfully!');
+}
+
+window.deleteUserAccount = async function(userId, userName) {
+    if (!confirm(`⚠️ DELETE account for "${userName}"?\n\nThis will:\n• Delete the user account\n• Keep their listings (transfer to admin)\n• This action CANNOT be undone!`)) {
+        return;
+    }
+    
+    const confirmText = prompt('Type "DELETE ACCOUNT" to confirm:', '');
+    if (confirmText !== 'DELETE ACCOUNT') {
+        alert('Deletion cancelled. You must type "DELETE ACCOUNT" exactly.');
+        return;
+    }
+    
+    try {
+        // Transfer user's listings to admin or mark as orphaned
+        const userListings = allListings.filter(l => l.userId === userId);
+        for (const listing of userListings) {
+            await updateDoc(doc(db, 'listings', listing.id), {
+                userId: 'admin',
+                userName: 'Former User',
+                userEmail: 'admin@systemly.com',
+                originalOwnerId: userId,
+                accountDeleted: true
+            });
+        }
+        
+        // Delete user document
+        await deleteDoc(doc(db, 'users', userId));
+        
+        alert('🗑️ User account deleted. Their listings have been transferred to admin.');
+        await loadUsers();
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        alert('Failed to delete user account: ' + error.message);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Modal action wrappers
 window.suspendUserFromModal = async function(userId) {
     closeModal();
@@ -2857,6 +3704,55 @@ window.activateUserFromModal = async function(userId) {
     closeModal();
     await activateUser(userId);
 }
+
+// Close user action modals
+window.closeUserActionModal = function() {
+    const modal = document.getElementById('userActionModal');
+    if (modal) modal.style.display = 'none';
+    
+    // Also remove any dynamically created modals
+    document.querySelectorAll('div[style*="fixed"]').forEach(el => {
+        if (el.querySelector('.modal-content')) {
+            el.remove();
+        }
+    });
+}
+
+// Enhanced modal closer - handles all dynamically created modals
+document.addEventListener('click', function(e) {
+    // Check if click is on modal backdrop (not modal content)
+    if (e.target.style && e.target.style.position === 'fixed' && e.target.style.background && e.target.style.background.includes('rgba')) {
+        e.target.remove();
+    }
+});
+
+// Escape key to close any modal
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        // Close static modals
+        const listingModal = document.getElementById('listingModal');
+        const fileReviewModal = document.getElementById('fileReviewModal');
+        const fileViewerModal = document.getElementById('fileViewerModal');
+        
+        if (listingModal && listingModal.classList.contains('active')) {
+            closeModal();
+        }
+        if (fileReviewModal && fileReviewModal.classList.contains('active')) {
+            closeFileReviewModal();
+        }
+        if (fileViewerModal && fileViewerModal.classList.contains('active')) {
+            closeFileViewerModal();
+        }
+        
+        // Close dynamic modals
+        const dynamicModals = document.querySelectorAll('div[style*="position: fixed"][style*="z-index: 3000"]');
+        dynamicModals.forEach(modal => modal.remove());
+    }
+});
+
+
+
+
 
 
 
@@ -2919,19 +3815,27 @@ window.activateUserFromModal = async function(userId) {
                                 ${listing.shortDescription || listing.detailedDescription || 'No description provided'}
                             </div>
                             
-                            <div class="listing-stats">
-                                <div class="stat-item">
-                                    <div class="stat-item-label">Asking Price</div>
-                                    <div class="stat-item-value" style="color: var(--primary);">$${parseInt(listing.askingPrice || 0).toLocaleString()}</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-item-label">Revenue</div>
-                                    <div class="stat-item-value" style="color: var(--success);">$${parseInt(listing.monthlyRevenue || 0).toLocaleString()}/mo</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-item-label">Profit</div>
-                                    <div class="stat-item-value" style="color: var(--success);">$${parseInt(listing.monthlyProfit || 0).toLocaleString()}/mo</div>
-                                </div>
+<div class="listing-stats">
+<div class="stat-item">
+    <div class="stat-item-label">Asking Price</div>
+    <div class="stat-item-value" style="color: var(--primary);">₱${(() => {
+        if (listing.variants && listing.variants.length > 0) {
+            const inclusiveVariant = listing.variants.find(v => v.type === 'inclusive');
+            const exclusiveVariant = listing.variants.find(v => v.type === 'exclusive');
+            const price = inclusiveVariant ? inclusiveVariant.price : (exclusiveVariant ? exclusiveVariant.price : 0);
+            return parseInt(price || 0).toLocaleString();
+        }
+        return parseInt(listing.askingPrice || 0).toLocaleString();
+    })()}</div>
+</div>
+<div class="stat-item">
+    <div class="stat-item-label">Revenue</div>
+    <div class="stat-item-value" style="color: var(--success);">₱${parseInt(listing.monthlyRevenue || 0).toLocaleString()}/mo</div>
+</div>
+<div class="stat-item">
+    <div class="stat-item-label">Profit</div>
+    <div class="stat-item-value" style="color: var(--success);">₱${parseInt(listing.monthlyProfit || 0).toLocaleString()}/mo</div>
+</div>
                                 <div class="stat-item">
                                     <div class="stat-item-label">Multiple</div>
                                     <div class="stat-item-value">${calculateMultiple(listing.askingPrice, listing.monthlyProfit)}x</div>
@@ -2940,21 +3844,24 @@ window.activateUserFromModal = async function(userId) {
                         </div>
                         
                         <div class="listing-actions">
-                            <span class="status-badge ${listing.status || 'pending'}">
-                                ${listing.status === 'pending' ? '⏳' : listing.status === 'approved' ? '✅' : '❌'}
-                                ${(listing.status || 'pending').toUpperCase()}
-                            </span>
+<span class="status-badge ${listing.status || 'pending'}">
+    ${listing.status === 'pending' ? '<i class="fas fa-clock"></i>' : listing.status === 'approved' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>'}
+    ${(listing.status || 'pending').toUpperCase()}
+</span>
                             <div class="action-buttons">
                                 <button class="action-btn view" onclick="viewListing('${listing.id}')">
                                     View Details
                                 </button>
                                 ${listing.status === 'pending' ? `
-                                    <button class="action-btn approve" onclick="approveListing('${listing.id}')">
-                                        <i class="fas fa-eye"></i> View Details
-                                    </button>
-                                    <button class="action-btn reject" onclick="rejectListing('${listing.id}')">
-                                        <i class="fas fa-times"></i> Reject
-                                    </button>
+    <button class="action-btn view" onclick="viewListing('${listing.id}')">
+        <i class="fas fa-eye"></i> View Details
+    </button>
+    <button class="action-btn approve" onclick="approveListing('${listing.id}')">
+        <i class="fas fa-check"></i> Approve
+    </button>
+    <button class="action-btn reject" onclick="rejectListing('${listing.id}')">
+        <i class="fas fa-times"></i> Reject
+    </button>
                                 ` : listing.status === 'approved' ? `
                                     <button class="action-btn reject" onclick="unpublishListing('${listing.id}')">
                                         <i class="fas fa-upload"></i> Unpublish
@@ -3071,22 +3978,57 @@ window.filterUsers = function() {
                     <span style="font-size: 0.8rem; color: var(--gray-medium);"> listing${user.listings !== 1 ? 's' : ''}</span>
                 </td>
                 <td><span class="status-badge ${user.status}">${user.status.toUpperCase()}</span></td>
-                <td>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="action-btn view" onclick="viewUser('${user.id}')" style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
-                            👁️ View
-                        </button>
-                        ${user.status === 'active' ? `
-                            <button class="action-btn reject" onclick="suspendUser('${user.id}')" style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
-                                🚫 Suspend
-                            </button>
-                        ` : `
-                            <button class="action-btn approve" onclick="activateUser('${user.id}')" style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
-                                ✅ Activate
-                            </button>
-                        `}
-                    </div>
-                </td>
+<td>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+        <!-- View Profile -->
+        <button class="action-btn view" onclick="viewUser('${user.id}')" title="View full profile" style="padding: 0.5rem 0.7rem;">
+            <i class="fas fa-eye"></i>
+        </button>
+        
+        <!-- Change Role -->
+        <button class="action-btn" onclick="changeUserRole('${user.id}', '${user.role}')" title="Change role" style="background: var(--secondary); color: white; border: none; padding: 0.5rem 0.7rem;">
+            <i class="fas fa-user-tag"></i>
+        </button>
+        
+        <!-- Change Subscription -->
+        <button class="action-btn" onclick="changeUserSubscription('${user.id}')" title="Change subscription" style="background: var(--warning); color: white; border: none; padding: 0.5rem 0.7rem;">
+            <i class="fas fa-crown"></i>
+        </button>
+        
+        <!-- Activity Log -->
+        <button class="action-btn" onclick="viewUserActivity('${user.id}')" title="View activity log" style="background: var(--accent); color: white; border: none; padding: 0.5rem 0.7rem;">
+            <i class="fas fa-history"></i>
+        </button>
+        
+        <!-- Send Email -->
+        <button class="action-btn" onclick="sendUserNotification('${user.id}', '${user.name}', '${user.email}')" title="Send email" style="background: var(--info); color: white; border: none; padding: 0.5rem 0.7rem;">
+            <i class="fas fa-envelope"></i>
+        </button>
+        
+        <!-- Export Data -->
+        <button class="action-btn" onclick="exportUserData('${user.id}')" title="Export user data" style="background: var(--success); color: white; border: none; padding: 0.5rem 0.7rem;">
+            <i class="fas fa-download"></i>
+        </button>
+        
+        <!-- Suspend/Activate -->
+        ${user.status === 'active' ? `
+            <button class="action-btn reject" onclick="suspendUser('${user.id}')" title="Suspend account" style="padding: 0.5rem 0.7rem;">
+                <i class="fas fa-ban"></i>
+            </button>
+        ` : `
+            <button class="action-btn approve" onclick="activateUser('${user.id}')" title="Activate account" style="padding: 0.5rem 0.7rem;">
+                <i class="fas fa-check-circle"></i>
+            </button>
+        `}
+        
+        <!-- Delete Account (only for non-admins) -->
+        ${user.role !== 'admin' ? `
+            <button class="action-btn" onclick="deleteUserAccount('${user.id}', '${user.name}')" title="Delete account" style="background: var(--error); color: white; border: none; padding: 0.5rem 0.7rem;">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        ` : ''}
+    </div>
+</td>
             </tr>
         `;
     }).join('');
@@ -3101,6 +4043,864 @@ window.filterUsers = function() {
             
             alert(`User Details:\n\nName: ${user.name}\nEmail: ${user.email}\nRole: ${user.role}\nJoined: ${user.joined}\nListings: ${user.listings}\nStatus: ${user.status}\n\nFull user management coming soon!`);
         }
+
+
+
+
+
+// ============================================
+// ADVANCED USER MANAGEMENT FUNCTIONS
+// ============================================
+
+
+
+
+
+
+
+
+
+
+
+
+// Change User Role with History Tracking
+window.changeUserRole = async function(userId, currentRole) {
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    const roles = ['buyer', 'seller', 'admin'];
+    const roleDescriptions = {
+        'buyer': 'Can browse and purchase listings',
+        'seller': 'Can list and sell systems',
+        'admin': 'Full platform access and management'
+    };
+    
+    let roleOptions = '';
+    roles.forEach(role => {
+        const selected = role === currentRole ? 'selected' : '';
+        const disabled = role === currentRole ? 'disabled' : '';
+        roleOptions += `<option value="${role}" ${selected} ${disabled}>${role.toUpperCase()} - ${roleDescriptions[role]}</option>`;
+    });
+    
+    const modalDiv = document.createElement('div');
+    modalDiv.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 2rem;';
+    
+    modalDiv.innerHTML = `
+        <div style="background: var(--white); border-radius: 12px; max-width: 500px; width: 100%; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative;">
+            <button id="closeXBtn" style="position: absolute; top: 1rem; right: 1rem; background: var(--gray-light); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; color: var(--gray-dark); font-size: 1.5rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
+            
+            <h2 style="margin-bottom: 1rem; font-size: 1.5rem; font-weight: 700; padding-right: 2rem;">Change User Role</h2>
+            <div style="background: var(--gray-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--gray-medium); margin-bottom: 0.3rem;">User</div>
+                <div style="font-weight: 600; color: var(--text);">${user.name}</div>
+                <div style="font-size: 0.875rem; color: var(--gray-medium);">${user.email}</div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem;">Current Role</label>
+                <div style="padding: 0.75rem; background: var(--gray-light); border-radius: 6px; font-weight: 600; color: var(--primary);">
+                    ${currentRole.toUpperCase()}
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem;">New Role <span style="color: var(--error);">*</span></label>
+                <select id="newRoleSelect" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9375rem;">
+                    ${roleOptions}
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem;">Reason for Change (Optional)</label>
+                <textarea id="roleChangeReason" placeholder="Document why this role change was made..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9375rem; min-height: 80px; resize: vertical;"></textarea>
+            </div>
+            
+            <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 6px; border-left: 4px solid var(--error); margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--error); line-height: 1.6;">
+                    <strong>⚠️ Warning:</strong> Changing user roles will affect their permissions and access to platform features. This action will be logged.
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button id="cancelBtn" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--white); color: var(--gray-700); border: 1px solid var(--border); font-family: 'Sarabun', sans-serif;">
+                    Cancel
+                </button>
+                <button id="confirmBtn" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--primary); color: var(--white); border: none; font-family: 'Sarabun', sans-serif;">
+                    <i class="fas fa-check"></i> Change Role
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modalDiv);
+    
+    // Add event listeners AFTER appending to DOM
+    modalDiv.querySelector('#closeXBtn').addEventListener('click', () => modalDiv.remove());
+    modalDiv.querySelector('#cancelBtn').addEventListener('click', () => modalDiv.remove());
+    modalDiv.querySelector('#confirmBtn').addEventListener('click', () => confirmRoleChange(userId, currentRole));
+    modalDiv.addEventListener('click', (e) => {
+        if (e.target === modalDiv) modalDiv.remove();
+    });
+    
+    // Add hover effect to X button
+    const closeBtn = modalDiv.querySelector('#closeXBtn');
+    closeBtn.addEventListener('mouseenter', () => {
+        closeBtn.style.background = 'var(--gray-medium)';
+        closeBtn.style.color = 'var(--white)';
+    });
+    closeBtn.addEventListener('mouseleave', () => {
+        closeBtn.style.background = 'var(--gray-light)';
+        closeBtn.style.color = 'var(--gray-dark)';
+    });
+}
+
+window.confirmRoleChange = async function(userId, currentRole) {
+    const newRole = document.getElementById('newRoleSelect').value;
+    const reason = document.getElementById('roleChangeReason').value;
+    
+    if (newRole === currentRole) {
+        alert('Please select a different role');
+        return;
+    }
+    
+    if (!confirm(`Are you sure you want to change this user's role from "${currentRole}" to "${newRole}"?`)) {
+        return;
+    }
+    
+    try {
+        const roleChangeData = {
+            role: newRole,
+            previousRole: currentRole,
+            roleChangedAt: new Date().toISOString(),
+            roleChangedBy: auth.currentUser.uid,
+            roleChangeReason: reason || 'No reason provided'
+        };
+        
+        // Add to role history
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        const roleHistory = userDoc.data().roleHistory || [];
+        roleHistory.push({
+            from: currentRole,
+            to: newRole,
+            changedAt: new Date().toISOString(),
+            changedBy: auth.currentUser.uid,
+            reason: reason || 'No reason provided'
+        });
+        
+        await updateDoc(doc(db, 'users', userId), {
+            ...roleChangeData,
+            roleHistory: roleHistory
+        });
+        
+        document.querySelector('div[style*="fixed"]').remove();
+        alert(`✅ User role changed from "${currentRole}" to "${newRole}" successfully`);
+        await loadUsers();
+    } catch (error) {
+        console.error('Error changing user role:', error);
+        alert('Failed to change user role: ' + error.message);
+    }
+}
+
+// Upgrade/Downgrade Subscription
+window.changeUserSubscription = async function(userId) {
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    const currentPlan = user.subscriptionPlan || 'free';
+    const plans = {
+        'free': { name: 'Free', price: '₱0/mo', listings: '1 listing/month', features: 'Basic features' },
+        'basic': { name: 'Basic', price: '₱299/mo', listings: '3 listings/month', features: 'Priority support' },
+        'premium': { name: 'Premium', price: '₱999/mo', listings: 'Unlimited listings', features: 'All features + Analytics' }
+    };
+    
+    const modalDiv = document.createElement('div');
+    modalDiv.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 2rem;';
+    
+    modalDiv.innerHTML = `
+        <div style="background: var(--white); border-radius: 12px; max-width: 600px; width: 100%; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; position: relative;">
+            <button id="closeXBtn" style="position: absolute; top: 1rem; right: 1rem; background: var(--gray-light); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; color: var(--gray-dark); font-size: 1.5rem; display: flex; align-items: center; justify-content: center; z-index: 1;">×</button>
+            
+            <h2 style="margin-bottom: 1rem; font-size: 1.5rem; font-weight: 700; padding-right: 2rem;">Change Subscription Plan</h2>
+            <div style="background: var(--gray-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--gray-medium); margin-bottom: 0.3rem;">User</div>
+                <div style="font-weight: 600; color: var(--text);">${user.name}</div>
+                <div style="font-size: 0.875rem; color: var(--gray-medium);">${user.email}</div>
+                <div style="margin-top: 0.5rem; display: inline-block; background: var(--primary); color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem; font-weight: 600;">
+                    Current: ${currentPlan.toUpperCase()}
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 1rem; font-weight: 600; font-size: 0.875rem;">Select New Plan</label>
+                <div style="display: grid; gap: 1rem;">
+                    ${Object.entries(plans).map(([key, plan]) => `
+                        <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid ${key === currentPlan ? 'var(--primary)' : 'var(--border)'}; border-radius: 8px; cursor: pointer; transition: all 0.2s;" class="plan-option" data-plan="${key}">
+                            <input type="radio" name="newPlan" value="${key}" ${key === currentPlan ? 'checked disabled' : ''} style="width: 20px; height: 20px; margin-right: 1rem; accent-color: var(--primary);">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem;">${plan.name}</div>
+                                <div style="font-size: 0.875rem; color: var(--gray-medium);">${plan.price} • ${plan.listings}</div>
+                                <div style="font-size: 0.8rem; color: var(--gray-medium);">${plan.features}</div>
+                            </div>
+                            ${key === currentPlan ? '<div style="background: var(--success); color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.75rem; font-weight: 600;">CURRENT</div>' : ''}
+                        </label>
+                    `).join('')}
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem;">Reason for Change (Optional)</label>
+                <textarea id="planChangeReason" placeholder="Document why this plan change was made..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9375rem; min-height: 80px; resize: vertical;"></textarea>
+            </div>
+            
+            <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 6px; border-left: 4px solid var(--info); margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--info); line-height: 1.6;">
+                    <strong>ℹ️ Note:</strong> Subscription changes take effect immediately. The user will gain or lose access to features based on their new plan.
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button id="cancelBtn" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--white); color: var(--gray-700); border: 1px solid var(--border); font-family: 'Sarabun', sans-serif;">
+                    Cancel
+                </button>
+                <button id="confirmBtn" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--primary); color: var(--white); border: none; font-family: 'Sarabun', sans-serif;">
+                    <i class="fas fa-check"></i> Change Plan
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modalDiv);
+    
+    // Add event listeners
+    modalDiv.querySelector('#closeXBtn').addEventListener('click', () => modalDiv.remove());
+    modalDiv.querySelector('#cancelBtn').addEventListener('click', () => modalDiv.remove());
+    modalDiv.querySelector('#confirmBtn').addEventListener('click', () => confirmSubscriptionChange(userId, currentPlan));
+    modalDiv.addEventListener('click', (e) => {
+        if (e.target === modalDiv) modalDiv.remove();
+    });
+    
+    // Add hover effects
+    const closeBtn = modalDiv.querySelector('#closeXBtn');
+    closeBtn.addEventListener('mouseenter', () => {
+        closeBtn.style.background = 'var(--gray-medium)';
+        closeBtn.style.color = 'var(--white)';
+    });
+    closeBtn.addEventListener('mouseleave', () => {
+        closeBtn.style.background = 'var(--gray-light)';
+        closeBtn.style.color = 'var(--gray-dark)';
+    });
+    
+    // Add plan selection interactivity
+    modalDiv.querySelectorAll('.plan-option').forEach(option => {
+        option.addEventListener('mouseenter', function() {
+            if (!this.querySelector('input').disabled) {
+                this.style.borderColor = 'var(--primary)';
+                this.style.background = 'rgba(249, 115, 22, 0.05)';
+            }
+        });
+        option.addEventListener('mouseleave', function() {
+            if (!this.querySelector('input').checked) {
+                this.style.borderColor = 'var(--border)';
+                this.style.background = '';
+            }
+        });
+        option.addEventListener('click', function() {
+            if (!this.querySelector('input').disabled) {
+                modalDiv.querySelectorAll('.plan-option').forEach(opt => {
+                    opt.style.borderColor = 'var(--border)';
+                    opt.style.background = '';
+                });
+                this.style.borderColor = 'var(--primary)';
+                this.style.background = 'rgba(249, 115, 22, 0.05)';
+                this.querySelector('input').checked = true;
+            }
+        });
+    });
+}
+
+window.confirmSubscriptionChange = async function(userId, currentPlan) {
+    const newPlan = document.querySelector('input[name="newPlan"]:checked')?.value;
+    const reason = document.getElementById('planChangeReason').value;
+    
+    if (!newPlan) {
+        alert('Please select a plan');
+        return;
+    }
+    
+    if (newPlan === currentPlan) {
+        alert('Please select a different plan');
+        return;
+    }
+    
+    const action = ['premium', 'basic'].indexOf(newPlan) > ['premium', 'basic'].indexOf(currentPlan) ? 'upgrade' : 'downgrade';
+    
+    if (!confirm(`Are you sure you want to ${action} this user from "${currentPlan}" to "${newPlan}"?`)) {
+        return;
+    }
+    
+    try {
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        const subscriptionHistory = userDoc.data().subscriptionHistory || [];
+        subscriptionHistory.push({
+            from: currentPlan,
+            to: newPlan,
+            changedAt: new Date().toISOString(),
+            changedBy: auth.currentUser.uid,
+            reason: reason || 'No reason provided',
+            action: action
+        });
+        
+        await updateDoc(doc(db, 'users', userId), {
+            subscriptionPlan: newPlan,
+            previousPlan: currentPlan,
+            planChangedAt: new Date().toISOString(),
+            planChangedBy: auth.currentUser.uid,
+            planChangeReason: reason || 'No reason provided',
+            subscriptionHistory: subscriptionHistory
+        });
+        
+        document.querySelector('div[style*="fixed"]').remove();
+        alert(`✅ User subscription ${action}d from "${currentPlan}" to "${newPlan}" successfully`);
+        await loadUsers();
+    } catch (error) {
+        console.error('Error changing subscription:', error);
+        alert('Failed to change subscription: ' + error.message);
+    }
+}
+
+// View User Activity Log
+window.viewUserActivity = async function(userId) {
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    const modalDiv = document.createElement('div');
+    modalDiv.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 2rem;';
+    
+    try {
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        const userData = userDoc.data();
+        const roleHistory = userData.roleHistory || [];
+        const subscriptionHistory = userData.subscriptionHistory || [];
+        const userListings = allListings.filter(l => l.userId === userId);
+        
+        modalDiv.innerHTML = `
+            <div style="background: var(--white); border-radius: 12px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <div style="position: sticky; top: 0; background: var(--white); padding: 2rem; border-bottom: 1px solid var(--border); z-index: 10;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">User Activity Log</h2>
+                            <div style="font-size: 0.9rem; color: var(--gray-medium);">${user.name} (${user.email})</div>
+                        </div>
+                        <button id="closeXBtn" style="background: var(--gray-light); border: none; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; color: var(--gray-dark); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">×</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 2rem;">
+                    <!-- Role Changes History -->
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-user-tag" style="color: var(--primary);"></i> Role Changes History
+                        </h3>
+                        ${roleHistory.length > 0 ? `
+                            <div style="border-left: 2px solid var(--border); padding-left: 1.5rem;">
+                                ${roleHistory.reverse().map((change, index) => `
+                                    <div style="position: relative; margin-bottom: 1.5rem; padding: 1rem; background: var(--gray-light); border-radius: 8px;">
+                                        <div style="position: absolute; left: -1.7rem; top: 1.2rem; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; border: 3px solid var(--white);"></div>
+                                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                            <div>
+                                                <span style="background: var(--error); color: white; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">${change.from.toUpperCase()}</span>
+                                                <i class="fas fa-arrow-right" style="margin: 0 0.5rem; color: var(--gray-medium);"></i>
+                                                <span style="background: var(--success); color: white; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">${change.to.toUpperCase()}</span>
+                                            </div>
+                                            <div style="font-size: 0.8rem; color: var(--gray-medium);">${new Date(change.changedAt).toLocaleString()}</div>
+                                        </div>
+                                        ${change.reason ? `<div style="font-size: 0.85rem; color: var(--gray-dark); margin-top: 0.5rem;"><strong>Reason:</strong> ${change.reason}</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<div style="text-align: center; padding: 2rem; color: var(--gray-medium);">No role changes recorded</div>'}
+                    </div>
+                    
+                    <!-- Subscription Changes History -->
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-crown" style="color: var(--warning);"></i> Subscription Changes History
+                        </h3>
+                        ${subscriptionHistory.length > 0 ? `
+                            <div style="border-left: 2px solid var(--border); padding-left: 1.5rem;">
+                                ${subscriptionHistory.reverse().map((change, index) => `
+                                    <div style="position: relative; margin-bottom: 1.5rem; padding: 1rem; background: var(--gray-light); border-radius: 8px;">
+                                        <div style="position: absolute; left: -1.7rem; top: 1.2rem; width: 12px; height: 12px; background: var(--warning); border-radius: 50%; border: 3px solid var(--white);"></div>
+                                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                            <div>
+                                                <span style="background: var(--gray-medium); color: white; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">${change.from.toUpperCase()}</span>
+                                                <i class="fas fa-arrow-${change.action === 'upgrade' ? 'up' : 'down'}" style="margin: 0 0.5rem; color: ${change.action === 'upgrade' ? 'var(--success)' : 'var(--error)'};"></i>
+                                                <span style="background: var(--primary); color: white; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">${change.to.toUpperCase()}</span>
+                                                <span style="margin-left: 0.5rem; color: ${change.action === 'upgrade' ? 'var(--success)' : 'var(--error)'}; font-size: 0.85rem; font-weight: 600;">${change.action.toUpperCase()}</span>
+                                            </div>
+                                            <div style="font-size: 0.8rem; color: var(--gray-medium);">${new Date(change.changedAt).toLocaleString()}</div>
+                                        </div>
+                                        ${change.reason ? `<div style="font-size: 0.85rem; color: var(--gray-dark); margin-top: 0.5rem;"><strong>Reason:</strong> ${change.reason}</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<div style="text-align: center; padding: 2rem; color: var(--gray-medium);">No subscription changes recorded</div>'}
+                    </div>
+                    
+                    <!-- Listing Activity -->
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-list" style="color: var(--secondary);"></i> Recent Listing Activity
+                        </h3>
+                        ${userListings.length > 0 ? `
+                            <div style="display: grid; gap: 1rem;">
+                                ${userListings.slice(0, 5).map(listing => `
+                                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--gray-light); border-radius: 8px; border-left: 4px solid ${listing.status === 'approved' ? 'var(--success)' : listing.status === 'pending' ? 'var(--warning)' : 'var(--error)'};">
+                                        <div>
+                                            <div style="font-weight: 600; margin-bottom: 0.25rem;">${listing.systemName || 'Untitled'}</div>
+                                            <div style="font-size: 0.85rem; color: var(--gray-medium);">
+                                                Created: ${listing.createdAt?.toDate ? listing.createdAt.toDate().toLocaleDateString() : 'Unknown'}
+                                            </div>
+                                        </div>
+                                        <span class="status-badge ${listing.status}">${listing.status?.toUpperCase() || 'PENDING'}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<div style="text-align: center; padding: 2rem; color: var(--gray-medium);">No listings found</div>'}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modalDiv);
+        
+        // Add event listeners
+        modalDiv.querySelector('#closeXBtn').addEventListener('click', () => modalDiv.remove());
+        modalDiv.addEventListener('click', (e) => {
+            if (e.target === modalDiv) modalDiv.remove();
+        });
+        
+        // Add hover effect to X button
+        const closeBtn = modalDiv.querySelector('#closeXBtn');
+        closeBtn.addEventListener('mouseenter', () => {
+            closeBtn.style.background = 'var(--gray-medium)';
+            closeBtn.style.color = 'var(--white)';
+        });
+        closeBtn.addEventListener('mouseleave', () => {
+            closeBtn.style.background = 'var(--gray-light)';
+            closeBtn.style.color = 'var(--gray-dark)';
+        });
+        
+    } catch (error) {
+        console.error('Error loading user activity:', error);
+        alert('Failed to load user activity: ' + error.message);
+        modalDiv.remove();
+    }
+}
+
+
+// Wrapper to safely pass user data from onclick
+window.sendUserNotificationWrapper = function(button) {
+    const userId = button.getAttribute('data-user-id');
+    const userName = button.getAttribute('data-user-name');
+    const userEmail = button.getAttribute('data-user-email');
+    sendUserNotification(userId, userName, userEmail);
+}
+
+
+
+
+
+
+
+// Send Email Notification
+window.sendUserNotification = async function(userId, userName, userEmail) {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(5px);
+        z-index: 3000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    `;
+    
+    modal.innerHTML = `
+        <div style="background: var(--white); border-radius: 12px; max-width: 600px; width: 100%; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h2 style="margin-bottom: 1rem; font-size: 1.5rem; font-weight: 700;">Send Email to User</h2>
+            <div style="background: var(--gray-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--gray-medium); margin-bottom: 0.3rem;">Recipient</div>
+                <div style="font-weight: 600; color: var(--text);">${userName}</div>
+                <div style="font-size: 0.875rem; color: var(--gray-medium);">${userEmail}</div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem;">Subject <span style="color: var(--error);">*</span></label>
+                <input type="text" id="emailSubject" placeholder="Enter email subject" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9375rem;">
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem;">Message <span style="color: var(--error);">*</span></label>
+                <textarea id="emailMessage" placeholder="Type your message here..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9375rem; min-height: 150px; resize: vertical;"></textarea>
+            </div>
+            
+            <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 6px; border-left: 4px solid var(--info); margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--info); line-height: 1.6;">
+                    <strong>ℹ️ Note:</strong> This will open your default email client. Make sure you have an email client configured on your device.
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button onclick="event.stopPropagation(); this.closest('div[style*=\"fixed\"]').remove();" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--white); color: var(--gray-700); border: 1px solid var(--border); font-family: 'Sarabun', sans-serif;">
+    Cancel
+</button>
+                <button onclick="sendEmailToUser('${userEmail}', '${userName}')" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--primary); color: var(--white); border: none; font-family: 'Sarabun', sans-serif;">
+                    <i class="fas fa-paper-plane"></i> Send Email
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+window.sendEmailToUser = function(userEmail, userName) {
+    const subject = document.getElementById('emailSubject').value;
+    const message = document.getElementById('emailMessage').value;
+    
+    if (!subject || !message) {
+        alert('Please fill in both subject and message');
+        return;
+    }
+    
+    const mailtoLink = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hello ${userName},\n\n${message}\n\nBest regards,\nSystemly Admin Team`)}`;
+    window.location.href = mailtoLink;
+    
+    document.querySelector('div[style*="fixed"]').remove();
+}
+
+// Reset Password
+window.resetUserPassword = async function(userId, userEmail) {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(5px);
+        z-index: 3000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    `;
+    
+    modal.innerHTML = `
+        <div style="background: var(--white); border-radius: 12px; max-width: 500px; width: 100%; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h2 style="margin-bottom: 1rem; font-size: 1.5rem; font-weight: 700;">Reset User Password</h2>
+            
+            <div style="background: var(--gray-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--gray-medium); margin-bottom: 0.3rem;">User Email</div>
+                <div style="font-weight: 600; color: var(--text);">${userEmail}</div>
+            </div>
+            
+            <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 6px; border-left: 4px solid var(--error); margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--error); line-height: 1.6;">
+                    <strong>⚠️ Password Reset Instructions:</strong><br><br>
+                    To reset this user's password, they should:<br>
+                    1. Go to the login page<br>
+                    2. Click "Forgot Password"<br>
+                    3. Enter their email: <strong>${userEmail}</strong><br>
+                    4. Follow the password reset link sent to their email
+                </div>
+            </div>
+            
+            <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 6px; border-left: 4px solid var(--info); margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--info); line-height: 1.6;">
+                    <strong>ℹ️ Admin Note:</strong> For security reasons, admins cannot directly set user passwords. You can send them an email with password reset instructions using the button below.
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button onclick="event.stopPropagation(); this.closest('div[style*=\"fixed\"]').remove();" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--white); color: var(--gray-700); border: 1px solid var(--border); font-family: 'Sarabun', sans-serif;">
+    Cancel
+</button>
+                <button onclick="sendPasswordResetInstructions('${userEmail}')" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--primary); color: var(--white); border: none; font-family: 'Sarabun', sans-serif;">
+                    <i class="fas fa-envelope"></i> Send Instructions
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+window.sendPasswordResetInstructions = function(userEmail) {
+    const subject = 'Password Reset Instructions - Systemly';
+    const message = `You or an administrator has requested password reset instructions for your Systemly account.
+
+To reset your password:
+
+1. Go to https://systemly.com/login
+2. Click on "Forgot Password"
+3. Enter your email: ${userEmail}
+4. Check your email for the password reset link
+5. Follow the link to create a new password
+
+If you did not request this, please contact our support team immediately.
+
+For security reasons, this link will expire in 24 hours.`;
+    
+    const mailtoLink = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+    window.location.href = mailtoLink;
+    
+    document.querySelector('div[style*="fixed"]').remove();
+    alert('✅ Password reset instructions email opened. Please send it to complete the process.');
+}
+
+// Export User Data (GDPR Compliance)
+window.exportUserData = async function(userId) {
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    try {
+        // Get user document from Firestore
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        const userData = userDoc.data();
+        
+        // Get user's listings
+        const userListings = allListings.filter(l => l.userId === userId);
+        
+        const exportData = {
+            exportInfo: {
+                exportedAt: new Date().toISOString(),
+                exportedBy: auth.currentUser.email,
+                dataProtectionNote: 'This export contains all personal data as per GDPR Article 15'
+            },
+            personalInfo: {
+                userId: userId,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                subscriptionPlan: user.subscriptionPlan,
+                status: user.status,
+                joinedDate: user.joined,
+                profileComplete: user.profileComplete
+            },
+            accountHistory: {
+                roleHistory: userData.roleHistory || [],
+                subscriptionHistory: userData.subscriptionHistory || [],
+                suspensionHistory: userData.suspensionHistory || []
+            },
+            listings: userListings.map(listing => ({
+                id: listing.id,
+                name: listing.systemName,
+                category: listing.category,
+                status: listing.status,
+                price: listing.variants?.[0]?.price || listing.askingPrice,
+                createdAt: listing.createdAt?.toDate ? listing.createdAt.toDate().toISOString() : null,
+                views: listing.views || 0,
+                inquiries: listing.inquiries || 0
+            })),
+            statistics: {
+                totalListings: user.listings,
+                totalViews: userListings.reduce((sum, l) => sum + (l.views || 0), 0),
+                totalInquiries: userListings.reduce((sum, l) => sum + (l.inquiries || 0), 0),
+                approvedListings: userListings.filter(l => l.status === 'approved').length,
+                pendingListings: userListings.filter(l => l.status === 'pending').length,
+                rejectedListings: userListings.filter(l => l.status === 'rejected').length
+            }
+        };
+        
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `systemly-user-data-${user.name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        alert('📥 User data exported successfully!\n\nThe exported file contains:\n• Personal information\n• Account history\n• All listings\n• Platform statistics');
+        
+    } catch (error) {
+        console.error('Error exporting user data:', error);
+        alert('Failed to export user data: ' + error.message);
+    }
+}
+
+// Delete User Account (with safeguards)
+window.deleteUserAccount = async function(userId, userName) {
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(5px);
+        z-index: 3000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    `;
+    
+    const userListings = allListings.filter(l => l.userId === userId);
+    
+    modal.innerHTML = `
+        <div style="background: var(--white); border-radius: 12px; max-width: 600px; width: 100%; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h2 style="margin-bottom: 1rem; font-size: 1.5rem; font-weight: 700; color: var(--error);">
+                <i class="fas fa-exclamation-triangle"></i> Delete User Account
+            </h2>
+            
+            <div style="background: var(--gray-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--gray-medium); margin-bottom: 0.3rem;">User to Delete</div>
+                <div style="font-weight: 600; color: var(--text);">${userName}</div>
+                <div style="font-size: 0.875rem; color: var(--gray-medium);">${user.email}</div>
+            </div>
+            
+            <div style="background: rgba(239, 68, 68, 0.1); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--error); margin-bottom: 1.5rem;">
+                <div style="font-size: 0.875rem; color: var(--error); line-height: 1.8;">
+                    <strong style="font-size: 1rem;">⚠️ WARNING: This action CANNOT be undone!</strong><br><br>
+                    Deleting this account will:<br>
+                    • Delete the user account permanently<br>
+                    • Transfer their ${userListings.length} listing(s) to admin ownership<br>
+                    • Remove all personal data (GDPR compliance)<br>
+                    • Mark all historical records as "Deleted User"<br>
+                    • This action is logged and cannot be reversed
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem;">Reason for Deletion <span style="color: var(--error);">*</span></label>
+                <textarea id="deletionReason" placeholder="Document why this account is being deleted (required for audit trail)..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9375rem; min-height: 100px; resize: vertical;"></textarea>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem;">Type "DELETE ACCOUNT" to confirm <span style="color: var(--error);">*</span></label>
+                <input type="text" id="deleteConfirmation" placeholder="Type DELETE ACCOUNT" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9375rem;">
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button onclick="event.stopPropagation(); this.closest('div[style*=\"fixed\"]').remove();" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--white); color: var(--gray-700); border: 1px solid var(--border); font-family: 'Sarabun', sans-serif;">
+    Cancel
+</button>
+                <button onclick="confirmUserDeletion('${userId}', '${userName}')" style="padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--error); color: var(--white); border: none; font-family: 'Sarabun', sans-serif;">
+                    <i class="fas fa-trash-alt"></i> Delete Account
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+window.confirmUserDeletion = async function(userId, userName) {
+    const reason = document.getElementById('deletionReason').value;
+    const confirmation = document.getElementById('deleteConfirmation').value;
+    
+    if (!reason) {
+        alert('Please provide a reason for deletion');
+        document.getElementById('deletionReason').focus();
+        return;
+    }
+    
+    if (confirmation !== 'DELETE ACCOUNT') {
+        alert('Please type "DELETE ACCOUNT" exactly to confirm deletion');
+        document.getElementById('deleteConfirmation').focus();
+        return;
+    }
+    
+    try {
+        // Transfer user's listings to admin
+        const userListings = allListings.filter(l => l.userId === userId);
+        for (const listing of userListings) {
+            await updateDoc(doc(db, 'listings', listing.id), {
+                userId: 'admin',
+                userName: 'Deleted User',
+                userEmail: 'admin@systemly.com',
+                originalOwnerId: userId,
+                accountDeleted: true,
+                deletedAt: new Date().toISOString(),
+                deletionReason: reason
+            });
+        }
+        
+        // Log deletion before deleting
+        await addDoc(collection(db, 'audit_logs'), {
+            action: 'USER_ACCOUNT_DELETED',
+            targetUserId: userId,
+            targetUserName: userName,
+            deletedBy: auth.currentUser.uid,
+            deletedByEmail: auth.currentUser.email,
+            deletedAt: new Date().toISOString(),
+            reason: reason,
+            listingsTransferred: userListings.length
+        });
+        
+        // Delete user document
+        await deleteDoc(doc(db, 'users', userId));
+        
+        document.querySelector('div[style*="fixed"]').remove();
+        alert(`🗑️ User account deleted successfully.\n\n• User: ${userName}\n• Listings transferred: ${userListings.length}\n• Deletion logged for audit trail`);
+        await loadUsers();
+        
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        alert('Failed to delete user account: ' + error.message);
+    }
+}
+
+// Contact User via Email
+window.contactUser = function(userEmail, userName) {
+    window.location.href = `mailto:${userEmail}?subject=Message from Systemly Admin&body=Hello ${userName},%0D%0A%0D%0A`;
+}
+
+// Modal action wrappers
+window.suspendUserFromModal = async function(userId) {
+    closeModal();
+    await suspendUser(userId);
+}
+
+window.activateUserFromModal = async function(userId) {
+    closeModal();
+    await activateUser(userId);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // View listing details - FIXED VERSION with ALL details
         window.viewListing = function(listingId) {
@@ -3241,15 +5041,15 @@ window.filterUsers = function() {
                     <div class="detail-grid">
                         <div class="detail-item">
                             <div class="detail-label">Monthly Revenue</div>
-                            <div class="detail-value" style="font-size: 1.4rem; color: var(--success); font-weight: 700;">$${parseInt(currentListing.monthlyRevenue || 0).toLocaleString()}</div>
+                            <div class="detail-value" style="font-size: 1.4rem; color: var(--success); font-weight: 700;">₱${parseInt(currentListing.mothlyRevenue || 0).toLocaleString()}</div>
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">Monthly Profit</div>
-                            <div class="detail-value" style="font-size: 1.4rem; color: var(--success); font-weight: 700;">$${parseInt(currentListing.monthlyProfit || 0).toLocaleString()}</div>
+                            <div class="detail-value" style="font-size: 1.4rem; color: var(--success); font-weight: 700;">₱${parseInt(currentListing.monthlyProfit || 0).toLocaleString()}</div>
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">Asking Price</div>
-                            <div class="detail-value" style="font-size: 1.4rem; color: var(--primary); font-weight: 700;">$${parseInt(currentListing.askingPrice || 0).toLocaleString()}</div>
+                            <div class="detail-value" style="font-size: 1.4rem; color: var(--primary); font-weight: 700;">₱${parseInt(currentListing.askingPrice || 0).toLocaleString()}</div>
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">Price Multiple</div>
@@ -3261,6 +5061,64 @@ window.filterUsers = function() {
                         </div>
                     </div>
                 </div>
+
+
+${currentListing.variants && currentListing.variants.length > 0 ? `
+<div class="detail-section">
+    <h3>License Options & Pricing</h3>
+    <div style="display: grid; gap: 1rem;">
+        ${currentListing.variants.map(variant => `
+            <div style="background: ${variant.type === 'inclusive' ? 'linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(249, 115, 22, 0.05))' : 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05))'}; padding: 1.5rem; border-radius: 12px; border-left: 4px solid ${variant.type === 'inclusive' ? 'var(--primary)' : 'var(--success)'};">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <div>
+                        <h4 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.3rem; color: ${variant.type === 'inclusive' ? 'var(--primary)' : 'var(--success)'};">
+                            ${variant.type === 'inclusive' ? '📦 Inclusive License' : '👑 Exclusive License'}
+                        </h4>
+                        <div style="font-size: 0.85rem; color: var(--gray-medium);">
+                            ${variant.type === 'inclusive' ? 'Can be sold multiple times' : 'One-time sale with full rights'}
+                        </div>
+                    </div>
+                    <div style="font-size: 1.8rem; font-weight: 900; color: ${variant.type === 'inclusive' ? 'var(--primary)' : 'var(--success)'};">
+                        ₱${parseInt(variant.price).toLocaleString()}
+                    </div>
+                </div>
+                <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 0.75rem;">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--gray-dark);">What's Included:</div>
+                    <p style="white-space: pre-wrap; margin: 0; color: var(--text); line-height: 1.6;">${variant.description}</p>
+                </div>
+                ${variant.notes ? `
+                    <div style="background: rgba(255, 255, 255, 0.7); padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.875rem; color: var(--gray-dark);">
+                        <strong>Note:</strong> ${variant.notes}
+                    </div>
+                ` : ''}
+                ${variant.type === 'exclusive' && variant.soldOnce ? `
+                    <div style="background: rgba(16, 185, 129, 0.15); padding: 0.75rem 1rem; border-radius: 6px; margin-top: 0.75rem; font-size: 0.875rem; color: var(--success); font-weight: 600;">
+                        🔒 Can only be sold once
+                    </div>
+                ` : ''}
+            </div>
+        `).join('')}
+    </div>
+</div>
+` : ''}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 ${categorySpecificHTML}
 
@@ -4303,6 +6161,17 @@ const titles = {
                 document.getElementById('settingMaxImages').value = settings.maxImages || '5';
             }
         });
+
+
+
+
+
+
+
+
+
+
+
 
         // Log initialization
         console.log('Systemly Admin Dashboard initialized');
