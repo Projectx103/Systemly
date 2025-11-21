@@ -1443,76 +1443,68 @@
 
     <!-- Main Layout -->
     <div class="admin-layout">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <div class="nav-section">
-                    <div class="nav-section-title">Overview</div>
-                   <div class="nav-item" data-view="dashboard">
-                        <span class="nav-icon"><i class="fas fa-tachometer-alt"></i></span>
-			<span>Dashboard</span>
-                    </div>
-                    <div class="nav-item" data-view="analytics">
-                        <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
-                        <span>Analytics</span>
-                    </div>
+       <!-- Sidebar -->
+<aside class="sidebar">
+    <nav class="sidebar-nav">
+        <div class="nav-section">
+            <div class="nav-section-title">Overview</div>
+            <div class="nav-item" data-view="dashboard">
+                <span class="nav-icon"><i class="fas fa-tachometer-alt"></i></span>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" data-view="analytics">
+                <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+                <span>Analytics</span>
+            </div>
+        </div>
 
-                <div class="nav-section">
-                    <div class="nav-section-title">Listings</div>
-                   <div class="nav-item" data-view="listings">
-                        <span class="nav-icon"><i class="fas fa-list-ul"></i></span>
-                        <span>All Listings</span>
-                    </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Listings</div>
+            <div class="nav-item" data-view="listings">
+                <span class="nav-icon"><i class="fas fa-list-ul"></i></span>
+                <span>All Listings</span>
+            </div>
 
-                  <div class="nav-item" data-view="pending">
-                        <span class="nav-icon"><i class="fas fa-hourglass-half"></i></span>
-                        <span>Pending</span>
-                        <span class="nav-badge" id="pendingBadge">0</span>
-                    </div>
+            <div class="nav-item" data-view="pending">
+                <span class="nav-icon"><i class="fas fa-hourglass-half"></i></span>
+                <span>Pending</span>
+                <span class="nav-badge" id="pendingBadge">0</span>
+            </div>
 
-                    <div class="nav-item" data-view="approved">
-                        <span class="nav-icon"><i class="fas fa-check-double"></i></span>
-                        <span>Approved</span>
-                    </div>
+            <div class="nav-item" data-view="approved">
+                <span class="nav-icon"><i class="fas fa-check-double"></i></span>
+                <span>Approved</span>
+            </div>
 
-                    <div class="nav-item" data-view="rejected">
-                        <span class="nav-icon"><i class="fas fa-ban"></i></span>
-                        <span>Rejected</span>
-                    </div>
-                </div>
+            <div class="nav-item" data-view="rejected">
+                <span class="nav-icon"><i class="fas fa-ban"></i></span>
+                <span>Rejected</span>
+            </div>
+        </div>
 
-		    <div class="nav-item" data-view="file-review">
-                        <span class="nav-icon"><i class="fas fa-folder-open"></i></span>
-                        <span>File Reviews</span>
-                        <span class="nav-badge" id="fileReviewBadge" style="display: none;">0</span>
-                    </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Management</div>
+            <div class="nav-item" data-view="file-review">
+                <span class="nav-icon"><i class="fas fa-folder-open"></i></span>
+                <span>File Reviews</span>
+                <span class="nav-badge" id="fileReviewBadge" style="display: none;">0</span>
+            </div>
 
+            <div class="nav-item" data-view="invoices">
+                <span class="nav-icon"><i class="fas fa-file-invoice-dollar"></i></span>
+                <span>Invoices & Payments</span>
+                <span class="nav-badge" id="pendingInvoicesBadge">0</span>
+            </div>
 
-                <div class="nav-section">
-                    <div class="nav-section-title">Management</div>
-                    <div class="nav-item" data-view="users">
-                        <span class="nav-icon"><i class="fas fa-users"></i></span>
-                        <span>Users</span>
-                    </div>
-                    <div class="nav-item" data-view="settings">
-                        <span class="nav-icon"><i class="fas fa-cog"></i></span>
-                        <span>Settings</span>
-                    </div>
+            <div class="nav-item" data-view="users">
+                <span class="nav-icon"><i class="fas fa-users"></i></span>
+                <span>Users</span>
+            </div>
 
-
-
-<div class="nav-item" data-view="invoices">
-  <span class="nav-icon"><i class="fas fa-file-invoice-dollar"></i></span>
-  <span>Invoices & Payments</span>
-  <span class="badge" id="pendingInvoicesBadge">0</span>
-</div>
-
-
-
-
-
-
-
+            <div class="nav-item" data-view="settings">
+                <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                <span>Settings</span>
+            </div>
                 </div>
             </nav>
         </aside>
@@ -6587,9 +6579,8 @@ window.refreshFileReviews = function() {
 
 
 
-
-        // Navigation between views
        // Navigation between views
+// Navigation between views
 document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', function() {
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -6602,60 +6593,63 @@ document.querySelectorAll('.nav-item').forEach(item => {
         document.getElementById('analyticsView').style.display = 'none';
         document.getElementById('usersView').style.display = 'none';
         document.getElementById('settingsView').style.display = 'none';
-        document.getElementById('fileReviewView').style.display = 'none'; // ADD THIS LINE
+        document.getElementById('fileReviewView').style.display = 'none';
+        document.getElementById('invoicesView').style.display = 'none'; // ADD THIS LINE
 
-            // Show selected view
-if (view === 'analytics') {
-    document.getElementById('analyticsView').style.display = 'block';
-    // Update analytics when view is shown
-    setTimeout(() => updateAnalytics(), 100);
-} else if (view === 'users') {
-    document.getElementById('usersView').style.display = 'block';
-} else if (view === 'settings') {
-    document.getElementById('settingsView').style.display = 'block';
-} else if (view === 'file-review') {
-    document.getElementById('fileReviewView').style.display = 'block';
-    // Load file reviews when view is shown
-    loadFileReviews();
-} else {
-                    // Dashboard, listings, pending, approved, rejected
-                    document.getElementById('dashboardView').style.display = 'block';
-                    
-                    // Filter listings based on view
-                    if (view === 'pending') {
-                        document.getElementById('filterStatus').value = 'pending';
-                    } else if (view === 'approved') {
-                        document.getElementById('filterStatus').value = 'approved';
-                    } else if (view === 'rejected') {
-                        document.getElementById('filterStatus').value = 'rejected';
-                    } else if (view === 'listings' || view === 'dashboard') {
-                        document.getElementById('filterStatus').value = 'all';
-                    }
+        // Show selected view
+        if (view === 'analytics') {
+            document.getElementById('analyticsView').style.display = 'block';
+            setTimeout(() => updateAnalytics(), 100);
+        } else if (view === 'users') {
+            document.getElementById('usersView').style.display = 'block';
+        } else if (view === 'settings') {
+            document.getElementById('settingsView').style.display = 'block';
+        } else if (view === 'file-review') {
+            document.getElementById('fileReviewView').style.display = 'block';
+            loadFileReviews();
+        } else if (view === 'invoices') {  // ADD THIS BLOCK
+            document.getElementById('invoicesView').style.display = 'block';
+            loadInvoices();
+        } else {
+            // Dashboard, listings, pending, approved, rejected
+            document.getElementById('dashboardView').style.display = 'block';
+            
+            // Filter listings based on view
+            if (view === 'pending') {
+                document.getElementById('filterStatus').value = 'pending';
+            } else if (view === 'approved') {
+                document.getElementById('filterStatus').value = 'approved';
+            } else if (view === 'rejected') {
+                document.getElementById('filterStatus').value = 'rejected';
+            } else if (view === 'listings' || view === 'dashboard') {
+                document.getElementById('filterStatus').value = 'all';
+            }
 
-                    applyFilters();
-                }
+            applyFilters();
+        }
 
-                // Update page title
-const titles = {
-    'dashboard': { title: 'Dashboard Overview', subtitle: 'Monitor and manage all platform activities' },
-    'listings': { title: 'All Listings', subtitle: 'View and manage all system listings' },
-    'pending': { title: 'Pending Approval', subtitle: 'Review listings waiting for approval' },
-    'approved': { title: 'Approved Listings', subtitle: 'View all approved and published listings' },
-    'rejected': { title: 'Rejected Listings', subtitle: 'View listings that were rejected' },
-    'users': { title: 'User Management', subtitle: 'Manage platform users and permissions' },
-    'analytics': { title: 'Analytics Dashboard', subtitle: 'Platform performance metrics and insights' },
-    'settings': { title: 'Platform Settings', subtitle: 'Configure platform preferences and options' },
-    'file-review': { title: 'File Reviews', subtitle: 'Review and approve uploaded files from accepted offers' }
-};
+        // Update page title
+        const titles = {
+            'dashboard': { title: 'Dashboard Overview', subtitle: 'Monitor and manage all platform activities' },
+            'listings': { title: 'All Listings', subtitle: 'View and manage all system listings' },
+            'pending': { title: 'Pending Approval', subtitle: 'Review listings waiting for approval' },
+            'approved': { title: 'Approved Listings', subtitle: 'View all approved and published listings' },
+            'rejected': { title: 'Rejected Listings', subtitle: 'View listings that were rejected' },
+            'users': { title: 'User Management', subtitle: 'Manage platform users and permissions' },
+            'analytics': { title: 'Analytics Dashboard', subtitle: 'Platform performance metrics and insights' },
+            'settings': { title: 'Platform Settings', subtitle: 'Configure platform preferences and options' },
+            'file-review': { title: 'File Reviews', subtitle: 'Review and approve uploaded files from accepted offers' },
+            'invoices': { title: 'Invoices & Payments', subtitle: 'Manage payment transactions and invoices' }  // ADD THIS LINE
+        };
 
-                const pageTitle = titles[view] || titles['dashboard'];
-                const pageTitleElement = document.querySelector('.page-title h1');
-                const pageSubtitleElement = document.querySelector('.page-title p');
-                
-                if (pageTitleElement) pageTitleElement.textContent = pageTitle.title;
-                if (pageSubtitleElement) pageSubtitleElement.textContent = pageTitle.subtitle;
-            });
-        });
+        const pageTitle = titles[view] || titles['dashboard'];
+        const pageTitleElement = document.querySelector('.page-title h1');
+        const pageSubtitleElement = document.querySelector('.page-title p');
+        
+        if (pageTitleElement) pageTitleElement.textContent = pageTitle.title;
+        if (pageSubtitleElement) pageSubtitleElement.textContent = pageTitle.subtitle;
+    });
+});
 
         // Click outside modal to close
         document.getElementById('listingModal').addEventListener('click', function(e) {
