@@ -1915,7 +1915,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-
 onAuthStateChanged(auth, async (user) => {
   updateLoadingStep('auth', 'loading');
   
@@ -1958,51 +1957,47 @@ onAuthStateChanged(auth, async (user) => {
       console.log('✅ User document loaded:', userData);
       
       // Set up real-time listener for user document updates
-     // Set up real-time listener for user document updates
-onSnapshot(userDocRef, async (docSnap) => {
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    
-    const oldSaved = userData.savedListings || [];
-    const newSaved = data.savedListings || [];
-    
-    if (JSON.stringify(oldSaved) !== JSON.stringify(newSaved)) {
-      console.log('🔄 Saved listings updated:', newSaved.length);
-      userData.savedListings = newSaved;
-      
-      // Reload and render saved listings
-      if (newSaved.length > 0) {
-        try {
-          const listingsRef = collection(db, 'listings');
-          const q = query(listingsRef, where('__name__', 'in', newSaved));
-          const snapshot = await getDocs(q);
-          savedListings = [];
+      onSnapshot(userDocRef, async (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
           
-          snapshot.forEach((doc) => {
-            savedListings.push({
-              id: doc.id,
-              ...doc.data()
-            });
-          });
+          const oldSaved = userData.savedListings || [];
+          const newSaved = data.savedListings || [];
           
-          console.log('✅ Reloaded saved listings:', savedListings.length);
-        } catch (err) {
-          console.error('Error reloading saved listings:', err);
+          if (JSON.stringify(oldSaved) !== JSON.stringify(newSaved)) {
+            console.log('🔄 Saved listings updated:', newSaved.length);
+            userData.savedListings = newSaved;
+            
+            // Reload and render saved listings
+            if (newSaved.length > 0) {
+              try {
+                const listingsRef = collection(db, 'listings');
+                const q = query(listingsRef, where('__name__', 'in', newSaved));
+                const snapshot = await getDocs(q);
+                savedListings = [];
+                
+                snapshot.forEach((doc) => {
+                  savedListings.push({
+                    id: doc.id,
+                    ...doc.data()
+                  });
+                });
+                
+                console.log('✅ Reloaded saved listings:', savedListings.length);
+              } catch (err) {
+                console.error('Error reloading saved listings:', err);
+              }
+            } else {
+              savedListings = [];
+            }
+            
+            renderSavedListings();
+            updateStats();
+          }
         }
-      } else {
-        savedListings = [];
-      }
-      
-      renderSavedListings();
-      updateStats();
-    }
-  }
-}, (error) => {
-  console.error('❌ Error in user snapshot:', error);
-});
-      
-   
-   
+      }, (error) => {
+        console.error('❌ Error in user snapshot:', error);
+      });
       
     } else {
       console.log('📝 Creating new buyer user document...');
@@ -2130,7 +2125,7 @@ onSnapshot(userDocRef, async (docSnap) => {
   }
 });
 
-// Remove the timeout fallback and replace with this:
+// Loading timeout fallback
 setTimeout(() => {
   const loadingScreen = document.getElementById('loadingScreen');
   if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
@@ -2144,8 +2139,6 @@ setTimeout(() => {
     }, 1000);
   }
 }, 15000); // Increased to 15 seconds
-
-
 // ============================================
 // LOAD MARKETPLACE LISTINGS
 // ============================================
