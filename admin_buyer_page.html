@@ -1597,17 +1597,21 @@ async function loadFileReviews() {
   try {
     console.log('📥 Loading file reviews for buyer offers...');
     
-    // Set timeout helper
     const timeout = (ms) => new Promise((_, reject) => 
       setTimeout(() => reject(new Error('Timeout')), ms)
     );
     
     for (const offer of myOffers) {
+      // Only check for accepted or paid offers
+      if (offer.status !== 'accepted' && offer.status !== 'paid') {
+        console.log(`⏭️ Skipping offer ${offer.id} - status: ${offer.status}`);
+        continue;
+      }
+      
       try {
-        // Race between fetch and 3-second timeout
         const response = await Promise.race([
           fetch(`${API_URL}/api/file-reviews/offer/${offer.id}`),
-          timeout(3000)
+          timeout(5000) // Increased to 5 seconds
         ]);
         
         if (response.ok) {
@@ -1617,21 +1621,28 @@ async function loadFileReviews() {
             offer.fileReviewStatus = data.review.status;
             offer.fileReviewId = data.review.id;
             offer.fileCount = data.review.fileCount || 0;
+            offer.instructions = data.review.instructions || '';
             
-            console.log(`✅ Offer ${offer.id}: status=${data.review.status}, files=${offer.fileCount}`);
+            console.log(`✅ Offer ${offer.id}:`, {
+              status: data.review.status,
+              files: offer.fileCount,
+              reviewId: offer.fileReviewId
+            });
           } else {
-            console.log(`ℹ️ Offer ${offer.id}: No file review`);
+            console.log(`ℹ️ Offer ${offer.id}: No file review found`);
           }
+        } else {
+          console.warn(`⚠️ Offer ${offer.id}: Server returned ${response.status}`);
         }
       } catch (err) {
-        console.warn(`⚠️ File review timeout for offer ${offer.id}`);
+        console.warn(`⏱️ Offer ${offer.id}: ${err.message}`);
       }
     }
     
-    console.log('✅ File reviews loaded');
+    console.log('✅ File reviews loaded for', myOffers.filter(o => o.fileReviewId).length, 'offers');
     
   } catch (error) {
-    console.error('❌ Error loading file reviews:', error);
+    console.error('❌ Error in loadFileReviews:', error);
   }
 }
 
@@ -2535,19 +2546,25 @@ function renderOffers() {
         </div>
         
         ${offer.status === 'paid' ? `
-          <div class="offer-action-banner success">
-            <div class="offer-action-banner-title">
-              <i class="fa-solid fa-circle-check" style="color: var(--success);"></i>
-              Payment Completed
-            </div>
-            <div class="offer-action-banner-text">
-              Your purchase is complete. ${offer.fileCount || 0} file(s) ready for download.
-            </div>
-            <button class="btn btn-success btn-full" style="margin-top: 0.75rem;" 
-                    onclick="downloadPurchasedFiles('${offer.fileReviewId}')">
-              <i class="fa-solid fa-download"></i> Download All Files
-            </button>
-          </div>
+  <div class="offer-action-banner success">
+    <div class="offer-action-banner-title">
+      <i class="fa-solid fa-circle-check" style="color: var(--success);"></i>
+      Payment Completed
+    </div>
+    <div class="offer-action-banner-text">
+      Your purchase is complete. ${offer.fileCount || 0} file(s) ready for download.
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem;">
+      <button class="btn btn-secondary btn-full" 
+              onclick="viewPurchasedFiles('${offer.fileReviewId}')">
+        <i class="fa-solid fa-folder-open"></i> View Files
+      </button>
+      <button class="btn btn-success btn-full" 
+              onclick="downloadPurchasedFiles('${offer.fileReviewId}')">
+        <i class="fa-solid fa-download"></i> Download All
+      </button>
+    </div>
+  </div>
         ` : offer.fileReviewStatus === 'pending-admin-review' ? `
           <div class="offer-action-banner info">
             <div class="offer-action-banner-title">
@@ -2817,39 +2834,56 @@ window.downloadPurchasedFiles = async function(fileReviewId) {
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparing files...';
     
-    // Get file list
-    const response = await fetch(`${API_URL}/api/admin/file-review/${fileReviewId}`);
+    console.log('📥 Downloading files for review:', fileReviewId);
+    
+    // Get file list - USE BUYER ENDPOINT
+    const response = await fetch(`${API_URL}/api/file-reviews/${fileReviewId}/files`);
     const data = await response.json();
     
-    if (!data.success || !data.files || data.files.length === 0) {
-      throw new Error('No files available');
+    console.log('File list response:', data);
+    
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch files');
     }
     
+    if (!data.files || data.files.length === 0) {
+      throw new Error('No files available for download');
+    }
+    
+    const files = data.files;
+    console.log(`Found ${files.length} files to download`);
+    
     // Download each file
-    for (let i = 0; i < data.files.length; i++) {
-      const file = data.files[i];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
       
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Downloading ${i + 1}/${data.files.length}...`;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Downloading ${i + 1}/${files.length}...`;
       
-      const downloadResponse = await fetch(`${API_URL}/api/admin/download-file/${fileReviewId}/${encodeURIComponent(file.filename)}`);
-      
-      if (!downloadResponse.ok) {
-        console.warn(`Failed to download ${file.filename}`);
-        continue;
+      try {
+        const downloadResponse = await fetch(`${API_URL}/api/file-reviews/${fileReviewId}/download/${encodeURIComponent(file.filename)}`);
+        
+        if (!downloadResponse.ok) {
+          console.warn(`Failed to download ${file.filename}`);
+          continue;
+        }
+        
+        const blob = await downloadResponse.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file.filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        console.log(`✅ Downloaded: ${file.filename}`);
+        
+        // Delay between downloads
+        await new Promise(resolve => setTimeout(resolve, 500));
+      } catch (err) {
+        console.error(`Error downloading ${file.filename}:`, err);
       }
-      
-      const blob = await downloadResponse.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = file.filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-      
-      // Delay between downloads
-      await new Promise(resolve => setTimeout(resolve, 500));
     }
     
     btn.disabled = false;
@@ -2859,17 +2893,151 @@ window.downloadPurchasedFiles = async function(fileReviewId) {
       btn.innerHTML = '<i class="fa-solid fa-download"></i> Download All Files';
     }, 3000);
     
-    alert('✅ All files downloaded successfully!');
+    showToast(`Successfully downloaded ${files.length} file(s)!`, 'success');
     
   } catch (error) {
-    console.error('Download error:', error);
-    alert('Failed to download files: ' + error.message);
+    console.error('❌ Download error:', error);
+    showToast('Failed to download files: ' + error.message, 'error');
     
     const btn = event.target;
     btn.disabled = false;
     btn.innerHTML = '<i class="fa-solid fa-download"></i> Download All Files';
   }
 }
+
+
+window.viewPurchasedFiles = async function(fileReviewId) {
+  try {
+    console.log('👁️ Viewing files for review:', fileReviewId);
+    
+    const response = await fetch(`${API_URL}/api/file-reviews/${fileReviewId}/files`);
+    const data = await response.json();
+    
+    if (!data.success || !data.files || data.files.length === 0) {
+      throw new Error('No files available');
+    }
+    
+    // Create modal to show file list
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      z-index: 3000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    `;
+    
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 16px; max-width: 700px; width: 100%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+        <div style="padding: 2rem; border-bottom: 1px solid var(--gray-light); position: sticky; top: 0; background: white; z-index: 10;">
+          <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">
+            <i class="fa-solid fa-folder-open" style="color: var(--primary);"></i> 
+            Your Purchased Files
+          </h2>
+          <p style="color: var(--gray); font-size: 0.9rem;">
+            ${data.files.length} file(s) ready for download
+          </p>
+        </div>
+        
+        <div style="padding: 2rem;">
+          ${data.files.map((file, index) => `
+            <div style="background: var(--gray-light); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+              <div style="flex: 1;">
+                <div style="font-weight: 600; margin-bottom: 0.3rem;">
+                  <i class="fa-solid fa-file"></i> ${file.filename}
+                </div>
+                <div style="font-size: 0.85rem; color: var(--gray);">
+                  ${(file.size / 1024 / 1024).toFixed(2)} MB
+                </div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="downloadSingleFile('${fileReviewId}', '${encodeURIComponent(file.filename)}')">
+                <i class="fa-solid fa-download"></i> Download
+              </button>
+            </div>
+          `).join('')}
+          
+          ${data.instructions ? `
+            <div style="background: rgba(59, 130, 246, 0.1); padding: 1.5rem; border-radius: 10px; border-left: 4px solid var(--info); margin-top: 1.5rem;">
+              <h4 style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-info-circle"></i> Transfer Instructions
+              </h4>
+              <p style="white-space: pre-wrap; line-height: 1.6; font-size: 0.9rem;">${data.instructions}</p>
+            </div>
+          ` : ''}
+        </div>
+        
+        <div style="padding: 1.5rem; border-top: 1px solid var(--gray-light); display: flex; gap: 1rem; justify-content: flex-end;">
+          <button class="btn btn-secondary" onclick="this.closest('div[style*=\"fixed\"]').remove()">
+            Close
+          </button>
+          <button class="btn btn-primary" onclick="downloadPurchasedFiles('${fileReviewId}')">
+            <i class="fa-solid fa-download"></i> Download All Files
+          </button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.remove();
+    });
+    
+  } catch (error) {
+    console.error('Error viewing files:', error);
+    showToast('Failed to load files: ' + error.message, 'error');
+  }
+}
+
+window.downloadSingleFile = async function(fileReviewId, filename) {
+  try {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Downloading...';
+    
+    const response = await fetch(`${API_URL}/api/file-reviews/${fileReviewId}/download/${filename}`);
+    
+    if (!response.ok) throw new Error('Download failed');
+    
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = decodeURIComponent(filename);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Downloaded!';
+    
+    setTimeout(() => {
+      btn.innerHTML = '<i class="fa-solid fa-download"></i> Download';
+    }, 2000);
+    
+    showToast('File downloaded successfully!', 'success');
+    
+  } catch (error) {
+    console.error('Download error:', error);
+    showToast('Failed to download file', 'error');
+    
+    const btn = event.target;
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-download"></i> Download';
+  }
+}
+
+
+
+
+
 
 async function downloadFile(reviewId, filename) {
   try {
