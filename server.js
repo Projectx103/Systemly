@@ -66,11 +66,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS configuration
+// CORS configuration - REPLACE THE EXISTING ONE
 app.use(cors({
-  origin: ['https://projectx103.github.io', 'http://localhost:3000'],
-  credentials: true
+  origin: '*', // Allow all origins for now (can restrict later)
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Add OPTIONS handler for preflight requests
+app.options('*', cors());
 
 // PostgreSQL connection
 const pool = new Pool({
@@ -913,6 +918,240 @@ app.post('/api/webhook/invoice-paid', async (req, res) => {
 
 
 
+// ============================================
+// BUYER ENDPOINTS - Add these before "START SERVER"
+// ============================================
+
+// Buyer: Get file review by offer ID (same as general endpoint but for clarity)
+app.get('/api/buyer/file-reviews/:offerId', async (req, res) => {
+  try {
+    const { offerId } = req.params;
+    
+    console.log(`🔍 [BUYER] Looking for file review for offer: ${offerId}`);
+    
+    const result = await pool.query(
+      `SELECT DISTINCT ON (offer_id)
+        offer_id as id, 
+        listing_id, 
+        seller_id, 
+        seller_name,
+        buyer_id, 
+        buyer_name, 
+        buyer_email, 
+        listing_name,
+        offer_amount, 
+        instructions, 
+        whats_included,
+        status, 
+        created_at,
+        (SELECT COUNT(*) FROM offer_files of2 WHERE of2.offer_id = offer_files.offer_id) as file_count
+      FROM offer_files
+      WHERE offer_id = $1
+      ORDER BY offer_id, created_at DESC
+      LIMIT 1`,
+      [offerId]
+    );
+
+    if (result.rows.length === 0) {
+      console.log(`ℹ️ No file review found for offer ${offerId}`);
+      return res.json({ success: true, review: null });
+    }
+    
+    const review = result.rows[0];
+    
+    console.log(`✅ Found file review for offer ${offerId}: status=${review.status}`);
+    
+    res.json({ 
+      success: true, 
+      review: {
+        id: review.id,
+        listingId: review.listing_id,
+        listingName: review.listing_name,
+        sellerId: review.seller_id,
+        sellerName: review.seller_name,
+        buyerId: review.buyer_id,
+        buyerName: review.buyer_name,
+        buyerEmail: review.buyer_email,
+        offerAmount: review.offer_amount,
+        instructions: review.instructions,
+        whatsIncluded: review.whats_included,
+        status: review.status,
+        uploadedAt: review.created_at,
+        fileCount: parseInt(review.file_count)
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Error getting buyer file review:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+});
+
+// Buyer: Get list of files for a specific file review
+app.get('/api/buyer/file-reviews/:fileReviewId/files', async (req, res) => {
+  try {
+    const { fileReviewId } = req.params;
+    
+    console.log(`📁 [BUYER] Getting files for review: ${fileReviewId}`);
+    
+    const result = await pool.query(
+      `SELECT file_name, file_size, file_type, created_at, instructions, whats_included, status
+       FROM offer_files
+       WHERE offer_id = $1
+       ORDER BY created_at ASC`,
+      [fileReviewId]
+    );
+
+    if (result.rows.length === 0) {
+      console.log(`ℹ️ No files found for review ${fileReviewId}`);
+      return res.json({
+        success: false,
+        error: 'No files found for this review'
+      });
+    }
+
+    const firstRow = result.rows[0];
+    
+    res.json({
+      success: true,
+      files: result.rows.map(row => ({
+        filename: row.file_name,
+        size: row.file_size,
+        type: row.file_type,
+        uploadedAt: row.created_at
+      })),
+      instructions: firstRow.instructions,
+      whatsIncluded: firstRow.whats_included,
+      status: firstRow.status
+    });
+
+    console.log(`✅ [BUYER] Returned ${result.rows.length} files`);
+
+  } catch (error) {
+    console.error('❌ Error fetching buyer files:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch files: ' + error.message 
+    });
+  }
+});
+
+// Buyer: View single file content
+app.get('/api/buyer/file-reviews/:fileReviewId/view/:filename', async (req, res) => {
+  try {
+    const { fileReviewId, filename } = req.params;
+    const decodedFilename = decodeURIComponent(filename);
+    
+    console.log(`👁️ [BUYER] Viewing file: ${decodedFilename} from review ${fileReviewId}`);
+    
+    const result = await pool.query(
+      `SELECT file_name, file_data, file_type, file_size, status
+       FROM offer_files
+       WHERE offer_id = $1 AND file_name = $2
+       LIMIT 1`,
+      [fileReviewId, decodedFilename]
+    );
+
+    if (result.rows.length === 0) {
+      console.log(`❌ File not found: ${decodedFilename}`);
+      return res.status(404).json({ 
+        success: false,
+        error: 'File not found' 
+      });
+    }
+
+    const file = result.rows[0];
+    
+    // Check if files are approved or paid
+    if (file.status !== 'admin-approved' && file.status !== 'paid') {
+      console.log(`⚠️ Files not yet approved for review ${fileReviewId}`);
+      return res.status(403).json({ 
+        success: false,
+        error: 'Files are not yet approved for viewing' 
+      });
+    }
+    
+    res.json({
+      success: true,
+      filename: file.file_name,
+      type: file.file_type,
+      data: file.file_data,
+      size: file.file_size
+    });
+    
+    console.log(`✅ [BUYER] File content sent: ${file.file_name}`);
+
+  } catch (error) {
+    console.error('❌ Error viewing buyer file:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to load file: ' + error.message 
+    });
+  }
+});
+
+// Buyer: Download single file
+app.get('/api/buyer/file-reviews/:fileReviewId/download/:filename', async (req, res) => {
+  try {
+    const { fileReviewId, filename } = req.params;
+    const decodedFilename = decodeURIComponent(filename);
+    
+    console.log(`📥 [BUYER] Downloading: ${decodedFilename} from review ${fileReviewId}`);
+    
+    const result = await pool.query(
+      `SELECT file_name, file_data, file_type, status
+       FROM offer_files
+       WHERE offer_id = $1 AND file_name = $2
+       LIMIT 1`,
+      [fileReviewId, decodedFilename]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false,
+        error: 'File not found' 
+      });
+    }
+
+    const file = result.rows[0];
+    
+    // Check if files are approved or paid
+    if (file.status !== 'admin-approved' && file.status !== 'paid') {
+      return res.status(403).json({ 
+        success: false,
+        error: 'Files are not yet approved for download' 
+      });
+    }
+
+    const fileBuffer = Buffer.from(file.file_data, 'base64');
+    
+    res.setHeader('Content-Disposition', `attachment; filename="${file.file_name}"`);
+    res.setHeader('Content-Type', file.file_type || 'application/octet-stream');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.send(fileBuffer);
+    
+    console.log(`✅ [BUYER] Downloaded: ${file.file_name}`);
+
+  } catch (error) {
+    console.error('❌ Buyer download error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Download failed: ' + error.message 
+    });
+  }
+});
+
+
+
+
+
+
+
+
+
 
 
 
@@ -936,5 +1175,6 @@ const server = app.listen(PORT, () => {
 server.timeout = 300000; // 5 minutes
 server.keepAliveTimeout = 300000;
 server.headersTimeout = 300000;
+
 
 
