@@ -623,7 +623,7 @@ app.post('/api/admin/reject-files/:offerId', async (req, res) => {
       [offerId, reason || 'No reason provided']
     );
 
-    // Update Firebase - FIXED: Changed 'status' to match Firestore field name
+    // Update Firebase
     const db = admin.firestore();
     const offerRef = db.collection('offers').doc(offerId);
     
@@ -639,11 +639,11 @@ app.post('/api/admin/reject-files/:offerId', async (req, res) => {
     
     // Update the offer with admin rejection
     await offerRef.update({
-      status: 'admin-rejected',  // ✅ This is the key field that wasn't updating properly
+      status: 'admin-rejected',
       rejectionReason: reason || 'No reason provided',
       adminRejectedAt: admin.firestore.FieldValue.serverTimestamp(),
       filesRejected: true,
-      filesUploadedAt: null  // Reset this so seller can re-upload
+      filesUploadedAt: null
     });
 
     console.log(`✅ Admin rejected files for offer ${offerId} (PostgreSQL + Firebase updated)`);
@@ -732,6 +732,185 @@ app.get('/api/file-reviews/offer/:offerId', async (req, res) => {
 });
 
 // ============================================
+// NEW: INVOICE PAYMENT WEBHOOK/ENDPOINT
+// ============================================
+
+// Update offer status when invoice is paid
+app.post('/api/update-offer-payment/:offerId', async (req, res) => {
+  try {
+    const { offerId } = req.params;
+    const { invoiceId, invoiceNumber } = req.body;
+    
+    console.log(`💰 Received payment update for offer ${offerId}`);
+    console.log(`📋 Invoice: ${invoiceNumber} (ID: ${invoiceId})`);
+    
+    const db = admin.firestore();
+    
+    // Verify invoice exists and is paid
+    const invoiceRef = db.collection('invoices').doc(invoiceId);
+    const invoiceDoc = await invoiceRef.get();
+    
+    if (!invoiceDoc.exists) {
+      console.error(`❌ Invoice ${invoiceId} not found`);
+      return res.status(404).json({ 
+        success: false,
+        error: 'Invoice not found' 
+      });
+    }
+    
+    const invoiceData = invoiceDoc.data();
+    
+    if (invoiceData.status !== 'paid') {
+      console.error(`❌ Invoice ${invoiceId} is not paid (status: ${invoiceData.status})`);
+      return res.status(400).json({ 
+        success: false,
+        error: 'Invoice is not marked as paid' 
+      });
+    }
+    
+    // Verify invoice is for this offer
+    if (invoiceData.offerId !== offerId) {
+      console.error(`❌ Invoice ${invoiceId} is not for offer ${offerId}`);
+      return res.status(400).json({ 
+        success: false,
+        error: 'Invoice does not match offer' 
+      });
+    }
+    
+    // Update offer status to 'paid'
+    const offerRef = db.collection('offers').doc(offerId);
+    const offerDoc = await offerRef.get();
+    
+    if (!offerDoc.exists) {
+      console.error(`❌ Offer ${offerId} not found`);
+      return res.status(404).json({ 
+        success: false,
+        error: 'Offer not found' 
+      });
+    }
+    
+    await offerRef.update({
+      status: 'paid',
+      paidAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      invoiceId: invoiceId,
+      invoiceNumber: invoiceNumber
+    });
+    
+    console.log(`✅ Offer ${offerId} status updated to 'paid'`);
+    console.log(`💳 Payment confirmed via invoice ${invoiceNumber}`);
+    
+    res.json({
+      success: true,
+      message: 'Offer payment status updated successfully',
+      offerId: offerId,
+      status: 'paid'
+    });
+    
+  } catch (error) {
+    console.error('❌ Error updating offer payment status:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to update payment status: ' + error.message 
+    });
+  }
+});
+
+// Check invoice status for an offer
+app.get('/api/check-invoice-status/:offerId', async (req, res) => {
+  try {
+    const { offerId } = req.params;
+    
+    console.log(`🔍 Checking invoice status for offer ${offerId}`);
+    
+    const db = admin.firestore();
+    
+    // Find invoice for this offer
+    const invoicesRef = db.collection('invoices');
+    const querySnapshot = await invoicesRef.where('offerId', '==', offerId).get();
+    
+    if (querySnapshot.empty) {
+      console.log(`ℹ️ No invoice found for offer ${offerId}`);
+      return res.json({
+        success: true,
+        hasInvoice: false,
+        invoice: null
+      });
+    }
+    
+    const invoiceDoc = querySnapshot.docs[0];
+    const invoiceData = invoiceDoc.data();
+    
+    console.log(`📋 Found invoice ${invoiceData.invoiceNumber}: status=${invoiceData.status}`);
+    
+    res.json({
+      success: true,
+      hasInvoice: true,
+      invoice: {
+        id: invoiceDoc.id,
+        invoiceNumber: invoiceData.invoiceNumber,
+        status: invoiceData.status,
+        amount: invoiceData.amount,
+        createdAt: invoiceData.createdAt,
+        paidAt: invoiceData.paidAt || null
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Error checking invoice status:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to check invoice status: ' + error.message 
+    });
+  }
+});
+
+// Webhook endpoint for automatic invoice payment updates
+app.post('/api/webhook/invoice-paid', async (req, res) => {
+  try {
+    const { invoiceId, offerId, invoiceNumber, amount, paidAt } = req.body;
+    
+    console.log(`🔔 Webhook received: Invoice ${invoiceNumber} paid`);
+    console.log(`💰 Amount: ${amount}, Offer ID: ${offerId}`);
+    
+    if (!invoiceId || !offerId) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Missing required fields: invoiceId and offerId' 
+      });
+    }
+    
+    const db = admin.firestore();
+    
+    // Update offer status
+    const offerRef = db.collection('offers').doc(offerId);
+    await offerRef.update({
+      status: 'paid',
+      paidAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      invoiceId: invoiceId,
+      invoiceNumber: invoiceNumber,
+      paidAmount: amount
+    });
+    
+    console.log(`✅ Webhook processed: Offer ${offerId} marked as paid`);
+    
+    res.json({
+      success: true,
+      message: 'Payment webhook processed successfully'
+    });
+    
+  } catch (error) {
+    console.error('❌ Webhook processing error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Webhook processing failed: ' + error.message 
+    });
+  }
+});
+
+// ============================================
 // START SERVER
 // ============================================
 const server = app.listen(PORT, () => {
@@ -739,11 +918,12 @@ const server = app.listen(PORT, () => {
   console.log(`📁 Original file exchange: /api/upload`);
   console.log(`📤 Offer file upload: /api/upload-offer-files`);
   console.log(`👨‍💼 Admin file reviews: /api/admin/file-reviews`);
+  console.log(`💳 Payment update: /api/update-offer-payment/:offerId`);
+  console.log(`🔍 Invoice status check: /api/check-invoice-status/:offerId`);
+  console.log(`🔔 Payment webhook: /api/webhook/invoice-paid`);
 });
 
 // Set server timeouts
 server.timeout = 300000; // 5 minutes
 server.keepAliveTimeout = 300000;
 server.headersTimeout = 300000;
-
-
