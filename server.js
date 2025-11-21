@@ -1166,6 +1166,7 @@ const server = app.listen(PORT, () => {
   console.log(`📁 Original file exchange: /api/upload`);
   console.log(`📤 Offer file upload: /api/upload-offer-files`);
   console.log(`👨‍💼 Admin file reviews: /api/admin/file-reviews`);
+  console.log(`👤 Buyer file access: /api/buyer/file-reviews/:offerId`);
   console.log(`💳 Payment update: /api/update-offer-payment/:offerId`);
   console.log(`🔍 Invoice status check: /api/check-invoice-status/:offerId`);
   console.log(`🔔 Payment webhook: /api/webhook/invoice-paid`);
@@ -1175,6 +1176,7 @@ const server = app.listen(PORT, () => {
 server.timeout = 300000; // 5 minutes
 server.keepAliveTimeout = 300000;
 server.headersTimeout = 300000;
+
 
 
 
