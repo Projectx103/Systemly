@@ -1589,68 +1589,6 @@ async function loadOffers() {
 }
 
 
-// ============================================
-// LOAD FILE REVIEWS - FIXED
-// ============================================
-async function loadFileReviews() {
-  try {
-    console.log('📥 Loading file reviews for buyer offers...');
-    
-    const timeout = (ms) => new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Timeout')), ms)
-    );
-    
-    for (const offer of myOffers) {
-      // Only check for accepted or paid offers
-      if (offer.status !== 'accepted' && offer.status !== 'paid') {
-        console.log(`⏭️ Skipping offer ${offer.id} - status: ${offer.status}`);
-        continue;
-      }
-      
-      try {
-        const response = await Promise.race([
-          fetch(`${API_URL}/api/file-reviews/offer/${offer.id}`),
-          timeout(5000) // Increased to 5 seconds
-        ]);
-        
-        if (response.ok) {
-          const data = await response.json();
-          
-         if (data.success && data.review) {
-  offer.fileReviewStatus = data.review.status;
-  offer.fileReviewId = data.review.id;
-  offer.fileCount = data.review.fileCount || 0;
-  offer.instructions = data.review.instructions || '';
-  
-  // ADDED: Check if invoice is already paid - auto-update offer status
-  if (offer.status === 'admin-approved' && data.review.status === 'admin-approved') {
-    await checkInvoiceStatusAndUpdate(offer.id);
-  }
-            
-            console.log(`✅ Offer ${offer.id}:`, {
-              status: data.review.status,
-              files: offer.fileCount,
-              reviewId: offer.fileReviewId
-            });
-          } else {
-            console.log(`ℹ️ Offer ${offer.id}: No file review found`);
-          }
-        } else {
-          console.warn(`⚠️ Offer ${offer.id}: Server returned ${response.status}`);
-        }
-      } catch (err) {
-        console.warn(`⏱️ Offer ${offer.id}: ${err.message}`);
-      }
-    }
-    
-    console.log('✅ File reviews loaded for', myOffers.filter(o => o.fileReviewId).length, 'offers');
-    
-  } catch (error) {
-    console.error('❌ Error in loadFileReviews:', error);
-  }
-}
-
-
 
 
 // ============================================
