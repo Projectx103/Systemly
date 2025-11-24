@@ -634,6 +634,349 @@
             color: var(--white);
         }
 
+/* Add these new form styles */
+.form-section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 2px solid var(--gray-light);
+}
+
+.form-section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-title i {
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+.form-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.form-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.checkbox-label {
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Update form-input to support readonly state better */
+.form-input[readonly] {
+    background: var(--gray-light);
+    cursor: not-allowed;
+    color: var(--gray-dark);
+}
+
+/* Add styles for bank select dropdown */
+.bank-logo {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* TAB NAVIGATION STYLES */
+.profile-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--gray-light);
+    overflow-x: auto;
+    padding-bottom: 0;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--gray-medium);
+    cursor: pointer;
+    transition: all 0.3s;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    font-family: 'Sarabun', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tab-btn:hover {
+    color: var(--primary);
+    background: rgba(249, 115, 22, 0.05);
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: rgba(249, 115, 22, 0.05);
+}
+
+.tab-btn i {
+    font-size: 1rem;
+}
+
+/* TAB CONTENT SECTIONS */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* MODERN CARD STYLING FOR EACH SECTION */
+.profile-section-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+    border: 1px solid var(--gray-light);
+    transition: all 0.3s;
+}
+
+.profile-section-card:hover {
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    border-color: rgba(249, 115, 22, 0.2);
+}
+
+/* SECTION HEADERS WITH BETTER STYLING */
+.section-header-new {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--gray-light);
+}
+
+.section-icon-new {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.section-header-new h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.section-header-new p {
+    color: var(--gray-medium);
+    font-size: 0.9rem;
+    margin: 0.3rem 0 0 0;
+}
+
+/* IMPROVED FORM ROW SPACING */
+.form-row-new {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* PROGRESS INDICATORS FOR EACH SECTION */
+.section-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.05), rgba(99, 102, 241, 0.05));
+    border-radius: 12px;
+    border-left: 4px solid var(--primary);
+}
+
+.section-progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--gray-light);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.section-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.section-progress-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+    min-width: 60px;
+    text-align: right;
+}
+
+/* COMPLETION BADGE */
+.completion-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, var(--success), var(--accent));
+    color: var(--white);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.completion-badge i {
+    font-size: 1rem;
+}
+
+/* REQUIRED FIELD INDICATOR */
+.required-indicator {
+    color: var(--error);
+    font-weight: 700;
+    margin-left: 0.2rem;
+}
+
+/* HELP TEXT BOXES */
+.help-box {
+    background: rgba(99, 102, 241, 0.05);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--secondary);
+}
+
+.help-box p {
+    font-size: 0.9rem;
+    color: var(--gray-dark);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.help-box strong {
+    color: var(--secondary);
+}
+
+/* FLOATING SAVE BUTTON */
+.floating-save-container {
+    position: sticky;
+    bottom: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    z-index: 100;
+}
+
+.floating-save-btn {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: var(--white);
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    border: none;
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Sarabun', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    box-shadow: 0 8px 25px rgba(249, 115, 22, 0.3);
+}
+
+.floating-save-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(249, 115, 22, 0.4);
+}
+
+/* MOBILE RESPONSIVE TABS */
+@media (max-width: 768px) {
+    .profile-tabs {
+        gap: 0.25rem;
+    }
+    
+    .tab-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .tab-btn span {
+        display: none;
+    }
+    
+    .tab-btn i {
+        margin: 0;
+    }
+}
+
+/* Add to your <style> section */
+.tab-btn.incomplete {
+    position: relative;
+}
+
+.tab-btn.incomplete::after {
+    content: '●';
+    color: var(--error);
+    font-size: 0.6rem;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+}
+
+.tab-btn.complete::after {
+    content: '✓';
+    color: var(--success);
+    font-size: 0.8rem;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+}
+
+
+
+
+
 
 
 
@@ -754,122 +1097,352 @@
 
         <!-- MAIN CONTENT -->
         <main class="main-content">
-            <section class="settings-section">
-                <div class="section-header">
-                    <div class="section-icon">
+           <section class="settings-section">
+    <div class="section-header">
+        <div class="section-icon">
+            <i class="fa-solid fa-user-pen"></i>
+        </div>
+        <div style="flex: 1;">
+            <h2>Profile Settings</h2>
+            <p style="color: var(--gray-medium); font-size: 0.95rem; margin-top: 0.3rem;">Complete your profile to unlock all features</p>
+        </div>
+        <div id="overallCompletion" class="completion-badge" style="display: none;">
+            <i class="fa-solid fa-check-circle"></i>
+            <span>100% Complete</span>
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>Profile updated successfully!</span>
+    </div>
+
+    <!-- TAB NAVIGATION -->
+    <div class="profile-tabs">
+        <button class="tab-btn active" onclick="switchTab('personal')" data-tab="personal">
+            <i class="fa-solid fa-user"></i>
+            <span>Personal</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('contact')" data-tab="contact">
+            <i class="fa-solid fa-phone"></i>
+            <span>Contact</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('address')" data-tab="address">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>Address</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('tax')" data-tab="tax">
+            <i class="fa-solid fa-file-invoice"></i>
+            <span>Tax & Legal</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('banking')" data-tab="banking">
+            <i class="fa-solid fa-building-columns"></i>
+            <span>Banking</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('seller')" data-tab="seller">
+            <i class="fa-solid fa-star"></i>
+            <span>Seller Info</span>
+        </button>
+    </div>
+
+    <form id="profileForm">
+        <!-- TAB 1: PERSONAL/BUSINESS INFORMATION -->
+        <div class="tab-content active" id="personal-tab">
+            <div class="profile-section-card">
+               
+
+                <div class="section-header-new">
+                    <div class="section-icon-new">
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div>
-                        <h2>Personal Information</h2>
-                        <p style="color: var(--gray-medium); font-size: 0.95rem; margin-top: 0.3rem;">Update your personal details and profile information</p>
+                        <h3>Personal & Business Information</h3>
+                        <p>Tell us about yourself and your business</p>
                     </div>
                 </div>
 
-                <div class="success-message" id="successMessage">
-                    <i class="fa-solid fa-circle-check"></i>
-                    <span>Profile updated successfully!</span>
+                <div class="form-row-new">
+                    <div class="form-group">
+                        <label for="fullName">Full Name <span class="required-indicator">*</span></label>
+                       <input type="text" class="form-input" id="fullName" placeholder="Juan Dela Cruz">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" class="form-input" id="email" disabled>
+                        <div class="form-hint">Email cannot be changed</div>
+                    </div>
                 </div>
 
-                <form id="profileForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="fullName">Full Name *</label>
-                            <input type="text" class="form-input" id="fullName" required placeholder="John Doe">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" class="form-input" id="email" disabled>
-                            <div class="form-hint">Email cannot be changed</div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" class="form-input" id="phone" placeholder="+63 912 345 6789" readonly style="background: var(--gray-light); cursor: not-allowed;">
-                            <div class="form-hint">Verify your phone number in the verification section</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="country">Country *</label>
-                            <select class="form-select" id="country" required>
-                                <option value="">Select Country</option>
-                                <option value="PH">Philippines</option>
-                                <option value="US">United States</option>
-                                <option value="GB">United Kingdom</option>
-                                <option value="AU">Australia</option>
-                                <option value="CA">Canada</option>
-                                <option value="SG">Singapore</option>
-                                <option value="MY">Malaysia</option>
-                                <option value="ID">Indonesia</option>
-                                <option value="TH">Thailand</option>
-                                <option value="VN">Vietnam</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="city">City *</label>
-                            <input type="text" class="form-input" id="city" placeholder="Quezon City" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="state">State/Province *</label>
-                            <input type="text" class="form-input" id="state" placeholder="Metro Manila" required>
-                        </div>
-                    </div>
-
+                <div class="form-row-new">
                     <div class="form-group">
-                        <label for="address">Street Address *</label>
-                        <input type="text" class="form-input" id="address" placeholder="123 Main Street, Barangay XYZ" required>
+                        <label for="companyName">Company Name (Optional)</label>
+                        <input type="text" class="form-input" id="companyName" placeholder="Your Company Name">
                     </div>
-
                     <div class="form-group">
-                        <label for="bio">Bio</label>
-                        <textarea class="form-textarea" id="bio" maxlength="500" placeholder="Tell us about yourself... (Minimum 20 characters for 100% profile)"></textarea>
-                        <div class="char-count"><span id="bioCount">0</span>/500</div>
+                        <label for="businessType">Business Type <span class="required-indicator">*</span></label>
+                        <select class="form-select" id="businessType">
+                            <option value="">Select Business Type</option>
+                            <option value="individual">Individual</option>
+                            <option value="sole-proprietor">Sole Proprietor</option>
+                            <option value="corporation">Corporation</option>
+                            <option value="partnership">Partnership</option>
+                        </select>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="company">Company Name</label>
-                            <input type="text" class="form-input" id="company" placeholder="Your Company">
-                        </div>
-                        <div class="form-group">
-                            <label for="website">Website</label>
-                            <input type="url" class="form-input" id="website" placeholder="https://yourwebsite.com">
-                        </div>
-                    </div>
+        <!-- TAB 2: CONTACT INFORMATION -->
+        <div class="tab-content" id="contact-tab">
+            <div class="profile-section-card">
+               
 
-                    <button type="submit" class="save-btn" id="saveBtn">
-                        <i class="fa-solid fa-floppy-disk"></i>
-                        Save Changes
-                    </button>
-                </form>
-            </section>
-
-            <section class="settings-section">
-                <div class="section-header">
-                    <div class="section-icon">
-                        <i class="fa-solid fa-shield-halved"></i>
+                <div class="section-header-new">
+                    <div class="section-icon-new">
+                        <i class="fa-solid fa-phone"></i>
                     </div>
                     <div>
-                        <h2>Account Settings</h2>
-                        <p style="color: var(--gray-medium); font-size: 0.95rem; margin-top: 0.3rem;">Manage your account security and preferences</p>
+                        <h3>Contact Information</h3>
+                        <p>How can buyers and sellers reach you?</p>
                     </div>
                 </div>
 
-                <div class="danger-zone">
-                    <h4>
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        Danger Zone
-                    </h4>
-                    <p>Permanently delete your Systemly account and all associated data.</p>
-                    <button class="danger-btn" onclick="deleteAccount()">
-                        <i class="fa-solid fa-trash"></i>
-                        Delete Account
-                    </button>
+                <div class="help-box">
+                    <p><strong><i class="fa-solid fa-lightbulb"></i> Tip:</strong> Verify your phone number to increase trust and enable SMS notifications.</p>
                 </div>
-            </section>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" class="form-input" id="phone" placeholder="+63 917 XXX XXXX" readonly style="background: var(--gray-light); cursor: not-allowed;">
+                    <div class="form-hint">
+                        <i class="fa-solid fa-shield-halved"></i> Verify your phone number in the left sidebar verification section
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: ADDRESS -->
+        <div class="tab-content" id="address-tab">
+            <div class="profile-section-card">
+               
+
+                <div class="section-header-new">
+                    <div class="section-icon-new">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <div>
+                        <h3>Address Information</h3>
+                        <p>Where are you located?</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Street Address <span class="required-indicator">*</span></label>
+                    <input type="text" class="form-input" id="address" placeholder="123 Main Street">
+                </div>
+
+                <div class="form-row-new">
+                    <div class="form-group">
+                        <label for="barangay">Barangay <span class="required-indicator">*</span></label>
+                        <input type="text" class="form-input" id="barangay" placeholder="Barangay Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City <span class="required-indicator">*</span></label>
+                        <input type="text" class="form-input" id="city" placeholder="Quezon City">
+                    </div>
+                </div>
+
+                <div class="form-row-new">
+                    <div class="form-group">
+                        <label for="province">Province <span class="required-indicator">*</span></label>
+                        <input type="text" class="form-input" id="province" placeholder="Metro Manila">
+                    </div>
+                    <div class="form-group">
+                        <label for="postalCode">Postal Code <span class="required-indicator">*</span></label>
+                        <input type="text" class="form-input" id="postalCode" placeholder="1100">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="country">Country <span class="required-indicator">*</span></label>
+                    <select class="form-select" id="country">
+                        <option value="Philippines">Philippines</option>
+                        <option value="US">United States</option>
+                        <option value="GB">United Kingdom</option>
+                        <option value="AU">Australia</option>
+                        <option value="CA">Canada</option>
+                        <option value="SG">Singapore</option>
+                        <option value="MY">Malaysia</option>
+                        <option value="ID">Indonesia</option>
+                        <option value="TH">Thailand</option>
+                        <option value="VN">Vietnam</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: TAX/LEGAL -->
+        <div class="tab-content" id="tax-tab">
+            <div class="profile-section-card">
+              
+
+                <div class="section-header-new">
+                    <div class="section-icon-new">
+                        <i class="fa-solid fa-file-invoice"></i>
+                    </div>
+                    <div>
+                        <h3>Tax & Legal Information</h3>
+                        <p>Required for invoicing and compliance</p>
+                    </div>
+                </div>
+
+                <div class="help-box">
+                    <p><strong><i class="fa-solid fa-info-circle"></i> Why we need this:</strong> Tax information is required by law for all transactions. Your TIN will be used for invoicing and tax reporting.</p>
+                </div>
+
+                <div class="form-row-new">
+                    <div class="form-group">
+                        <label for="taxId">Tax ID Number (TIN) <span class="required-indicator">*</span></label>
+                        <input type="text" class="form-input" id="taxId" placeholder="XXX-XXX-XXX-XXX">
+                        <div class="form-hint">Required for invoicing and tax compliance</div>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 1rem;">VAT Registration Status</label>
+                        <div class="form-checkbox-group">
+                            <input type="checkbox" class="form-checkbox" id="vatRegistered">
+                            <label for="vatRegistered" class="checkbox-label">
+                                <i class="fa-solid fa-circle-check" style="color: var(--success);"></i>
+                                I am VAT Registered
+                            </label>
+                        </div>
+                        <div class="form-hint">Check this if your business is registered for VAT</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: BANKING INFORMATION -->
+        <div class="tab-content" id="banking-tab">
+            <div class="profile-section-card">
+           
+
+                <div class="section-header-new">
+                    <div class="section-icon-new">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <div>
+                        <h3>Banking Information</h3>
+                        <p>For payments and refunds</p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(249, 115, 22, 0.1); padding: 1.25rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+                    <p style="font-size: 0.95rem; color: var(--gray-dark); margin: 0;">
+                        <strong><i class="fa-solid fa-shield-halved"></i> Bank-level security:</strong> Your banking information is encrypted with 256-bit SSL and used only for payments and refunds.
+                    </p>
+                </div>
+
+                <div class="form-row-new">
+                    <div class="form-group">
+                        <label for="bankName">Bank Name <span class="required-indicator">*</span></label>
+                        <select class="form-select" id="bankName">
+                            <option value="">Select Bank</option>
+                            <option value="BDO">BDO Unibank</option>
+                            <option value="BPI">Bank of the Philippine Islands (BPI)</option>
+                            <option value="Metrobank">Metrobank</option>
+                            <option value="UnionBank">UnionBank</option>
+                            <option value="RCBC">RCBC</option>
+                            <option value="PNB">Philippine National Bank (PNB)</option>
+                            <option value="Landbank">Land Bank of the Philippines</option>
+                            <option value="Security Bank">Security Bank</option>
+                            <option value="Chinabank">Chinabank</option>
+                            <option value="EastWest">EastWest Bank</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="accountType">Account Type <span class="required-indicator">*</span></label>
+                        <select class="form-select" id="accountType">
+                            <option value="">Select Account Type</option>
+                            <option value="savings">Savings Account</option>
+                            <option value="checking">Checking Account</option>
+                            <option value="business">Business Account</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row-new">
+                    <div class="form-group">
+                        <label for="accountName">Account Name <span class="required-indicator">*</span></label>
+                        <input type="text" class="form-input" id="accountName" placeholder="Juan Dela Cruz">
+                        <div class="form-hint">Name as it appears on your bank account</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="accountNumber">Account Number <span class="required-indicator">*</span></label>
+                        <input type="text" class="form-input" id="accountNumber" placeholder="XXXXXXXXXXXX">
+                        <div class="form-hint">Your bank account number</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: SELLER ENHANCEMENTS -->
+        <div class="tab-content" id="seller-tab">
+            <div class="profile-section-card">
+
+
+                <div class="section-header-new">
+                    <div class="section-icon-new">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div>
+                        <h3>Seller Enhancements</h3>
+                        <p>Optional information to boost buyer confidence</p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(99, 102, 241, 0.1); padding: 1.25rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid var(--secondary);">
+                    <p style="font-size: 0.95rem; color: var(--gray-dark); margin: 0;">
+                        <strong><i class="fa-solid fa-award"></i> Stand out:</strong> Adding these optional details helps build trust with buyers and can increase your sales by up to 40%.
+                    </p>
+                </div>
+
+                <div class="form-row-new">
+                    <div class="form-group">
+                        <label for="registrationNumber">Business Registration Number</label>
+                        <input type="text" class="form-input" id="registrationNumber" placeholder="SEC/DTI Number">
+                        <div class="form-hint">SEC or DTI registration number</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="supportEmail">Support Email</label>
+                        <input type="email" class="form-input" id="supportEmail" placeholder="support@yourcompany.com">
+                        <div class="form-hint">Separate email for customer support</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="website">Website</label>
+                    <input type="url" class="form-input" id="website" placeholder="https://yourwebsite.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="bio">Business Description</label>
+                    <textarea class="form-textarea" id="bio" maxlength="500" placeholder="Tell buyers about your business..."></textarea>
+                    <div class="char-count"><span id="bioCount">0</span>/500</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLOATING SAVE BUTTON -->
+        <div class="floating-save-container">
+            <button type="submit" class="floating-save-btn" id="saveBtn">
+                <i class="fa-solid fa-floppy-disk"></i>
+                Save All Changes
+            </button>
+        </div>
+    </form>
+</section>
+
         </main>
 
       <!-- RIGHT SIDEBAR NAVIGATION -->
@@ -1586,32 +2159,47 @@
         // UPDATE PROFILE COMPLETION WITH VERIFICATIONS
         // ==========================================
         function calculateProfileCompletionWithVerifications(data) {
-            let completedFields = 0;
-            const verification = data.verification || {};
-            
-            const completionCriteria = [
-                { check: !!data.name && data.name.trim().length > 2, weight: 1 },
-                { check: !!currentUser.photoURL, weight: 1 },
-                { check: !!data.profile?.phone, weight: 0.5 },
-                { check: !!verification.phoneVerified, weight: 1.5 }, // Phone verified
-                { check: !!data.profile?.country, weight: 0.5 },
-                { check: !!data.profile?.city, weight: 0.5 },
-                { check: !!data.profile?.state, weight: 0.5 },
-                { check: !!data.profile?.address, weight: 0.5 },
-                { check: !!data.profile?.bio && data.profile.bio.trim().length >= 20, weight: 1 },
-                { check: !!data.profile?.company, weight: 0.5 },
-                { check: !!data.profile?.website, weight: 0.5 },
-                { check: !!currentUser.emailVerified, weight: 1.5 }, // Email verified
-                { check: verification.kycStatus === 'approved', weight: 2 } // KYC approved
-            ];
-            
-            const totalWeight = 12;
-            completedFields = completionCriteria.filter(c => c.check).reduce((sum, c) => sum + c.weight, 0);
-            const percentage = Math.min(100, Math.round((completedFields / totalWeight) * 100));
-            
-            updateCompletionDisplay(percentage);
-            return percentage;
-        }
+    let completedFields = 0;
+    const verification = data.verification || {};
+    const profile = data.profile || {};
+    const banking = data.banking || {};
+    
+    const completionCriteria = [
+        // Required fields (higher weight)
+        { check: !!data.name && data.name.trim().length > 2, weight: 1 },
+        { check: !!data.businessType, weight: 1 },
+        { check: !!data.taxId, weight: 1.5 },
+        { check: !!profile.address, weight: 1 },
+        { check: !!profile.barangay, weight: 0.5 },
+        { check: !!profile.city, weight: 0.5 },
+        { check: !!profile.province, weight: 0.5 },
+        { check: !!profile.postalCode, weight: 0.5 },
+        { check: !!profile.country, weight: 0.5 },
+        { check: !!banking.bankName, weight: 1 },
+        { check: !!banking.accountName, weight: 1 },
+        { check: !!banking.accountNumber, weight: 1 },
+        { check: !!banking.accountType, weight: 1 },
+        
+        // Verifications (highest weight)
+        { check: !!currentUser.emailVerified, weight: 1.5 },
+        { check: !!verification.phoneVerified, weight: 1.5 },
+        { check: verification.kycStatus === 'approved', weight: 2 },
+        
+        // Optional but valuable
+        { check: !!currentUser.photoURL, weight: 1 },
+        { check: !!profile.phone, weight: 0.5 },
+        { check: !!profile.bio && profile.bio.trim().length >= 20, weight: 1 },
+        { check: !!data.companyName, weight: 0.5 },
+        { check: !!profile.website, weight: 0.5 }
+    ];
+    
+    const totalWeight = 18;
+    completedFields = completionCriteria.filter(c => c.check).reduce((sum, c) => sum + c.weight, 0);
+    const percentage = Math.min(100, Math.round((completedFields / totalWeight) * 100));
+    
+    updateCompletionDisplay(percentage);
+    return percentage;
+}
 
 
 
@@ -1743,33 +2331,56 @@
         // PROFILE POPULATION & COMPLETION LOGIC
         // ==========================================
 
-        function populateProfileData(user, data) {
-            const profile = data.profile || {};
-            
-            document.getElementById('profileName').textContent = data.name || user.displayName || 'User';
-            document.getElementById('profileEmail').textContent = user.email;
-            
-            const avatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || user.email)}&size=100&background=F97316&color=fff`;
-            document.getElementById('profileAvatar').src = avatar;
-            
-            document.getElementById('fullName').value = data.name || '';
-            document.getElementById('email').value = user.email;
-            document.getElementById('phone').value = profile.phone || '';
-            document.getElementById('country').value = profile.country || '';
-            document.getElementById('city').value = profile.city || '';
-            document.getElementById('state').value = profile.state || '';
-            document.getElementById('address').value = profile.address || '';
-            document.getElementById('bio').value = profile.bio || '';
-            document.getElementById('company').value = profile.company || '';
-            document.getElementById('website').value = profile.website || '';
-            
-            updateCharCount();
-            
-            // Show verified badge (dummy logic for display)
-            if (profile.verified) {
-                document.getElementById('verifiedBadge').style.display = 'flex';
-            }
-        }
+       function populateProfileData(user, data) {
+    const profile = data.profile || {};
+    const banking = data.banking || {};
+    
+    document.getElementById('profileName').textContent = data.name || user.displayName || 'User';
+    document.getElementById('profileEmail').textContent = user.email;
+    
+    const avatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || user.email)}&size=100&background=F97316&color=fff`;
+    document.getElementById('profileAvatar').src = avatar;
+    
+    // Personal/Business Information
+    document.getElementById('fullName').value = data.name || '';
+    document.getElementById('email').value = user.email;
+    document.getElementById('companyName').value = data.companyName || '';
+    document.getElementById('businessType').value = data.businessType || '';
+    
+    // Contact
+    document.getElementById('phone').value = profile.phone || '';
+    
+    // Address
+    document.getElementById('address').value = profile.address || '';
+    document.getElementById('barangay').value = profile.barangay || '';
+    document.getElementById('city').value = profile.city || '';
+    document.getElementById('province').value = profile.province || profile.state || '';
+    document.getElementById('postalCode').value = profile.postalCode || '';
+    document.getElementById('country').value = profile.country || 'Philippines';
+    
+    // Tax/Legal
+    document.getElementById('taxId').value = data.taxId || '';
+    document.getElementById('vatRegistered').checked = data.vatRegistered || false;
+    
+    // Banking
+    document.getElementById('bankName').value = banking.bankName || '';
+    document.getElementById('accountType').value = banking.accountType || '';
+    document.getElementById('accountName').value = banking.accountName || '';
+    document.getElementById('accountNumber').value = banking.accountNumber || '';
+    
+    // Seller Enhancements (Optional)
+    document.getElementById('registrationNumber').value = data.registrationNumber || '';
+    document.getElementById('supportEmail').value = data.supportEmail || '';
+    document.getElementById('website').value = profile.website || '';
+    document.getElementById('bio').value = profile.bio || '';
+    
+    updateCharCount();
+    
+    // Show seller enhancements if user has seller role
+    if (data.role === 'seller' || data.isSeller) {
+        document.getElementById('sellerEnhancementsSection').style.display = 'block';
+    }
+}
         
 
 
@@ -1941,75 +2552,131 @@
             }
         }
         
-        // This function saves the profile form data
-       async function handleProfileUpdate(e) {
-            e.preventDefault();
+async function handleProfileUpdate(e) {
+    e.preventDefault();
+    
+    // Manually validate visible required fields
+    const requiredFields = [
+        { id: 'fullName', name: 'Full Name', tab: 'personal' },
+        { id: 'businessType', name: 'Business Type', tab: 'personal' },
+        { id: 'address', name: 'Street Address', tab: 'address' },
+        { id: 'barangay', name: 'Barangay', tab: 'address' },
+        { id: 'city', name: 'City', tab: 'address' },
+        { id: 'province', name: 'Province', tab: 'address' },
+        { id: 'postalCode', name: 'Postal Code', tab: 'address' },
+        { id: 'country', name: 'Country', tab: 'address' },
+        { id: 'taxId', name: 'Tax ID (TIN)', tab: 'tax' },
+        { id: 'bankName', name: 'Bank Name', tab: 'banking' },
+        { id: 'accountType', name: 'Account Type', tab: 'banking' },
+        { id: 'accountName', name: 'Account Name', tab: 'banking' },
+        { id: 'accountNumber', name: 'Account Number', tab: 'banking' }
+    ];
+
+    // Check each required field
+    for (const field of requiredFields) {
+        const element = document.getElementById(field.id);
+        const value = element.value.trim();
+        
+        if (!value) {
+            // Switch to the tab containing the empty field
+            switchTab(field.tab);
             
-            saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
-            saveBtn.disabled = true;
-
-            const fullName = document.getElementById('fullName').value;
-            const phone = document.getElementById('phone').value;
-            const country = document.getElementById('country').value;
-            const city = document.getElementById('city').value;
-            const state = document.getElementById('state').value;
-            const address = document.getElementById('address').value;
-            const bio = document.getElementById('bio').value;
-            const company = document.getElementById('company').value;
-            const website = document.getElementById('website').value;
-            
-            // Validate required fields
-            if (!country || !city || !state || !address) {
-                alert('Please fill in all required address fields');
-                saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
-                saveBtn.disabled = false;
-                return;
-            }
-
-            try {
-                // 1. Update Firebase Auth (for displayName)
-                await updateProfile(currentUser, {
-                    displayName: fullName
-                });
-
-                // 2. Update Firestore Document
-                const userDocRef = doc(db, 'users', currentUser.uid);
-                await updateDoc(userDocRef, {
-                    name: fullName,
-                    profile: {
-                        phone: phone,
-                        country: country,
-                        city: city,
-                        state: state,
-                        address: address,
-                        location: `${city}, ${state}, ${country}`, // Combined for backward compatibility
-                        bio: bio,
-                        company: company,
-                        website: website,
-                        verified: userData.profile?.verified || false
-                    },
-                    updatedAt: new Date().toISOString()
-                }, { merge: true });
-
-                // 3. Reload and update UI
-                await loadUserData(currentUser); // Re-fetch and re-render all data
-
-                // 4. Display success
-                successMessage.classList.add('show');
+            // Focus on the field
+            setTimeout(() => {
+                element.focus();
+                element.style.borderColor = 'var(--error)';
                 setTimeout(() => {
-                    successMessage.classList.remove('show');
-                }, 4000);
-
-            } catch (error) {
-                console.error("Error updating profile: ", error);
-                alert("Failed to update profile. Please try again. Error: " + error.message);
-            } finally {
-                // Reset button state
-                saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
-                saveBtn.disabled = false;
-            }
+                    element.style.borderColor = '';
+                }, 2000);
+            }, 300);
+            
+            alert(`❌ Please fill in: ${field.name}\n\nTab: ${field.tab.charAt(0).toUpperCase() + field.tab.slice(1)}`);
+            return;
         }
+    }
+    
+    saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
+    saveBtn.disabled = true;
 
+    const fullName = document.getElementById('fullName').value;
+    const companyName = document.getElementById('companyName').value;
+    const businessType = document.getElementById('businessType').value;
+    const phone = document.getElementById('phone').value;
+    const address = document.getElementById('address').value;
+    const barangay = document.getElementById('barangay').value;
+    const city = document.getElementById('city').value;
+    const province = document.getElementById('province').value;
+    const postalCode = document.getElementById('postalCode').value;
+    const country = document.getElementById('country').value;
+    const taxId = document.getElementById('taxId').value;
+    const vatRegistered = document.getElementById('vatRegistered').checked;
+    const bankName = document.getElementById('bankName').value;
+    const accountType = document.getElementById('accountType').value;
+    const accountName = document.getElementById('accountName').value;
+    const accountNumber = document.getElementById('accountNumber').value;
+    const registrationNumber = document.getElementById('registrationNumber').value;
+    const supportEmail = document.getElementById('supportEmail').value;
+    const website = document.getElementById('website').value;
+    const bio = document.getElementById('bio').value;
+
+    try {
+        // Update Firebase Auth
+        await updateProfile(currentUser, {
+            displayName: fullName
+        });
+
+        // Update Firestore Document with ALL new fields
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        await updateDoc(userDocRef, {
+            name: fullName,
+            companyName: companyName,
+            businessType: businessType,
+            taxId: taxId,
+            vatRegistered: vatRegistered,
+            registrationNumber: registrationNumber,
+            supportEmail: supportEmail,
+            profile: {
+                phone: phone,
+                address: address,
+                barangay: barangay,
+                city: city,
+                province: province,
+                state: province,
+                postalCode: postalCode,
+                country: country,
+                location: `${city}, ${province}, ${country}`,
+                bio: bio,
+                company: companyName,
+                website: website,
+                verified: userData.profile?.verified || false
+            },
+            banking: {
+                bankName: bankName,
+                accountName: accountName,
+                accountNumber: accountNumber,
+                accountType: accountType
+            },
+            profileCompleted: true,
+            updatedAt: new Date().toISOString()
+        }, { merge: true });
+
+        // Reload and update UI
+        await loadUserData(currentUser);
+
+        // Display success
+        successMessage.classList.add('show');
+        setTimeout(() => {
+            successMessage.classList.remove('show');
+        }, 4000);
+
+    } catch (error) {
+        console.error("Error updating profile: ", error);
+        alert("Failed to update profile. Please try again. Error: " + error.message);
+    } finally {
+        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save All Changes';
+        saveBtn.disabled = false;
+    }
+}
         // Global function for account deletion (used in the Danger Zone)
         window.deleteAccount = async function() {
             if (!confirm('Are you absolutely sure you want to delete your account? This action is irreversible.')) {
@@ -2054,6 +2721,65 @@
         
         // Make it globally accessible
         window.handleSignOut = handleSignOut;
+
+
+
+// ==========================================
+// TAB SWITCHING FUNCTIONALITY
+// ==========================================
+window.switchTab = function(tabName) {
+    // Remove active class from all tabs and content
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    // Add active class to clicked tab and corresponding content
+    const tabBtn = document.querySelector(`[data-tab="${tabName}"]`);
+    const tabContent = document.getElementById(`${tabName}-tab`);
+    
+    if (tabBtn) tabBtn.classList.add('active');
+    if (tabContent) tabContent.classList.add('active');
+    
+    // Scroll to top of page smoothly
+    window.scrollTo({ 
+        top: document.querySelector('.settings-section').offsetTop - 100, 
+        behavior: 'smooth' 
+    });
+}
+
+function updateTabCompletionIndicators() {
+    const tabs = [
+        { name: 'personal', fields: ['fullName', 'businessType'] },
+        { name: 'contact', fields: ['phone'] },
+        { name: 'address', fields: ['address', 'barangay', 'city', 'province', 'postalCode', 'country'] },
+        { name: 'tax', fields: ['taxId'] },
+        { name: 'banking', fields: ['bankName', 'accountType', 'accountName', 'accountNumber'] },
+        { name: 'seller', fields: [] } // Optional fields
+    ];
+
+    tabs.forEach(tab => {
+        const tabBtn = document.querySelector(`[data-tab="${tab.name}"]`);
+        if (!tabBtn) return;
+
+        // Remove existing classes
+        tabBtn.classList.remove('complete', 'incomplete');
+
+        // Check if all required fields are filled
+        const allFilled = tab.fields.every(fieldId => {
+            const element = document.getElementById(fieldId);
+            return element && element.value.trim() !== '';
+        });
+
+        if (tab.fields.length > 0) {
+            tabBtn.classList.add(allFilled ? 'complete' : 'incomplete');
+        }
+    });
+}
+
+// Call this when form inputs change
+document.getElementById('profileForm').addEventListener('input', updateTabCompletionIndicators);
+document.getElementById('profileForm').addEventListener('change', updateTabCompletionIndicators);
+
+
 
     </script>
 </body>
