@@ -637,6 +637,24 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   justify-content: center;
 }
 
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+.btn:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+
+
+
+
+
+
+
 /* Empty State */
 .empty-state {
   text-align: center;
@@ -1560,7 +1578,6 @@ let listingsUnsubscribe = null;
 // ============================================
 // LOAD OFFERS
 // ============================================
-
 async function loadOffers() {
   try {
     console.log('📥 Loading buyer offers from Firebase...');
@@ -1589,12 +1606,22 @@ async function loadOffers() {
           created_at: data.createdAt?.toDate?.() || new Date(),
           counter_amount: data.counterAmount || null,
           fileReviewStatus: null,
-          fileReviewId: null
+          fileReviewId: null,
+          // ✅ Initialize invoice-related fields
+          hasInvoice: false,
+          invoiceId: null,
+          invoiceStatus: null
         });
       });
       
       console.log('✅ Loaded', myOffers.length, 'offers from Firebase');
+      
+      // ✅ Load file reviews first
       await loadFileReviews();
+      
+      // ✅ Check invoice status for all offers
+      await checkOfferInvoiceStatus();
+      
       renderOffers();
       updateStats();
     }, (error) => {
@@ -1606,6 +1633,53 @@ async function loadOffers() {
     myOffers = [];
   }
 }
+
+
+
+// ✅ CHECK INVOICE STATUS FOR ALL OFFERS
+async function checkOfferInvoiceStatus() {
+  try {
+    console.log('🔍 Checking invoice status for all offers...');
+    
+    for (const offer of myOffers) {
+      // Only check for offers with approved files
+      if (offer.fileReviewStatus === 'admin-approved' && offer.status === 'admin-approved') {
+        try {
+          const invoicesRef = collection(db, 'invoices');
+          const q = query(invoicesRef, where('offerId', '==', offer.id));
+          const snapshot = await getDocs(q);
+          
+          if (!snapshot.empty) {
+            const invoiceDoc = snapshot.docs[0];
+            const invoiceData = invoiceDoc.data();
+            
+            offer.hasInvoice = true;
+            offer.invoiceId = invoiceDoc.id;
+            offer.invoiceStatus = invoiceData.status;
+            
+            console.log(`✅ Offer ${offer.id} has invoice: ${invoiceData.invoiceNumber} (${invoiceData.status})`);
+          } else {
+            console.log(`ℹ️ Offer ${offer.id}: No invoice found`);
+          }
+        } catch (err) {
+          console.warn(`⚠️ Error checking invoice for offer ${offer.id}:`, err);
+        }
+      }
+    }
+    
+    console.log('✅ Invoice status check complete');
+    
+  } catch (error) {
+    console.error('❌ Error in checkOfferInvoiceStatus:', error);
+  }
+}
+
+
+
+
+
+
+
 
 
 
@@ -2560,11 +2634,44 @@ function renderPurchases() {
 
 
 
+// ✅ CHECK INVOICE STATUS FOR ALL OFFERS ON LOAD
+async function checkOfferInvoiceStatus() {
+  try {
+    console.log('🔍 Checking invoice status for all offers...');
+    
+    for (const offer of myOffers) {
+      if (offer.fileReviewStatus === 'admin-approved' && offer.status === 'admin-approved') {
+        const invoicesRef = collection(db, 'invoices');
+        const q = query(invoicesRef, where('offerId', '==', offer.id));
+        const snapshot = await getDocs(q);
+        
+        if (!snapshot.empty) {
+          const invoiceData = snapshot.docs[0].data();
+          offer.hasInvoice = true;
+          offer.invoiceId = snapshot.docs[0].id;
+          offer.invoiceStatus = invoiceData.status;
+          
+          console.log(`✅ Offer ${offer.id} has invoice: ${invoiceData.invoiceNumber} (${invoiceData.status})`);
+        }
+      }
+    }
+    
+    renderOffers();
+    
+  } catch (error) {
+    console.error('❌ Error checking invoice status:', error);
+  }
+}
+
+
+
+
+
+
 
 // ============================================
 // RENDER OFFERS
 // ============================================
-
 function renderOffers() {
   const container = document.getElementById('offersList');
   
@@ -2619,25 +2726,25 @@ function renderOffers() {
         </div>
         
         ${offer.status === 'paid' ? `
-  <div class="offer-action-banner success">
-    <div class="offer-action-banner-title">
-      <i class="fa-solid fa-circle-check" style="color: var(--success);"></i>
-      Payment Completed
-    </div>
-    <div class="offer-action-banner-text">
-      Your purchase is complete. ${offer.fileCount || 0} file(s) ready for download.
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem;">
-      <button class="btn btn-secondary btn-full" 
-              onclick="viewPurchasedFiles('${offer.fileReviewId}')">
-        <i class="fa-solid fa-folder-open"></i> View Files
-      </button>
-      <button class="btn btn-success btn-full" 
-              onclick="downloadPurchasedFiles('${offer.fileReviewId}')">
-        <i class="fa-solid fa-download"></i> Download All
-      </button>
-    </div>
-  </div>
+          <div class="offer-action-banner success">
+            <div class="offer-action-banner-title">
+              <i class="fa-solid fa-circle-check" style="color: var(--success);"></i>
+              Payment Completed
+            </div>
+            <div class="offer-action-banner-text">
+              Your purchase is complete. ${offer.fileCount || 0} file(s) ready for download.
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem;">
+              <button class="btn btn-secondary btn-full" 
+                      onclick="viewPurchasedFiles('${offer.fileReviewId}')">
+                <i class="fa-solid fa-folder-open"></i> View Files
+              </button>
+              <button class="btn btn-success btn-full" 
+                      onclick="downloadPurchasedFiles('${offer.fileReviewId}')">
+                <i class="fa-solid fa-download"></i> Download All
+              </button>
+            </div>
+          </div>
         ` : offer.fileReviewStatus === 'pending-admin-review' ? `
           <div class="offer-action-banner info">
             <div class="offer-action-banner-title">
@@ -2655,12 +2762,33 @@ function renderOffers() {
               Files Approved
             </div>
             <div class="offer-action-banner-text">
-              ${offer.fileCount || 0} file(s) verified and ready. Proceed with payment.
+              ${offer.fileCount || 0} file(s) verified and ready. 
+              ${offer.hasInvoice ? 'Invoice already generated.' : 'Proceed with payment.'}
             </div>
-            <button class="btn btn-success btn-full" style="margin-top: 0.75rem;" 
-                    onclick="proceedToPayment('${offer.id}', '${offer.fileReviewId}')">
-              <i class="fa-solid fa-credit-card"></i> Proceed to Payment - ₱${parseFloat(offer.offer_amount).toLocaleString()}
-            </button>
+            
+            ${offer.hasInvoice ? `
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem;">
+                <button class="btn btn-secondary btn-full" onclick="viewInvoice('${offer.invoiceId}')">
+                  <i class="fa-solid fa-file-invoice"></i> View Invoice
+                </button>
+                ${offer.invoiceStatus === 'pending' ? `
+                  <button class="btn btn-success btn-full" onclick="window.location.href='invoice-viewer.html?id=${offer.invoiceId}'">
+                    <i class="fa-solid fa-credit-card"></i> Pay Now
+                  </button>
+                ` : `
+                  <button class="btn btn-success btn-full" disabled style="opacity: 0.6; cursor: not-allowed;">
+                    <i class="fa-solid fa-check"></i> Already Paid
+                  </button>
+                `}
+              </div>
+            ` : `
+              <button class="btn btn-success btn-full" 
+                      style="margin-top: 0.75rem;" 
+                      id="paymentBtn_${offer.id}"
+                      onclick="proceedToPayment('${offer.id}', '${offer.fileReviewId}')">
+                <i class="fa-solid fa-credit-card"></i> Proceed to Payment - ₱${parseFloat(offer.offer_amount).toLocaleString()}
+              </button>
+            `}
           </div>
         ` : ''}
         
@@ -2711,7 +2839,6 @@ function renderOffers() {
     `;
   }).join('');
 }
-
 
 function renderInvoices() {
   const container = document.getElementById('invoicesList');
@@ -2866,6 +2993,40 @@ window.proceedToPayment = async function(offerId, fileReviewId) {
   }
   
   try {
+    // ✅ CHECK IF INVOICE ALREADY EXISTS FOR THIS OFFER
+    console.log('🔍 Checking for existing invoice...');
+    
+    const invoicesRef = collection(db, 'invoices');
+    const q = query(invoicesRef, where('offerId', '==', offerId));
+    const existingInvoices = await getDocs(q);
+    
+    if (!existingInvoices.empty) {
+      const invoiceDoc = existingInvoices.docs[0];
+      const existingInvoice = invoiceDoc.data();
+      console.log('⚠️ Invoice already exists:', existingInvoice.invoiceNumber);
+      
+      // Check invoice status
+      if (existingInvoice.status === 'paid') {
+        showToast('This offer has already been paid!', 'info');
+        return;
+      } else if (existingInvoice.status === 'pending') {
+        // Invoice exists but unpaid - redirect to existing invoice
+        showToast('Redirecting to your pending invoice...', 'info');
+        
+        setTimeout(() => {
+          window.location.href = `invoice-viewer.html?id=${invoiceDoc.id}`;
+        }, 1500);
+        return;
+      }
+    }
+    
+    // ✅ DISABLE BUTTON IMMEDIATELY TO PREVENT DOUBLE CLICKS
+    const btn = event?.target;
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+    }
+    
     // Create transaction checkout summary in Firebase
     const transactionData = {
       offerId: offerId,
@@ -2878,7 +3039,7 @@ window.proceedToPayment = async function(offerId, fileReviewId) {
       listingId: offer.listing_id,
       listingName: offer.listing_name,
       amount: parseFloat(offer.offer_amount),
-      status: 'pending', // pending, processing, completed, failed
+      status: 'pending',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     };
@@ -2898,6 +3059,13 @@ window.proceedToPayment = async function(offerId, fileReviewId) {
   } catch (error) {
     console.error('❌ Error creating transaction:', error);
     showToast('Failed to proceed to payment: ' + error.message, 'error');
+    
+    // Re-enable button on error
+    if (event?.target) {
+      const btn = event.target;
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> Proceed to Payment - ₱' + parseFloat(offer.offer_amount).toLocaleString();
+    }
   }
 }
 
