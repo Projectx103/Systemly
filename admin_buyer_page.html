@@ -2634,41 +2634,6 @@ function renderPurchases() {
 
 
 
-// ✅ CHECK INVOICE STATUS FOR ALL OFFERS ON LOAD
-async function checkOfferInvoiceStatus() {
-  try {
-    console.log('🔍 Checking invoice status for all offers...');
-    
-    for (const offer of myOffers) {
-      if (offer.fileReviewStatus === 'admin-approved' && offer.status === 'admin-approved') {
-        const invoicesRef = collection(db, 'invoices');
-        const q = query(invoicesRef, where('offerId', '==', offer.id));
-        const snapshot = await getDocs(q);
-        
-        if (!snapshot.empty) {
-          const invoiceData = snapshot.docs[0].data();
-          offer.hasInvoice = true;
-          offer.invoiceId = snapshot.docs[0].id;
-          offer.invoiceStatus = invoiceData.status;
-          
-          console.log(`✅ Offer ${offer.id} has invoice: ${invoiceData.invoiceNumber} (${invoiceData.status})`);
-        }
-      }
-    }
-    
-    renderOffers();
-    
-  } catch (error) {
-    console.error('❌ Error checking invoice status:', error);
-  }
-}
-
-
-
-
-
-
-
 // ============================================
 // RENDER OFFERS
 // ============================================
