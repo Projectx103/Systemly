@@ -720,6 +720,48 @@ nav {
   animation: slideInDown 0.5s ease-out;
 }
 
+
+/* Email Verification Notice */
+.verification-notice {
+  background: linear-gradient(135deg, #FCD34D, #F59E0B);
+  color: var(--gray-dark);
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  display: none;
+  align-items: center;
+  gap: 0.8rem;
+  font-weight: 500;
+  border: 2px solid #F59E0B;
+}
+
+.verification-notice.show {
+  display: flex;
+  animation: slideInDown 0.5s ease-out;
+}
+
+.verification-notice i {
+  font-size: 1.5rem;
+}
+
+.verification-notice .resend-link {
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  font-weight: 600;
+}
+
+.verification-notice .resend-link:hover {
+  color: var(--orange-dark);
+}
+
+
+
+
+
+
+
 .success-message.show {
   display: flex;
 }
@@ -960,6 +1002,13 @@ nav {
           <span>Login successful! Redirecting...</span>
         </div>
 
+<div class="verification-notice" id="verificationNotice">
+  <i class="fa-solid fa-triangle-exclamation"></i>
+  <span>Please verify your email to continue. <a class="resend-link" id="resendVerification">Resend verification email</a></span>
+</div>
+
+
+
         <div class="form-group">
           <label class="form-label">Email Address</label>
           <div class="form-input-wrapper">
@@ -1025,6 +1074,19 @@ nav {
     <i class="fa-solid fa-circle-check"></i>
     <span>Account created! Setting up your profile...</span>
   </div>
+
+<div class="success-message" id="verificationSent" style="background: linear-gradient(135deg, #3B82F6, #2563EB);">
+  <i class="fa-solid fa-envelope-circle-check"></i>
+  <span>Verification email sent! Please check your inbox.</span>
+</div>
+
+
+
+
+
+
+
+
 
   <!-- Role Selection -->
   <div class="form-group">
@@ -1186,7 +1248,8 @@ import {
   signOut,
   setPersistence,
   browserLocalPersistence,
-  updateProfile
+  updateProfile,
+  sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import { 
@@ -1371,6 +1434,7 @@ document.getElementById('switchToLoginBtn').addEventListener('click', (e) => {
 // LOGIN HANDLER
 // ==========================================
 // LOGIN HANDLER (REPLACE THE EXISTING ONE)
+// LOGIN HANDLER WITH EMAIL VERIFICATION CHECK
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   
@@ -1379,10 +1443,12 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   const btn = e.target.querySelector('.btn-primary');
   const emailError = document.getElementById('loginEmailError');
   const passwordError = document.getElementById('loginPasswordError');
+  const verificationNotice = document.getElementById('verificationNotice');
 
   // Reset errors
   emailError.classList.remove('show');
   passwordError.classList.remove('show');
+  verificationNotice.classList.remove('show');
   document.getElementById('loginEmail').classList.remove('error');
   document.getElementById('loginPassword').classList.remove('error');
 
@@ -1403,13 +1469,31 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+    const user = userCredential.user;
+    
+    // Check if email is verified
+    if (!user.emailVerified) {
+      btn.classList.remove('loading');
+      verificationNotice.classList.add('show');
+      
+      // Store user for resend function
+      window.currentUnverifiedUser = user;
+      
+      console.log('⚠️ Email not verified');
+      return;
+    }
     
     // Check user document
-    const userDocRef = doc(db, 'users', userCredential.user.uid);
+    const userDocRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userDocRef);
     
     if (userDoc.exists()) {
       const userData = userDoc.data();
+      
+      // Update emailVerified status in Firestore if needed
+      if (userData.emailVerified !== true) {
+        await setDoc(userDocRef, { emailVerified: true }, { merge: true });
+      }
       
       // Check if suspended
       if (userData.status === 'suspended') {
@@ -1429,6 +1513,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     
     document.getElementById('loginSuccess').classList.add('show');
     setTimeout(() => window.location.href = "marketplace.html", 1500);
+    
   } catch (err) {
     btn.classList.remove('loading');
     let errorMsg = "Login failed. Please check your credentials.";
@@ -1461,6 +1546,52 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
 
 
+// RESEND VERIFICATION EMAIL
+document.getElementById('resendVerification').addEventListener('click', async (e) => {
+  e.preventDefault();
+  
+  if (!window.currentUnverifiedUser) {
+    alert('Please try logging in again.');
+    return;
+  }
+  
+  const link = e.target;
+  link.textContent = 'Sending...';
+  link.style.pointerEvents = 'none';
+  
+  try {
+    await sendEmailVerification(window.currentUnverifiedUser, {
+      url: window.location.origin + '/profile.html',
+      handleCodeInApp: true
+    });
+    
+    alert('✅ Verification email sent! Please check your inbox.');
+    link.textContent = 'Email sent!';
+    
+    setTimeout(() => {
+      link.textContent = 'Resend verification email';
+      link.style.pointerEvents = 'auto';
+    }, 5000);
+    
+  } catch (err) {
+    console.error('Resend error:', err);
+    alert('Failed to resend email. Please try again.');
+    link.textContent = 'Resend verification email';
+    link.style.pointerEvents = 'auto';
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
 // Role selection for signup
 let selectedSignupRole = null;
 
@@ -1483,7 +1614,7 @@ window.selectSignupRole = function(role) {
   }
 };
 
-// SIGNUP HANDLER
+// SIGNUP HANDLER WITH EMAIL VERIFICATION
 document.getElementById('signupForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   
@@ -1511,20 +1642,17 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
     console.log('No role selected - showing error');
     roleError.classList.add('show');
     
-    // Scroll to role selection smoothly
     const roleContainer = document.querySelector('.role-select-card').parentElement.parentElement;
     roleContainer.scrollIntoView({ 
       behavior: 'smooth', 
       block: 'center' 
     });
     
-    // Add shake animation to role cards
     document.querySelectorAll('.role-select-card').forEach(card => {
       card.style.animation = 'shake 0.5s';
       setTimeout(() => { card.style.animation = ''; }, 500);
     });
     
-    // Also show an alert as fallback
     setTimeout(() => {
       if (!selectedSignupRole) {
         alert('⚠️ Please select your account type: Buyer or Seller');
@@ -1558,28 +1686,71 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
   btn.classList.add('loading');
 
   try {
+    // Create user account
     const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
     const user = userCredential.user;
 
+    // Update display name
     await updateProfile(user, {
       displayName: name
     });
 
+    // Send verification email
+    await sendEmailVerification(user, {
+      url: window.location.origin + '/profile.html',
+      handleCodeInApp: true
+    });
+
+    // Create user document in Firestore
     const userDocRef = doc(db, 'users', user.uid);
     await setDoc(userDocRef, {
       email: user.email,
       name: name,
       role: selectedSignupRole,
+      subscriptionPlan: 'free',
       profileComplete: false,
+      emailVerified: false,
       createdAt: new Date().toISOString(),
       photoURL: user.photoURL || null,
-      status: 'active'
+      status: 'active',
+      listings: {
+        active: 0,
+        total: 0
+      },
+      stats: {
+        totalViews: 0,
+        inquiries: 0,
+        sales: 0,
+        alerts: 0,
+        savedSearches: 0
+      },
+      profile: {
+        bio: '',
+        company: '',
+        website: '',
+        phone: '',
+        location: 'Quezon City, Metro Manila, PH',
+        verified: false
+      }
     });
 
     console.log('✅ User created successfully:', user.uid);
+    console.log('📧 Verification email sent to:', user.email);
     
-    document.getElementById('signupSuccess').classList.add('show');
-    setTimeout(() => window.location.href = "profile.html", 1500);
+    btn.classList.remove('loading');
+    
+    // Show verification sent message
+    document.getElementById('verificationSent').classList.add('show');
+    
+    // Sign out user until they verify
+    await signOut(auth);
+    
+    // Switch to login form after 3 seconds
+    setTimeout(() => {
+      document.getElementById('verificationSent').classList.remove('show');
+      switchToLogin();
+      alert('✅ Account created! Please check your email and click the verification link before logging in.');
+    }, 3000);
     
   } catch (err) {
     btn.classList.remove('loading');
