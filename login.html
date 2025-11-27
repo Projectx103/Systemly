@@ -787,6 +787,147 @@ nav {
     padding: 1rem;
   }
 }
+
+/* Google Login Role Selection Modal */
+.google-role-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.google-role-modal.show {
+  display: flex;
+}
+
+.google-role-content {
+  background: var(--white);
+  padding: 3rem;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s ease-out;
+  border: 1px solid var(--border);
+}
+
+.google-role-content h3 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--gray-dark);
+  text-align: center;
+}
+
+.google-role-content p {
+  color: var(--gray);
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.google-role-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.google-role-card {
+  background: var(--gray-light);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.google-role-card:hover {
+  border-color: var(--primary);
+  background: rgba(249, 115, 22, 0.05);
+  transform: translateY(-5px);
+}
+
+.google-role-card.selected {
+  border-color: var(--primary);
+  background: rgba(249, 115, 22, 0.1);
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
+}
+
+.google-role-card i {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+  color: var(--gray);
+  transition: color 0.3s;
+}
+
+.google-role-card.selected i {
+  color: var(--primary);
+}
+
+.google-role-card span {
+  display: block;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--gray-dark);
+}
+
+.google-role-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.google-role-actions button {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: 'Sarabun', sans-serif;
+}
+
+.btn-cancel-google {
+  background: var(--gray-light);
+  color: var(--gray-dark);
+  border: 1px solid var(--border);
+}
+
+.btn-cancel-google:hover {
+  background: var(--border);
+}
+
+.btn-confirm-google {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4);
+}
+
+.btn-confirm-google:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(249, 115, 22, 0.5);
+}
+
+.btn-confirm-google:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+
+
+
+
+
 </style>
 </head>
 <body>
@@ -1000,7 +1141,37 @@ nav {
     </div>
 
   </div>
+<!-- Google Login Role Selection Modal -->
+<div class="google-role-modal" id="googleRoleModal">
+  <div class="google-role-content">
+    <h3>Welcome! 👋</h3>
+    <p>Please select what you want to do on Systemly</p>
+    
+    <div class="google-role-options">
+      <div class="google-role-card" data-role="buyer" onclick="selectGoogleRole('buyer')">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span>Buy Systems</span>
+      </div>
+      <div class="google-role-card" data-role="seller" onclick="selectGoogleRole('seller')">
+        <i class="fa-solid fa-store"></i>
+        <span>Sell Systems</span>
+      </div>
+    </div>
+    
+    <div class="google-role-actions">
+      <button type="button" class="btn-cancel-google" onclick="cancelGoogleLogin()">
+        Cancel
+      </button>
+      <button type="button" class="btn-confirm-google" id="confirmGoogleRole" disabled>
+        Continue
+      </button>
+    </div>
+  </div>
 </div>
+</div>
+
+
+
 
 <!-- Firebase SDK -->
 <script type="module">
@@ -1437,7 +1608,91 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
   }
 });
 
-// GOOGLE LOGIN HANDLER (REPLACE THE EXISTING ONE)
+// GOOGLE LOGIN - Variables
+let googleRoleSelected = null;
+let pendingGoogleUser = null;
+
+// Role selection for Google login
+window.selectGoogleRole = function(role) {
+  googleRoleSelected = role;
+  
+  document.querySelectorAll('.google-role-card').forEach(card => {
+    card.classList.remove('selected');
+  });
+  document.querySelector(`.google-role-card[data-role="${role}"]`).classList.add('selected');
+  
+  document.getElementById('confirmGoogleRole').disabled = false;
+};
+
+window.cancelGoogleLogin = async function() {
+  document.getElementById('googleRoleModal').classList.remove('show');
+  googleRoleSelected = null;
+  pendingGoogleUser = null;
+  
+  // Sign out the pending user
+  if (auth.currentUser) {
+    await signOut(auth);
+  }
+  
+  const btn = document.getElementById('googleLogin');
+  btn.style.opacity = '1';
+  btn.style.pointerEvents = 'auto';
+};
+
+// Confirm Google role and complete signup
+document.getElementById('confirmGoogleRole').addEventListener('click', async () => {
+  if (!googleRoleSelected || !pendingGoogleUser) return;
+  
+  const btn = document.getElementById('confirmGoogleRole');
+  btn.disabled = true;
+  btn.textContent = 'Creating account...';
+  
+  try {
+    const userDocRef = doc(db, 'users', pendingGoogleUser.uid);
+    
+    await setDoc(userDocRef, {
+      email: pendingGoogleUser.email,
+      name: pendingGoogleUser.displayName || pendingGoogleUser.email.split('@')[0],
+      role: googleRoleSelected,
+      subscriptionPlan: 'free',
+      profileComplete: false,
+      createdAt: new Date().toISOString(),
+      photoURL: pendingGoogleUser.photoURL || null,
+      status: 'active',
+      listings: {
+        active: 0,
+        total: 0
+      },
+      stats: {
+        totalViews: 0,
+        inquiries: 0,
+        sales: 0,
+        alerts: 0,
+        savedSearches: 0
+      },
+      profile: {
+        bio: '',
+        company: '',
+        website: '',
+        phone: '',
+        location: 'Quezon City, Metro Manila, PH',
+        verified: false
+      }
+    });
+    
+    console.log('✅ Google user created with role:', googleRoleSelected);
+    
+    document.getElementById('googleRoleModal').classList.remove('show');
+    window.location.href = "profile.html";
+    
+  } catch (err) {
+    console.error('Error creating Google user:', err);
+    alert('Failed to create account. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Continue';
+  }
+});
+
 // GOOGLE LOGIN HANDLER
 document.getElementById('googleLogin').addEventListener('click', async () => {
   const provider = new GoogleAuthProvider();
@@ -1461,23 +1716,22 @@ document.getElementById('googleLogin').addEventListener('click', async () => {
     const userDoc = await getDoc(userDocRef);
     
     if (!userDoc.exists()) {
-      // New user - create document
-      await setDoc(userDocRef, {
-        email: user.email,
-        name: user.displayName || user.email.split('@')[0],
-        role: 'buyer', // Default role for Google sign-in
-        profileComplete: false,
-        createdAt: new Date().toISOString(),
-        photoURL: user.photoURL || null,
-        status: 'active'
+      // NEW USER - Show role selection modal
+      pendingGoogleUser = user;
+      googleRoleSelected = null;
+      
+      document.getElementById('confirmGoogleRole').disabled = true;
+      document.querySelectorAll('.google-role-card').forEach(card => {
+        card.classList.remove('selected');
       });
       
-      console.log('✅ New Google user document created');
+      document.getElementById('googleRoleModal').classList.add('show');
       
-      // Redirect to profile setup
-      window.location.href = "profile.html";
+      btn.style.opacity = '1';
+      btn.style.pointerEvents = 'auto';
+      
     } else {
-      // Existing user
+      // EXISTING USER - Normal login flow
       const userData = userDoc.data();
       
       if (userData.status === 'suspended') {
@@ -1488,7 +1742,6 @@ document.getElementById('googleLogin').addEventListener('click', async () => {
         return;
       }
       
-      // Check profile completion
       if (userData.profileComplete !== true) {
         window.location.href = "profile.html";
       } else {
@@ -1500,16 +1753,12 @@ document.getElementById('googleLogin').addEventListener('click', async () => {
     btn.style.pointerEvents = 'auto';
     
     console.error('❌ Google sign-in error:', err);
-    console.error('Error code:', err.code);
-    console.error('Error message:', err.message);
     
     if (err.code === 'auth/popup-closed-by-user') {
-      // User closed popup - no alert needed
       return;
     } else if (err.code === 'auth/popup-blocked') {
       alert('Popup blocked. Please allow popups for this site and try again.');
     } else if (err.code === 'auth/cancelled-popup-request') {
-      // Another popup was triggered - ignore
       return;
     } else {
       alert('Google sign-in failed: ' + err.message);
