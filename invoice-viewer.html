@@ -114,9 +114,7 @@ body {
 .company-logo {
   font-size: 1.75rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
   margin-bottom: 0.25rem;
   letter-spacing: -0.5px;
 }
@@ -418,11 +416,12 @@ body {
   
   .invoice-page {
     width: 210mm;
-    height: 297mm;
+    min-height: auto;
+    max-height: none;
     padding: 15mm 20mm;
     margin: 0;
-    page-break-after: always;
-    overflow: hidden;
+    page-break-inside: avoid;
+    overflow: visible;
   }
   
   @page {
@@ -430,30 +429,54 @@ body {
     margin: 0;
   }
   
-  /* Ensure content fits */
+  /* Make company logo visible in print */
+  .company-logo {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color: #F97316 !important;
+  }
+  
+  /* More compact spacing for print */
   .invoice-header {
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.85rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
   }
   
   .parties-section {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
   }
   
   .invoice-table {
-    margin-bottom: 1rem;
+    margin-bottom: 0.85rem;
+    page-break-inside: auto;
+  }
+  
+  .invoice-table tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  
+  .invoice-table thead {
+    display: table-header-group;
   }
   
   .totals-section {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
+    page-break-inside: avoid;
   }
   
   .payment-info {
-    margin-bottom: 1rem;
+    margin-bottom: 0.85rem;
+    page-break-inside: avoid;
   }
   
   .terms-section {
-    margin-bottom: 1rem;
+    margin-bottom: 0.85rem;
+    page-break-inside: avoid;
+  }
+  
+  .invoice-footer {
+    page-break-inside: avoid;
   }
 }
 
