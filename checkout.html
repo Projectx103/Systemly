@@ -326,6 +326,7 @@ import {
   updateDoc,
   collection,
   query,
+  where,  // ADD THIS
   orderBy,
   limit,
   getDocs,
@@ -419,41 +420,89 @@ async function loadTransaction() {
 
 async function generateInvoice(transactionId) {
   try {
+    // Get admin user data for seller info
+    const adminQuery = query(collection(db, 'users'), where('role', '==', 'admin'), limit(1));
+    const adminSnapshot = await getDocs(adminQuery);
+    
+    let adminData = null;
+    if (!adminSnapshot.empty) {
+      adminData = adminSnapshot.docs[0].data();
+    }
+    
+    // Get actual seller and buyer data
+    const sellerDoc = await getDoc(doc(db, 'users', transactionData.sellerId));
+    const buyerDoc = await getDoc(doc(db, 'users', transactionData.buyerId));
+    
+    const sellerData = sellerDoc.exists() ? sellerDoc.data() : null;
+    const buyerData = buyerDoc.exists() ? buyerDoc.data() : null;
+    
     // Get the next invoice number
     const invoiceNumber = await getNextInvoiceNumber();
     
     const today = new Date();
     const dueDate = new Date(today);
-    dueDate.setDate(dueDate.getDate() + 30); // 30 days due date
+    dueDate.setDate(dueDate.getDate() + 30);
+    
+    // Build admin info (for company/platform details)
+    const adminInfo = {
+      companyName: adminData?.companyName || 'Systemly',
+      address: adminData?.profile?.address 
+        ? `${adminData.profile.address}, ${adminData.profile.barangay}, ${adminData.profile.city}, ${adminData.profile.province}, ${adminData.profile.country}`
+        : 'Angeles City, Pampanga, Philippines',
+      contact: adminData?.email || 'molinajefferson001@gmail.com',
+      phone: adminData?.profile?.phone || '+63 912 345 6789',
+      taxId: adminData?.taxId || 'Not provided'
+    };
+    
+    // Build seller info
+    const sellerInfo = {
+      companyName: sellerData?.companyName || sellerData?.name || 'Unknown Seller',
+      address: sellerData?.profile?.address 
+        ? `${sellerData.profile.address}, ${sellerData.profile.barangay || ''}, ${sellerData.profile.city}, ${sellerData.profile.province}, ${sellerData.profile.country}`
+        : 'Address not provided',
+      contact: sellerData?.email || transactionData.sellerEmail,
+      phone: sellerData?.profile?.phone || 'Not provided',
+      taxId: sellerData?.taxId || null
+    };
+    
+    // Build buyer info
+    const buyerInfo = {
+      companyName: buyerData?.companyName || buyerData?.name || transactionData.buyerName,
+      address: buyerData?.profile?.address 
+        ? `${buyerData.profile.address}, ${buyerData.profile.barangay || ''}, ${buyerData.profile.city}, ${buyerData.profile.province}, ${buyerData.profile.country}`
+        : 'Address not provided',
+      contact: buyerData?.email || transactionData.buyerEmail,
+      phone: buyerData?.profile?.phone || 'Not provided',
+      taxId: buyerData?.taxId || null
+    };
+    
+    // Build banking info from admin
+    const bankingInfo = {
+      bankName: adminData?.banking?.bankName || 'BDO Unibank',
+      accountName: adminData?.banking?.accountName || 'Systemly Inc.',
+      accountNumber: adminData?.banking?.accountNumber || '1234-5678-9012',
+      accountType: adminData?.banking?.accountType || 'Business',
+      swiftCode: 'BNORPHMM', // You might want to add this to admin profile
+      paymentTerms: 'Payment due within 30 days of invoice date'
+    };
     
     const invoice = {
       invoiceNumber: invoiceNumber,
       transactionId: transactionId,
       offerId: transactionData.offerId,
       
-      // Dates
       issueDate: today.toISOString().split('T')[0],
       dueDate: dueDate.toISOString().split('T')[0],
       
-      // Seller (Vendor) Info
-      seller: {
-        companyName: 'Systemly',
-        address: 'Angeles City, Pampanga, Philippines',
-        contact: transactionData.sellerEmail,
-        phone: '+63 912 345 6789',
-        taxId: 'TIN-XXX-XXX-XXX'
-      },
+      // Admin/Platform Info
+      platform: adminInfo,
       
-      // Buyer (Purchaser) Info
-      buyer: {
-        companyName: transactionData.buyerName,
-        address: 'Angeles City, Central Luzon, Philippines',
-        contact: transactionData.buyerEmail,
-        phone: '+63 917 XXX XXXX',
-        taxId: 'TIN-YYY-YYY-YYY'
-      },
+      // Actual Seller Info
+      seller: sellerInfo,
       
-      // Items
+      // Actual Buyer Info
+      buyer: buyerInfo,
+      
       items: [
         {
           itemNumber: 1,
@@ -465,35 +514,24 @@ async function generateInvoice(transactionId) {
         }
       ],
       
-      // Amounts
       subtotal: transactionData.amount,
-      taxRate: 0, // No tax for now
+      taxRate: 0,
       taxAmount: 0,
       totalDue: transactionData.amount,
       
-      // Payment Info
-      payment: {
-        bankName: 'BDO Unibank',
-        accountName: 'Systemly Inc.',
-        accountNumber: '1234-5678-9012',
-        swiftCode: 'BNORPHMM',
-        paymentTerms: 'Payment due within 30 days of invoice date'
-      },
+      // Use admin banking info
+      payment: bankingInfo,
       
-      // Status
       status: 'pending',
       
-      // Metadata
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       createdBy: currentUser.uid
     };
     
-    // Save invoice to Firestore
     const invoiceRef = doc(db, 'invoices', transactionId);
     await setDoc(invoiceRef, invoice);
     
-    // Update transaction with invoice number
     const transactionRef = doc(db, 'transactions', transactionId);
     await updateDoc(transactionRef, {
       invoiceNumber: invoiceNumber,
@@ -583,26 +621,37 @@ function renderCheckout() {
         </div>
       </div>
       
-      <!-- Seller & Buyer Info -->
-      <div class="invoice-meta">
-        <div class="party-info">
-          <h4>Seller (Vendor)</h4>
-          <p><strong>${invoice.seller.companyName}</strong></p>
-          <p>${invoice.seller.address}</p>
-          <p>Email: ${invoice.seller.contact}</p>
-          <p>Phone: ${invoice.seller.phone}</p>
-          <p>Tax ID: ${invoice.seller.taxId}</p>
-        </div>
-        
-        <div class="party-info">
-          <h4>Buyer (Purchaser)</h4>
-          <p><strong>${invoice.buyer.companyName}</strong></p>
-          <p>${invoice.buyer.address}</p>
-          <p>Email: ${invoice.buyer.contact}</p>
-          <p>Phone: ${invoice.buyer.phone}</p>
-          <p>Tax ID: ${invoice.buyer.taxId}</p>
-        </div>
-      </div>
+      <!-- Platform, Seller & Buyer Info -->
+<div style="margin-bottom: 2rem;">
+  <div class="party-info" style="margin-bottom: 1rem;">
+    <h4>Platform (Facilitator)</h4>
+    <p><strong>${invoice.platform.companyName}</strong></p>
+    <p>${invoice.platform.address}</p>
+    <p>Email: ${invoice.platform.contact}</p>
+    <p>Phone: ${invoice.platform.phone}</p>
+    ${invoice.platform.taxId !== 'Not provided' ? `<p>Tax ID: ${invoice.platform.taxId}</p>` : ''}
+  </div>
+</div>
+
+<div class="invoice-meta">
+  <div class="party-info">
+    <h4>Bill From (Seller)</h4>
+    <p><strong>${invoice.seller.companyName}</strong></p>
+    <p>${invoice.seller.address}</p>
+    <p>Email: ${invoice.seller.contact}</p>
+    <p>Phone: ${invoice.seller.phone}</p>
+    ${invoice.seller.taxId ? `<p>Tax ID: ${invoice.seller.taxId}</p>` : ''}
+  </div>
+  
+  <div class="party-info">
+    <h4>Bill To (Buyer)</h4>
+    <p><strong>${invoice.buyer.companyName}</strong></p>
+    <p>${invoice.buyer.address}</p>
+    <p>Email: ${invoice.buyer.contact}</p>
+    <p>Phone: ${invoice.buyer.phone}</p>
+    ${invoice.buyer.taxId ? `<p>Tax ID: ${invoice.buyer.taxId}</p>` : ''}
+  </div>
+</div>
       
       <!-- Invoice Items -->
       <table class="invoice-table">
@@ -658,8 +707,8 @@ function renderCheckout() {
           <strong>Account No.:</strong>
           <span>${invoice.payment.accountNumber}</span>
           
-          <strong>SWIFT Code:</strong>
-          <span>${invoice.payment.swiftCode}</span>
+          <strong>Account Type:</strong>
+          <span>${invoice.payment.accountType}</span>
           
           <strong>Payment Terms:</strong>
           <span>${invoice.payment.paymentTerms}</span>
