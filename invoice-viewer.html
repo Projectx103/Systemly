@@ -25,27 +25,27 @@ body {
   font-family: 'Inter', sans-serif;
   background: #F9FAFB;
   color: var(--text);
-  line-height: 1.6;
-  padding: 2rem;
+  line-height: 1.5;
+  padding: 1.5rem;
 }
 
 .no-print {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   justify-content: center;
 }
 
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.65rem 1.25rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
+  gap: 0.4rem;
+  font-size: 0.875rem;
   transition: all 0.3s;
   text-decoration: none;
 }
@@ -80,29 +80,31 @@ body {
   background: #059669;
 }
 
-/* A4 Invoice Container */
+/* A4 Invoice Container - Optimized for 2 pages */
 .invoice-wrapper {
   max-width: 210mm;
   margin: 0 auto;
   background: white;
-  box-shadow: 0 0 30px rgba(0,0,0,0.1);
+  box-shadow: 0 0 20px rgba(0,0,0,0.08);
 }
 
 .invoice-page {
   width: 210mm;
   min-height: 297mm;
-  padding: 20mm;
+  max-height: 297mm;
+  padding: 15mm 20mm;
   background: white;
+  page-break-after: always;
 }
 
-/* Invoice Header */
+/* Invoice Header - Compact */
 .invoice-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 3rem;
-  padding-bottom: 2rem;
-  border-bottom: 3px solid var(--primary);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--primary);
 }
 
 .company-info {
@@ -110,24 +112,26 @@ body {
 }
 
 .company-logo {
-  font-size: 2.5rem;
+  font-size: 1.75rem;
   font-weight: 800;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.5px;
 }
 
 .company-tagline {
   color: var(--gray);
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
 .company-details {
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   color: var(--gray);
-  line-height: 1.8;
+  line-height: 1.5;
 }
 
 .invoice-title-section {
@@ -135,32 +139,35 @@ body {
 }
 
 .invoice-title {
-  font-size: 3rem;
+  font-size: 2.25rem;
   font-weight: 800;
   color: var(--text);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  letter-spacing: -1px;
 }
 
 .invoice-number {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   color: var(--primary);
-  font-weight: 600;
-  margin-bottom: 0.25rem;
+  font-weight: 700;
+  margin-bottom: 0.15rem;
 }
 
 .invoice-date {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   color: var(--gray);
+  font-weight: 500;
 }
 
-/* Status Badge */
+/* Status Badge - Compact */
 .status-badge {
   display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 50px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  margin-top: 0.5rem;
+  font-weight: 700;
+  font-size: 0.7rem;
+  margin-top: 0.4rem;
+  letter-spacing: 0.5px;
 }
 
 .status-paid, .status-completed {
@@ -175,47 +182,47 @@ body {
   border: 2px solid var(--primary);
 }
 
-/* Parties Section */
+/* Parties Section - Compact */
 .parties-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-bottom: 3rem;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .party-box {
-  padding: 1.5rem;
+  padding: 0.9rem;
   background: var(--gray-light);
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .party-title {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   color: var(--gray);
-  margin-bottom: 0.75rem;
-  font-weight: 600;
+  margin-bottom: 0.4rem;
+  font-weight: 700;
 }
 
 .party-name {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
 }
 
 .party-details {
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   color: var(--gray);
-  line-height: 1.8;
+  line-height: 1.5;
 }
 
-/* Invoice Table */
+/* Invoice Table - Compact */
 .invoice-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
 .invoice-table thead {
@@ -224,10 +231,10 @@ body {
 }
 
 .invoice-table th {
-  padding: 1rem;
+  padding: 0.65rem 0.75rem;
   text-align: left;
-  font-weight: 600;
-  font-size: 0.85rem;
+  font-weight: 700;
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -242,87 +249,90 @@ body {
 }
 
 .invoice-table td {
-  padding: 1.25rem 1rem;
+  padding: 0.85rem 0.75rem;
+  vertical-align: top;
 }
 
 .item-description {
   font-weight: 600;
   color: var(--text);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.2rem;
+  font-size: 0.8rem;
 }
 
 .item-subdescription {
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   color: var(--gray);
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .item-qty {
   text-align: center;
   color: var(--gray);
+  font-size: 0.8rem;
 }
 
-/* Totals Section */
+/* Totals Section - Compact */
 .totals-section {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
 }
 
 .totals-table {
-  width: 400px;
+  width: 350px;
 }
 
 .total-row {
   display: flex;
   justify-content: space-between;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
   border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
 }
 
 .total-row.subtotal {
-  font-size: 0.95rem;
+  font-weight: 600;
 }
 
 .total-row.tax {
-  font-size: 0.95rem;
   color: var(--gray);
 }
 
 .total-row.grand-total {
-  padding: 1rem 0;
-  margin-top: 0.5rem;
-  border-top: 3px solid var(--secondary);
-  border-bottom: 3px solid var(--secondary);
-  font-size: 1.5rem;
-  font-weight: 700;
+  padding: 0.75rem 0;
+  margin-top: 0.3rem;
+  border-top: 2px solid var(--secondary);
+  border-bottom: 2px solid var(--secondary);
+  font-size: 1.25rem;
+  font-weight: 800;
   color: var(--primary);
 }
 
-/* Payment Info */
+/* Payment Info - Compact */
 .payment-info {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(20, 184, 166, 0.05));
-  border: 2px solid var(--secondary);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.04), rgba(20, 184, 166, 0.04));
+  border: 1.5px solid var(--secondary);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .payment-title {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--secondary);
-  margin-bottom: 1rem;
+  margin-bottom: 0.65rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .payment-grid {
   display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 0.75rem;
-  font-size: 0.9rem;
+  grid-template-columns: 120px 1fr;
+  gap: 0.45rem;
+  font-size: 0.75rem;
 }
 
 .payment-label {
@@ -334,20 +344,20 @@ body {
   color: var(--gray);
 }
 
-/* Terms & Notes */
+/* Terms & Notes - Compact */
 .terms-section {
   background: var(--gray-light);
-  border-left: 4px solid var(--primary);
-  padding: 1.5rem;
+  border-left: 3px solid var(--primary);
+  padding: 1rem;
   border-radius: 4px;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
 .terms-title {
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--text);
-  margin-bottom: 1rem;
+  margin-bottom: 0.65rem;
 }
 
 .terms-list {
@@ -357,11 +367,11 @@ body {
 
 .terms-list li {
   counter-increment: item;
-  margin-bottom: 0.75rem;
-  font-size: 0.9rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.7rem;
   color: var(--gray);
-  line-height: 1.7;
-  padding-left: 2rem;
+  line-height: 1.5;
+  padding-left: 1.5rem;
   position: relative;
 }
 
@@ -371,26 +381,29 @@ body {
   left: 0;
   font-weight: 700;
   color: var(--primary);
+  font-size: 0.7rem;
 }
 
-/* Footer */
+/* Footer - Compact */
 .invoice-footer {
   text-align: center;
-  padding-top: 2rem;
-  border-top: 2px solid var(--border);
+  padding-top: 1rem;
+  border-top: 1.5px solid var(--border);
   color: var(--gray);
-  font-size: 0.85rem;
+  font-size: 0.7rem;
 }
 
 .invoice-footer p {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
+  line-height: 1.4;
 }
 
-/* Print Styles */
+/* Print Styles - Strict A4 */
 @media print {
   body {
     background: white;
     padding: 0;
+    margin: 0;
   }
   
   .no-print {
@@ -400,17 +413,47 @@ body {
   .invoice-wrapper {
     box-shadow: none;
     max-width: 100%;
+    margin: 0;
   }
   
   .invoice-page {
-    width: 100%;
-    padding: 15mm;
+    width: 210mm;
+    height: 297mm;
+    padding: 15mm 20mm;
+    margin: 0;
     page-break-after: always;
+    overflow: hidden;
   }
   
   @page {
-    size: A4;
+    size: A4 portrait;
     margin: 0;
+  }
+  
+  /* Ensure content fits */
+  .invoice-header {
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.85rem;
+  }
+  
+  .parties-section {
+    margin-bottom: 1.25rem;
+  }
+  
+  .invoice-table {
+    margin-bottom: 1rem;
+  }
+  
+  .totals-section {
+    margin-bottom: 1.25rem;
+  }
+  
+  .payment-info {
+    margin-bottom: 1rem;
+  }
+  
+  .terms-section {
+    margin-bottom: 1rem;
   }
 }
 
@@ -424,12 +467,12 @@ body {
 }
 
 .loader {
-  width: 50px;
-  height: 50px;
-  border: 4px solid var(--gray-light);
+  width: 45px;
+  height: 45px;
+  border: 3px solid var(--gray-light);
   border-top-color: var(--primary);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin {
@@ -443,7 +486,7 @@ body {
 }
 
 .error-container i {
-  font-size: 4rem;
+  font-size: 3.5rem;
   color: #EF4444;
   margin-bottom: 1rem;
 }
@@ -557,151 +600,127 @@ function renderInvoice(invoice) {
         <div class="company-logo">Systemly</div>
         <div class="company-tagline">System Marketplace Platform</div>
         <div class="company-details">
-  ${invoice.platform.address}<br>
-  Email: ${invoice.platform.contact}<br>
-  Phone: ${invoice.platform.phone}<br>
-  ${invoice.platform.taxId !== 'Not provided' ? `Tax ID: ${invoice.platform.taxId}` : ''}
-</div>
+          ${invoice.platform.address}<br>
+          ${invoice.platform.contact} • ${invoice.platform.phone}<br>
+          ${invoice.platform.taxId !== 'Not provided' ? `Tax ID: ${invoice.platform.taxId}` : ''}
+        </div>
       </div>
       
       <div class="invoice-title-section">
         <div class="invoice-title">INVOICE</div>
         <div class="invoice-number">${invoice.invoiceNumber}</div>
-        <div class="invoice-date">Issue Date: ${invoice.issueDate}</div>
-        <div class="invoice-date">Due Date: ${invoice.dueDate}</div>
+        <div class="invoice-date">Issued: ${invoice.issueDate}</div>
+        <div class="invoice-date">Due: ${invoice.dueDate}</div>
         <div class="status-badge status-${statusClass}">${statusText}</div>
       </div>
     </div>
     
     <!-- Billing Parties -->
     <div class="parties-section">
-      <!-- Platform Info (if needed to show separately) -->
-<div style="margin-bottom: 2rem;">
-  <div class="party-box">
-    <div class="party-title">Platform Facilitator</div>
-    <div class="party-name">${invoice.platform.companyName}</div>
-    <div class="party-details">
-      ${invoice.platform.address}<br>
-      ${invoice.platform.contact}<br>
-      ${invoice.platform.phone}<br>
-      ${invoice.platform.taxId !== 'Not provided' ? `Tax ID: ${invoice.platform.taxId}` : ''}
+      <div class="party-box">
+        <div class="party-title">Bill From (Seller)</div>
+        <div class="party-name">${invoice.seller.companyName}</div>
+        <div class="party-details">
+          ${invoice.seller.address}<br>
+          ${invoice.seller.contact}<br>
+          ${invoice.seller.phone}${invoice.seller.taxId ? '<br>Tax ID: ' + invoice.seller.taxId : ''}
+        </div>
+      </div>
+      
+      <div class="party-box">
+        <div class="party-title">Bill To (Buyer)</div>
+        <div class="party-name">${invoice.buyer.companyName}</div>
+        <div class="party-details">
+          ${invoice.buyer.address}<br>
+          ${invoice.buyer.contact}<br>
+          ${invoice.buyer.phone}${invoice.buyer.taxId ? '<br>Tax ID: ' + invoice.buyer.taxId : ''}
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
-<!-- Billing Parties -->
-<div class="parties-section">
-  <div class="party-box">
-    <div class="party-title">Bill From (Seller)</div>
-    <div class="party-name">${invoice.seller.companyName}</div>
-    <div class="party-details">
-      ${invoice.seller.address}<br>
-      ${invoice.seller.contact}<br>
-      ${invoice.seller.phone}<br>
-      ${invoice.seller.taxId ? `Tax ID: ${invoice.seller.taxId}` : 'Tax ID: Not provided'}
-    </div>
-  </div>
-  
-  <div class="party-box">
-    <div class="party-title">Bill To (Buyer)</div>
-    <div class="party-name">${invoice.buyer.companyName}</div>
-    <div class="party-details">
-      ${invoice.buyer.address}<br>
-      ${invoice.buyer.contact}<br>
-      ${invoice.buyer.phone}<br>
-      ${invoice.buyer.taxId ? `Tax ID: ${invoice.buyer.taxId}` : 'Tax ID: Not provided'}
-    </div>
-  </div>
-</div>
     
     <!-- Invoice Items -->
     <table class="invoice-table">
       <thead>
         <tr>
-          <th style="width: 60px;">#</th>
+          <th style="width: 40px;">#</th>
           <th>Description</th>
-          <th style="width: 80px; text-align: center;">Qty</th>
-          <th style="width: 150px; text-align: right;">Unit Price</th>
-          <th style="width: 150px; text-align: right;">Amount</th>
+          <th style="width: 60px; text-align: center;">Qty</th>
+          <th style="width: 130px; text-align: right;">Unit Price</th>
+          <th style="width: 130px; text-align: right;">Amount</th>
         </tr>
       </thead>
       <tbody>
         ${invoice.items.map(item => `
           <tr>
-            <td>${item.itemNumber}</td>
+            <td style="font-weight: 600; color: var(--gray);">${item.itemNumber}</td>
             <td>
               <div class="item-description">${item.description}</div>
               <div class="item-subdescription">${item.subDescription}</div>
             </td>
             <td class="item-qty">${item.quantity}</td>
-            <td style="text-align: right;">₱${item.unitPrice.toLocaleString()}</td>
-            <td style="text-align: right; font-weight: 600;">₱${item.lineTotal.toLocaleString()}</td>
+            <td style="text-align: right; font-size: 0.8rem;">₱${item.unitPrice.toLocaleString()}</td>
+            <td style="text-align: right; font-weight: 700; font-size: 0.85rem;">₱${item.lineTotal.toLocaleString()}</td>
           </tr>
         `).join('')}
       </tbody>
     </table>
     
-  <!-- Totals -->
-<div class="totals-section">
-  <div class="totals-table">
-    <div class="total-row subtotal">
-      <span>Base Amount</span>
-      <span>₱${invoice.baseAmount ? invoice.baseAmount.toLocaleString() : invoice.subtotal.toLocaleString()}</span>
+    <!-- Totals -->
+    <div class="totals-section">
+      <div class="totals-table">
+        <div class="total-row subtotal">
+          <span>Base Amount</span>
+          <span>₱${invoice.baseAmount ? invoice.baseAmount.toLocaleString() : invoice.subtotal.toLocaleString()}</span>
+        </div>
+        ${invoice.commissionRate ? `
+          <div class="total-row tax" style="color: #DC2626;">
+            <span>Platform Fee (${invoice.commissionRate}% - ${invoice.seller.subscriptionPlan ? invoice.seller.subscriptionPlan.toUpperCase() : 'FREE'} Plan)</span>
+            <span>-₱${invoice.commissionAmount.toLocaleString()}</span>
+          </div>
+          <div class="total-row subtotal">
+            <span>After Commission</span>
+            <span>₱${invoice.subtotal.toLocaleString()}</span>
+          </div>
+        ` : ''}
+        ${invoice.vatEnabled && invoice.vatAmount > 0 ? `
+          <div class="total-row tax" style="color: #DC2626;">
+            <span>VAT (${invoice.vatRate}%)</span>
+            <span>-₱${invoice.vatAmount.toLocaleString()}</span>
+          </div>
+        ` : ''}
+        <div class="total-row grand-total">
+          <span>Total Due</span>
+          <span>₱${invoice.totalDue.toLocaleString()}</span>
+        </div>
+        ${invoice.sellerReceives ? `
+          <div class="total-row" style="font-size: 0.85rem; color: var(--success); border-top: 2px dashed var(--border); margin-top: 0.65rem; padding-top: 0.65rem; font-weight: 700;">
+            <span>Seller Net Amount</span>
+            <span>₱${invoice.sellerReceives.toLocaleString()}</span>
+          </div>
+        ` : ''}
+      </div>
     </div>
-    ${invoice.commissionRate ? `
-      <div class="total-row tax" style="color: var(--error);">
-        <span>Platform Commission (${invoice.commissionRate}% - ${invoice.seller.subscriptionPlan ? invoice.seller.subscriptionPlan.toUpperCase() : 'FREE'} Plan)</span>
-        <span>-₱${invoice.commissionAmount.toLocaleString()}</span>
-      </div>
-      <div class="total-row subtotal">
-        <span>Subtotal (After Commission)</span>
-        <span>₱${invoice.subtotal.toLocaleString()}</span>
-      </div>
-    ` : ''}
-    ${invoice.vatEnabled && invoice.vatAmount > 0 ? `
-      <div class="total-row tax" style="color: var(--error);">
-        <span>VAT (${invoice.vatRate}%)</span>
-        <span>-₱${invoice.vatAmount.toLocaleString()}</span>
-      </div>
-    ` : `
-      <div class="total-row tax">
-        <span>Tax/VAT (${invoice.vatRate || 0}%)</span>
-        <span>₱${invoice.taxAmount || 0}</span>
-      </div>
-    `}
-    <div class="total-row grand-total">
-      <span>Total Due (Buyer Pays)</span>
-      <span>₱${invoice.totalDue.toLocaleString()}</span>
-    </div>
-    ${invoice.sellerReceives ? `
-      <div class="total-row" style="font-size: 1rem; color: var(--success); border-top: 2px dashed var(--border); margin-top: 1rem; padding-top: 1rem;">
-        <span>Seller Receives (Net)</span>
-        <span>₱${invoice.sellerReceives.toLocaleString()}</span>
-      </div>
-    ` : ''}
-  </div>
-</div>
     
     <!-- Payment Information -->
     <div class="payment-info">
       <div class="payment-title">
         <i class="fas fa-university"></i>
-        Payment Information
+        Payment Details
       </div>
       <div class="payment-grid">
-        <div class="payment-label">Bank Name:</div>
+        <div class="payment-label">Bank:</div>
         <div class="payment-value">${invoice.payment.bankName}</div>
         
         <div class="payment-label">Account Name:</div>
         <div class="payment-value">${invoice.payment.accountName}</div>
         
-        <div class="payment-label">Account Number:</div>
+        <div class="payment-label">Account No.:</div>
         <div class="payment-value">${invoice.payment.accountNumber}</div>
         
         <div class="payment-label">SWIFT Code:</div>
         <div class="payment-value">${invoice.payment.swiftCode}</div>
         
-        <div class="payment-label">Payment Terms:</div>
+        <div class="payment-label">Terms:</div>
         <div class="payment-value">${invoice.payment.paymentTerms}</div>
       </div>
     </div>
@@ -710,25 +729,21 @@ function renderInvoice(invoice) {
     <div class="terms-section">
       <div class="terms-title">Terms & Conditions</div>
       <ul class="terms-list">
-        <li>This invoice corresponds to the purchase and transfer of the system as agreed via the Systemly marketplace listing.</li>
-        <li>The seller certifies that they have full rights to transfer the assets and IP listed, and that no undisclosed liabilities exist.</li>
-        <li>The buyer has inspected the system, accepted the condition, and triggers the transfer upon receipt of payment.</li>
-        <li>Any disputes to be raised within 30 days of invoice date. Transfer of ownership is contingent upon full payment.</li>
-        <li>Once payment is confirmed by the administrator, the buyer will receive access to download all system files and assets.</li>
+        <li>This invoice corresponds to the purchase and transfer of the system as agreed via the Systemly marketplace.</li>
+        <li>The seller certifies full rights to transfer all listed assets and IP with no undisclosed liabilities.</li>
+        <li>Transfer of ownership is contingent upon full payment receipt and confirmation by administrator.</li>
+        <li>Disputes must be raised within 30 days of invoice date.</li>
+        <li>Upon payment confirmation, buyer receives download access to all system files and documentation.</li>
       </ul>
     </div>
     
     <!-- Footer -->
     <div class="invoice-footer">
-      <p><strong>Systemly</strong> - System Marketplace Platform</p>
-      <p>This is a computer-generated invoice and is valid without signature</p>
-      <p style="margin-top: 1rem; font-size: 0.75rem;">
-        For questions about this invoice, please contact us at support@systemly.com
-      </p>
+      <p><strong>Systemly</strong> - System Marketplace Platform • ${invoice.platform.contact}</p>
+      <p>This is a computer-generated invoice and is valid without physical signature</p>
     </div>
   `;
 }
-
 function showError(message) {
   const content = document.getElementById('invoiceContent');
   content.innerHTML = `
