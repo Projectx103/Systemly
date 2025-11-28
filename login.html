@@ -1004,7 +1004,7 @@ nav {
 
 <div class="verification-notice" id="verificationNotice">
   <i class="fa-solid fa-triangle-exclamation"></i>
-  <span>Please verify your email to continue. Check your inbox or <a class="resend-link" id="resendVerification">click here to resend</a> (wait 60s between attempts)</span>
+  <span>Please verify your email to continue. <a class="resend-link" id="resendVerification">Resend verification email</a></span>
 </div>
 
 
@@ -1472,17 +1472,16 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const user = userCredential.user;
     
     // Check if email is verified
-   // Check if email is verified
-if (!user.emailVerified) {
-  btn.classList.remove('loading');
-  verificationNotice.classList.add('show');
-  
-  // Sign out to prevent session without verification
-  await signOut(auth);
-  
-  console.log('⚠️ Email not verified');
-  return;
-}
+    if (!user.emailVerified) {
+      btn.classList.remove('loading');
+      verificationNotice.classList.add('show');
+      
+      // Store user for resend function
+      window.currentUnverifiedUser = user;
+      
+      console.log('⚠️ Email not verified');
+      return;
+    }
     
     // Check user document
     const userDocRef = doc(db, 'users', user.uid);
@@ -1551,11 +1550,8 @@ if (!user.emailVerified) {
 document.getElementById('resendVerification').addEventListener('click', async (e) => {
   e.preventDefault();
   
-  const email = document.getElementById("loginEmail").value.trim();
-  const pass = document.getElementById("loginPassword").value;
-  
-  if (!email || !pass) {
-    alert('Please enter your email and password first, then try again.');
+  if (!window.currentUnverifiedUser) {
+    alert('Please try logging in again.');
     return;
   }
   
@@ -1564,11 +1560,10 @@ document.getElementById('resendVerification').addEventListener('click', async (e
   link.style.pointerEvents = 'none';
   
   try {
-    // Re-authenticate to get fresh user object
-    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-    const user = userCredential.user;
-    
-    await sendEmailVerification(user);
+    await sendEmailVerification(window.currentUnverifiedUser, {
+      url: window.location.origin + '/profile.html',
+      handleCodeInApp: true
+    });
     
     alert('✅ Verification email sent! Please check your inbox.');
     link.textContent = 'Email sent!';
