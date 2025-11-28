@@ -420,7 +420,7 @@ async function loadTransaction() {
 
 async function generateInvoice(transactionId) {
   try {
-    // Get admin user data for seller info
+    // Get admin user data for PLATFORM info
     const adminQuery = query(collection(db, 'users'), where('role', '==', 'admin'), limit(1));
     const adminSnapshot = await getDocs(adminQuery);
     
@@ -443,8 +443,8 @@ async function generateInvoice(transactionId) {
     const dueDate = new Date(today);
     dueDate.setDate(dueDate.getDate() + 30);
     
-    // Build admin info (for company/platform details)
-    const adminInfo = {
+    // Build PLATFORM info (Admin - Systemly)
+    const platformInfo = {
       companyName: adminData?.companyName || 'Systemly',
       address: adminData?.profile?.address 
         ? `${adminData.profile.address}, ${adminData.profile.barangay}, ${adminData.profile.city}, ${adminData.profile.province}, ${adminData.profile.country}`
@@ -454,35 +454,35 @@ async function generateInvoice(transactionId) {
       taxId: adminData?.taxId || 'Not provided'
     };
     
-    // Build seller info
+    // Build ACTUAL SELLER info (the person who listed the system)
     const sellerInfo = {
       companyName: sellerData?.companyName || sellerData?.name || 'Unknown Seller',
       address: sellerData?.profile?.address 
-        ? `${sellerData.profile.address}, ${sellerData.profile.barangay || ''}, ${sellerData.profile.city}, ${sellerData.profile.province}, ${sellerData.profile.country}`
+        ? `${sellerData.profile.address}${sellerData.profile.barangay ? ', ' + sellerData.profile.barangay : ''}, ${sellerData.profile.city}, ${sellerData.profile.province}, ${sellerData.profile.country}`
         : 'Address not provided',
       contact: sellerData?.email || transactionData.sellerEmail,
       phone: sellerData?.profile?.phone || 'Not provided',
       taxId: sellerData?.taxId || null
     };
     
-    // Build buyer info
+    // Build BUYER info
     const buyerInfo = {
       companyName: buyerData?.companyName || buyerData?.name || transactionData.buyerName,
       address: buyerData?.profile?.address 
-        ? `${buyerData.profile.address}, ${buyerData.profile.barangay || ''}, ${buyerData.profile.city}, ${buyerData.profile.province}, ${buyerData.profile.country}`
+        ? `${buyerData.profile.address}${buyerData.profile.barangay ? ', ' + buyerData.profile.barangay : ''}, ${buyerData.profile.city}, ${buyerData.profile.province}, ${buyerData.profile.country}`
         : 'Address not provided',
       contact: buyerData?.email || transactionData.buyerEmail,
       phone: buyerData?.profile?.phone || 'Not provided',
       taxId: buyerData?.taxId || null
     };
     
-    // Build banking info from admin
+    // Build banking info from ADMIN (for platform payments)
     const bankingInfo = {
       bankName: adminData?.banking?.bankName || 'BDO Unibank',
       accountName: adminData?.banking?.accountName || 'Systemly Inc.',
       accountNumber: adminData?.banking?.accountNumber || '1234-5678-9012',
       accountType: adminData?.banking?.accountType || 'Business',
-      swiftCode: 'BNORPHMM', // You might want to add this to admin profile
+      swiftCode: 'BNORPHMM',
       paymentTerms: 'Payment due within 30 days of invoice date'
     };
     
@@ -494,10 +494,10 @@ async function generateInvoice(transactionId) {
       issueDate: today.toISOString().split('T')[0],
       dueDate: dueDate.toISOString().split('T')[0],
       
-      // Admin/Platform Info
-      platform: adminInfo,
+      // Platform Info (Admin/Systemly - facilitator only)
+      platform: platformInfo,
       
-      // Actual Seller Info
+      // Actual Seller Info (system owner)
       seller: sellerInfo,
       
       // Actual Buyer Info
@@ -519,7 +519,7 @@ async function generateInvoice(transactionId) {
       taxAmount: 0,
       totalDue: transactionData.amount,
       
-      // Use admin banking info
+      // Use admin banking info for platform payments
       payment: bankingInfo,
       
       status: 'pending',
