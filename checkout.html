@@ -558,6 +558,10 @@ async function loadTransaction() {
 
 async function generateInvoice(transactionId) {
   try {
+    // Load system settings for VAT and commission
+    const settings = await getSystemSettings();
+    console.log('📊 System settings loaded:', settings);
+    
     // Get admin user data for PLATFORM info
     const adminQuery = query(collection(db, 'users'), where('role', '==', 'admin'), limit(1));
     const adminSnapshot = await getDocs(adminQuery);
@@ -573,6 +577,36 @@ async function generateInvoice(transactionId) {
     
     const sellerData = sellerDoc.exists() ? sellerDoc.data() : null;
     const buyerData = buyerDoc.exists() ? buyerDoc.data() : null;
+    
+    // Get seller's subscription plan
+    const sellerPlan = sellerData?.subscriptionPlan || 'free';
+    console.log('👤 Seller subscription plan:', sellerPlan);
+    
+    // Calculate commission based on seller's plan
+    let commissionRate = settings.commissionFree; // default
+    if (sellerPlan === 'basic') {
+      commissionRate = settings.commissionBasic;
+    } else if (sellerPlan === 'premium') {
+      commissionRate = settings.commissionPremium;
+    }
+    
+    console.log('💰 Commission rate:', commissionRate + '%');
+    
+    // Calculate amounts
+    const baseAmount = transactionData.amount;
+    const commissionAmount = Math.round(baseAmount * (commissionRate / 100));
+    const subtotal = baseAmount - commissionAmount; // Amount seller receives after commission
+    
+    // Calculate VAT if enabled
+    let vatAmount = 0;
+    let totalDue = baseAmount; // Buyer always pays the full agreed amount
+    
+    if (settings.vatEnabled) {
+      // VAT is calculated on the total and deducted from it
+      // Formula: VAT = Total / (1 + VAT_RATE/100) * (VAT_RATE/100)
+      vatAmount = Math.round(baseAmount / (1 + settings.vatRate / 100) * (settings.vatRate / 100));
+      console.log('🧾 VAT amount:', vatAmount);
+    }
     
     // Get the next invoice number
     const invoiceNumber = await getNextInvoiceNumber();
@@ -600,7 +634,8 @@ async function generateInvoice(transactionId) {
         : 'Address not provided',
       contact: sellerData?.email || transactionData.sellerEmail,
       phone: sellerData?.profile?.phone || 'Not provided',
-      taxId: sellerData?.taxId || null
+      taxId: sellerData?.taxId || null,
+      subscriptionPlan: sellerPlan
     };
     
     // Build BUYER info
@@ -647,15 +682,21 @@ async function generateInvoice(transactionId) {
           description: `"System" – purchase of ${transactionData.listingName}`,
           subDescription: 'Included: domain name, source code, documentation, transfer of assets & IP (as per agreement)',
           quantity: 1,
-          unitPrice: transactionData.amount,
-          lineTotal: transactionData.amount
+          unitPrice: baseAmount,
+          lineTotal: baseAmount
         }
       ],
       
-      subtotal: transactionData.amount,
-      taxRate: 0,
-      taxAmount: 0,
-      totalDue: transactionData.amount,
+      // Financial breakdown
+      baseAmount: baseAmount,
+      commissionRate: commissionRate,
+      commissionAmount: commissionAmount,
+      subtotal: subtotal, // Amount after commission
+      vatEnabled: settings.vatEnabled,
+      vatRate: settings.vatRate,
+      vatAmount: vatAmount,
+      totalDue: totalDue, // Buyer pays full amount
+      sellerReceives: subtotal - vatAmount, // What seller actually gets
       
       // Use admin banking info for platform payments
       payment: bankingInfo,
@@ -675,6 +716,15 @@ async function generateInvoice(transactionId) {
       invoiceNumber: invoiceNumber,
       invoiceId: transactionId,
       updatedAt: serverTimestamp()
+    });
+    
+    console.log('✅ Invoice generated with breakdown:', {
+      baseAmount,
+      commission: `${commissionRate}% (₱${commissionAmount.toLocaleString()})`,
+      subtotal,
+      vat: settings.vatEnabled ? `${settings.vatRate}% (₱${vatAmount.toLocaleString()})` : 'Disabled',
+      totalDue,
+      sellerReceives: subtotal - vatAmount
     });
     
     return { id: transactionId, ...invoice };
@@ -712,6 +762,50 @@ async function getNextInvoiceNumber() {
     return `INV-${Date.now().toString().slice(-4)}`;
   }
 }
+
+
+async function getSystemSettings() {
+  try {
+    const settingsRef = doc(db, 'systemSettings', 'platform-settings');
+    const settingsDoc = await getDoc(settingsRef);
+    
+    if (settingsDoc.exists()) {
+      return settingsDoc.data();
+    }
+    
+    // Default settings if none exist
+    return {
+      vatEnabled: false,
+      vatRate: 12,
+      commissionFree: 10,
+      commissionBasic: 7,
+      commissionPremium: 5
+    };
+  } catch (error) {
+    console.error('Error loading system settings:', error);
+    // Return defaults on error
+    return {
+      vatEnabled: false,
+      vatRate: 12,
+      commissionFree: 10,
+      commissionBasic: 7,
+      commissionPremium: 5
+    };
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function renderCheckout() {
   const content = document.getElementById('checkoutContent');
@@ -816,22 +910,38 @@ function renderCheckout() {
         </tbody>
       </table>
       
-      <!-- Totals -->
-      <div class="invoice-totals">
-        <div class="total-row">
-          <span>Subtotal:</span>
-          <span>₱${invoice.subtotal.toLocaleString()}</span>
-        </div>
-        <div class="total-row">
-          <span>Taxes/VAT (${invoice.taxRate}%):</span>
-          <span>₱${invoice.taxAmount.toLocaleString()}</span>
-        </div>
-        <div class="total-row grand-total">
-          <span>Total Due:</span>
-          <span>₱${invoice.totalDue.toLocaleString()}</span>
-        </div>
-      </div>
-      
+     <!-- Totals -->
+<div class="invoice-totals">
+  <div class="total-row">
+    <span>Base Amount:</span>
+    <span>₱${invoice.baseAmount.toLocaleString()}</span>
+  </div>
+  <div class="total-row" style="color: var(--error);">
+    <span>Platform Commission (${invoice.commissionRate}% - ${invoice.seller.subscriptionPlan.toUpperCase()} Plan):</span>
+    <span>-₱${invoice.commissionAmount.toLocaleString()}</span>
+  </div>
+  <div class="total-row">
+    <span>Subtotal (After Commission):</span>
+    <span>₱${invoice.subtotal.toLocaleString()}</span>
+  </div>
+  ${invoice.vatEnabled ? `
+    <div class="total-row" style="color: var(--error);">
+      <span>VAT (${invoice.vatRate}%):</span>
+      <span>-₱${invoice.vatAmount.toLocaleString()}</span>
+    </div>
+  ` : ''}
+  <div class="total-row grand-total">
+    <span>Total Due (Buyer Pays):</span>
+    <span>₱${invoice.totalDue.toLocaleString()}</span>
+  </div>
+  ${invoice.sellerReceives ? `
+    <div class="total-row" style="font-size: 0.9rem; color: var(--success); border-top: 1px solid var(--border); margin-top: 0.5rem; padding-top: 0.5rem;">
+      <span>Seller Receives:</span>
+      <span>₱${invoice.sellerReceives.toLocaleString()}</span>
+    </div>
+  ` : ''}
+</div>
+
       <!-- Payment Instructions -->
       <div class="payment-instructions">
         <h4><i class="fa-solid fa-bank"></i> Payment Instructions</h4>
