@@ -71,6 +71,15 @@ body {
   color: var(--secondary);
 }
 
+.btn-success {
+  background: var(--success);
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+}
+
 /* A4 Invoice Container */
 .invoice-wrapper {
   max-width: 210mm;
@@ -154,7 +163,7 @@ body {
   margin-top: 0.5rem;
 }
 
-.status-paid {
+.status-paid, .status-completed {
   background: rgba(16, 185, 129, 0.1);
   color: var(--success);
   border: 2px solid var(--success);
@@ -444,13 +453,16 @@ body {
 
 <!-- Action Buttons -->
 <div class="no-print">
+  <button class="btn btn-success" onclick="refreshInvoice()">
+    <i class="fas fa-sync"></i> Refresh
+  </button>
   <button class="btn btn-primary" onclick="window.print()">
     <i class="fas fa-print"></i> Print Invoice
   </button>
   <button class="btn btn-secondary" onclick="downloadPDF()">
     <i class="fas fa-download"></i> Download PDF
   </button>
-  <a href="buyer_dashboard.html?tab=invoices" class="btn btn-secondary">
+  <a href="admin_buyer_page.html?tab=invoices" class="btn btn-secondary">
     <i class="fas fa-arrow-left"></i> Back to Dashboard
   </a>
 </div>
@@ -468,7 +480,7 @@ body {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD3PQ5oWrzAXOHnb7wrmpRhL9DWIB7w9rE",
@@ -484,6 +496,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentInvoice = null;
+let unsubscribe = null;
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
@@ -505,27 +518,37 @@ async function loadInvoice() {
   
   try {
     const invoiceRef = doc(db, 'invoices', invoiceId);
-    const invoiceDoc = await getDoc(invoiceRef);
     
-    if (!invoiceDoc.exists()) {
-      showError('Invoice not found');
-      return;
-    }
-    
-    currentInvoice = { id: invoiceId, ...invoiceDoc.data() };
-    renderInvoice(currentInvoice);
+    // Set up real-time listener for invoice updates
+    unsubscribe = onSnapshot(invoiceRef, (docSnap) => {
+      if (docSnap.exists()) {
+        currentInvoice = { id: invoiceId, ...docSnap.data() };
+        console.log('✅ Invoice loaded/updated:', currentInvoice);
+        console.log('📊 Status:', currentInvoice.status);
+        renderInvoice(currentInvoice);
+      } else {
+        showError('Invoice not found');
+      }
+    }, (error) => {
+      console.error('Error loading invoice:', error);
+      showError('Failed to load invoice: ' + error.message);
+    });
     
   } catch (error) {
-    console.error('Error loading invoice:', error);
-    showError('Failed to load invoice');
+    console.error('Error setting up invoice listener:', error);
+    showError('Failed to load invoice: ' + error.message);
   }
 }
 
 function renderInvoice(invoice) {
   const content = document.getElementById('invoiceContent');
   
-  const statusClass = invoice.status === 'paid' ? 'paid' : 'pending';
-  const statusText = invoice.status === 'paid' ? 'PAID' : 'PENDING';
+  // Handle both 'paid' and 'completed' status
+  const isPaid = invoice.status === 'paid' || invoice.status === 'completed';
+  const statusClass = isPaid ? 'paid' : 'pending';
+  const statusText = isPaid ? 'PAID' : 'PENDING';
+  
+  console.log('🎨 Rendering invoice with status:', invoice.status, '→', statusText);
   
   content.innerHTML = `
     <!-- Invoice Header -->
@@ -534,11 +557,11 @@ function renderInvoice(invoice) {
         <div class="company-logo">Systemly</div>
         <div class="company-tagline">System Marketplace Platform</div>
         <div class="company-details">
-          ${invoice.seller.address}<br>
-          Email: ${invoice.seller.contact}<br>
-          Phone: ${invoice.seller.phone}<br>
-          Tax ID: ${invoice.seller.taxId}
-        </div>
+  ${invoice.platform.address}<br>
+  Email: ${invoice.platform.contact}<br>
+  Phone: ${invoice.platform.phone}<br>
+  ${invoice.platform.taxId !== 'Not provided' ? `Tax ID: ${invoice.platform.taxId}` : ''}
+</div>
       </div>
       
       <div class="invoice-title-section">
@@ -552,28 +575,44 @@ function renderInvoice(invoice) {
     
     <!-- Billing Parties -->
     <div class="parties-section">
-      <div class="party-box">
-        <div class="party-title">Bill From (Seller)</div>
-        <div class="party-name">${invoice.seller.companyName}</div>
-        <div class="party-details">
-          ${invoice.seller.address}<br>
-          ${invoice.seller.contact}<br>
-          ${invoice.seller.phone}<br>
-          Tax ID: ${invoice.seller.taxId}
-        </div>
-      </div>
-      
-      <div class="party-box">
-        <div class="party-title">Bill To (Buyer)</div>
-        <div class="party-name">${invoice.buyer.companyName}</div>
-        <div class="party-details">
-          ${invoice.buyer.address}<br>
-          ${invoice.buyer.contact}<br>
-          ${invoice.buyer.phone}<br>
-          Tax ID: ${invoice.buyer.taxId}
-        </div>
-      </div>
+      <!-- Platform Info (if needed to show separately) -->
+<div style="margin-bottom: 2rem;">
+  <div class="party-box">
+    <div class="party-title">Platform Facilitator</div>
+    <div class="party-name">${invoice.platform.companyName}</div>
+    <div class="party-details">
+      ${invoice.platform.address}<br>
+      ${invoice.platform.contact}<br>
+      ${invoice.platform.phone}<br>
+      ${invoice.platform.taxId !== 'Not provided' ? `Tax ID: ${invoice.platform.taxId}` : ''}
     </div>
+  </div>
+</div>
+
+<!-- Billing Parties -->
+<div class="parties-section">
+  <div class="party-box">
+    <div class="party-title">Bill From (Seller)</div>
+    <div class="party-name">${invoice.seller.companyName}</div>
+    <div class="party-details">
+      ${invoice.seller.address}<br>
+      ${invoice.seller.contact}<br>
+      ${invoice.seller.phone}<br>
+      ${invoice.seller.taxId ? `Tax ID: ${invoice.seller.taxId}` : 'Tax ID: Not provided'}
+    </div>
+  </div>
+  
+  <div class="party-box">
+    <div class="party-title">Bill To (Buyer)</div>
+    <div class="party-name">${invoice.buyer.companyName}</div>
+    <div class="party-details">
+      ${invoice.buyer.address}<br>
+      ${invoice.buyer.contact}<br>
+      ${invoice.buyer.phone}<br>
+      ${invoice.buyer.taxId ? `Tax ID: ${invoice.buyer.taxId}` : 'Tax ID: Not provided'}
+    </div>
+  </div>
+</div>
     
     <!-- Invoice Items -->
     <table class="invoice-table">
@@ -675,18 +714,40 @@ function showError(message) {
       <h2 style="margin-bottom: 0.5rem;">Error</h2>
       <p>${message}</p>
       <br>
-      <a href="buyer_dashboard.html?tab=invoices" class="btn btn-primary">
+      <a href="admin_buyer_page.html?tab=invoices" class="btn btn-primary">
         <i class="fas fa-arrow-left"></i> Back to Dashboard
       </a>
     </div>
   `;
 }
 
+window.refreshInvoice = function() {
+  const btn = event.target.closest('.btn');
+  const originalHTML = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+  btn.disabled = true;
+  
+  setTimeout(() => {
+    btn.innerHTML = originalHTML;
+    btn.disabled = false;
+  }, 1000);
+  
+  // The real-time listener will automatically update
+  console.log('🔄 Invoice will auto-update via listener');
+}
+
 window.downloadPDF = function() {
   window.print();
 }
 
-console.log('✅ Invoice viewer loaded');
+// Clean up listener on page unload
+window.addEventListener('beforeunload', () => {
+  if (unsubscribe) {
+    unsubscribe();
+  }
+});
+
+console.log('✅ Invoice viewer loaded with real-time updates');
 </script>
 
 </body>
