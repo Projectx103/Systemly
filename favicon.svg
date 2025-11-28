@@ -1,0 +1,33 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F97316;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded square background (like Raket.ph style) -->
+  <rect x="20" y="20" width="160" height="160" rx="35" fill="#F97316"/>
+  
+  <!-- Bold letter S in white -->
+  <path d="M 120 55 
+           C 135 55, 145 63, 145 78
+           C 145 88, 138 94, 125 100
+           L 100 112
+           C 88 118, 83 123, 83 133
+           C 83 143, 92 150, 105 150
+           C 116 150, 125 146, 131 140
+           L 148 152
+           C 140 162, 125 168, 105 168
+           C 78 168, 60 153, 60 133
+           C 60 118, 70 109, 85 103
+           L 110 91
+           C 122 85, 125 80, 125 72
+           C 125 63, 118 45, 100 45
+           C 87 45, 77 51, 70 61
+           L 53 48
+           C 63 34, 78 37, 100 37
+           C 123 37, 145 50, 145 72
+           Z" 
+           fill="white"/>
+</svg>
