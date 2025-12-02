@@ -1845,27 +1845,49 @@
         // PHONE VERIFICATION
         // ==========================================
       window.openPhoneModal = function() {
-            const phone = document.getElementById('phone').value;
-            document.getElementById('verifyPhoneInput').value = phone || '+63';
-            document.getElementById('phoneVerificationModal').style.display = 'flex';
-            
-            // Initialize reCAPTCHA if not already
-            if (!window.recaptchaVerifier) {
-                setTimeout(() => {
-                    try {
-                        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                            'size': 'normal',
-                            'callback': (response) => {
-                                console.log('reCAPTCHA verified');
-                            }
-                        });
-                        window.recaptchaVerifier.render();
-                    } catch (error) {
-                        console.error('Error initializing reCAPTCHA:', error);
-                    }
-                }, 100);
-            }
+    const phone = document.getElementById('phone').value;
+    document.getElementById('verifyPhoneInput').value = phone || '+63';
+    document.getElementById('phoneVerificationModal').style.display = 'flex';
+    
+    // Clear any existing reCAPTCHA first
+    const container = document.getElementById('recaptcha-container');
+    if (container) {
+        container.innerHTML = '';
+    }
+    
+    if (window.recaptchaVerifier) {
+        try {
+            window.recaptchaVerifier.clear();
+        } catch (e) {
+            console.log('Cleared old reCAPTCHA');
         }
+        window.recaptchaVerifier = null;
+    }
+    
+    // Initialize fresh reCAPTCHA
+    setTimeout(() => {
+        try {
+            window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                'size': 'normal',
+                'callback': (response) => {
+                    console.log('✅ reCAPTCHA verified successfully');
+                },
+                'expired-callback': () => {
+                    alert('reCAPTCHA expired. Please try again.');
+                }
+            });
+            window.recaptchaVerifier.render().then(() => {
+                console.log('✅ reCAPTCHA rendered');
+            }).catch((error) => {
+                console.error('❌ reCAPTCHA render error:', error);
+                alert('reCAPTCHA failed to load. Please refresh the page and try again.');
+            });
+        } catch (error) {
+            console.error('❌ Error initializing reCAPTCHA:', error);
+            alert('reCAPTCHA initialization failed: ' + error.message);
+        }
+    }, 100);
+}
 
         window.closePhoneModal = function() {
             document.getElementById('phoneVerificationModal').style.display = 'none';
