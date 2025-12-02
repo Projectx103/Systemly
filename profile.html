@@ -1842,121 +1842,268 @@
         });
 
         // ==========================================
-        // PHONE VERIFICATION
-        // ==========================================
-      window.openPhoneModal = function() {
+// PHONE VERIFICATION WITH TIMER & LIMITS
+// ==========================================
+let smsAttempts = 0;
+let smsTimer = null;
+let smsCountdown = 120; // 2 minutes
+
+window.openPhoneModal = function() {
     const phone = document.getElementById('phone').value;
     document.getElementById('verifyPhoneInput').value = phone || '+63';
     document.getElementById('phoneVerificationModal').style.display = 'flex';
+    document.getElementById('phoneInputStep').style.display = 'block';
+    document.getElementById('otpInputStep').style.display = 'none';
     
-    // Clear any existing reCAPTCHA first
+    // Clear any existing reCAPTCHA
     const container = document.getElementById('recaptcha-container');
-    if (container) {
-        container.innerHTML = '';
-    }
+    if (container) container.innerHTML = '';
     
     if (window.recaptchaVerifier) {
         try {
             window.recaptchaVerifier.clear();
-        } catch (e) {
-            console.log('Cleared old reCAPTCHA');
-        }
+        } catch (e) {}
         window.recaptchaVerifier = null;
     }
     
-    // Initialize fresh reCAPTCHA
-    setTimeout(() => {
-        try {
+    // Reset attempts if this is a fresh session
+    const lastAttempt = sessionStorage.getItem('lastSMSAttempt');
+    if (!lastAttempt || Date.now() - parseInt(lastAttempt) > 3600000) { // 1 hour reset
+        smsAttempts = 0;
+        sessionStorage.setItem('smsAttempts', '0');
+    } else {
+        smsAttempts = parseInt(sessionStorage.getItem('smsAttempts') || '0');
+    }
+}
+
+window.closePhoneModal = function() {
+    document.getElementById('phoneVerificationModal').style.display = 'none';
+    if (smsTimer) {
+        clearInterval(smsTimer);
+        smsTimer = null;
+    }
+}
+
+window.sendPhoneOTP = async function() {
+    // Check attempts limit
+    if (smsAttempts >= 3) {
+        alert('⚠️ VIOLATION: SMS Protocol Limit Exceeded\n\n' +
+              'Too many attempts detected.\n' +
+              'Please try again in 1 hour for security reasons.\n\n' +
+              'If you need immediate help, contact support.');
+        return;
+    }
+
+    const phoneNumber = document.getElementById('verifyPhoneInput').value.trim();
+    
+    const phoneRegex = /^\+\d{10,15}$/;
+    if (!phoneNumber || !phoneRegex.test(phoneNumber)) {
+        alert('❌ Please enter a valid phone number with country code.\n\nFormat: +639123456789');
+        return;
+    }
+
+    const btn = event.target;
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span> Sending code...';
+    btn.disabled = true;
+
+    try {
+        // Initialize INVISIBLE reCAPTCHA
+        if (!window.recaptchaVerifier) {
             window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                'size': 'normal',
+                'size': 'invisible', // ← INVISIBLE! No checkbox needed
                 'callback': (response) => {
-                    console.log('✅ reCAPTCHA verified successfully');
-                },
-                'expired-callback': () => {
-                    alert('reCAPTCHA expired. Please try again.');
+                    console.log('✅ Security check passed');
                 }
             });
-            window.recaptchaVerifier.render().then(() => {
-                console.log('✅ reCAPTCHA rendered');
-            }).catch((error) => {
-                console.error('❌ reCAPTCHA render error:', error);
-                alert('reCAPTCHA failed to load. Please refresh the page and try again.');
-            });
-        } catch (error) {
-            console.error('❌ Error initializing reCAPTCHA:', error);
-            alert('reCAPTCHA initialization failed: ' + error.message);
+        }
+        
+        // Send SMS
+        const appVerifier = window.recaptchaVerifier;
+        window.confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+        
+        // Increment attempts
+        smsAttempts++;
+        sessionStorage.setItem('smsAttempts', smsAttempts.toString());
+        sessionStorage.setItem('lastSMSAttempt', Date.now().toString());
+        
+        // Switch to OTP input
+        document.getElementById('phoneInputStep').style.display = 'none';
+        document.getElementById('otpInputStep').style.display = 'block';
+        document.getElementById('sentPhoneNumber').textContent = phoneNumber;
+        
+        // Start 2-minute timer
+        startResendTimer();
+        
+        alert(`✅ Code sent to ${phoneNumber}\n\nAttempt ${smsAttempts} of 3`);
+        
+    } catch (error) {
+        console.error('❌ Error:', error);
+        
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+        
+        let errorMessage = '❌ Failed to send verification code.\n\n';
+        
+        if (error.code === 'auth/invalid-phone-number') {
+            errorMessage += 'Invalid phone number format.\nUse: +639123456789';
+        } else if (error.code === 'auth/too-many-requests') {
+            errorMessage += '⚠️ Too many requests from this device.\nPlease try again later.';
+        } else if (error.code === 'auth/quota-exceeded') {
+            errorMessage += 'Daily SMS limit reached (10/day for free tier).\nTry again tomorrow or upgrade Firebase.';
+        } else {
+            errorMessage += error.message || 'Unknown error';
+        }
+        
+        alert(errorMessage);
+        
+        // Clean up
+        if (window.recaptchaVerifier) {
+            try {
+                window.recaptchaVerifier.clear();
+            } catch (e) {}
+            window.recaptchaVerifier = null;
+        }
+    }
+}
+
+function startResendTimer() {
+    smsCountdown = 120; // 2 minutes
+    const resendBtn = document.querySelector('#otpInputStep button[onclick="resetPhoneVerification()"]');
+    
+    if (!resendBtn) return;
+    
+    resendBtn.disabled = true;
+    resendBtn.style.opacity = '0.5';
+    resendBtn.style.cursor = 'not-allowed';
+    
+    smsTimer = setInterval(() => {
+        smsCountdown--;
+        
+        const minutes = Math.floor(smsCountdown / 60);
+        const seconds = smsCountdown % 60;
+        resendBtn.textContent = `Resend Code (${minutes}:${seconds.toString().padStart(2, '0')})`;
+        
+        if (smsCountdown <= 0) {
+            clearInterval(smsTimer);
+            resendBtn.disabled = false;
+            resendBtn.style.opacity = '1';
+            resendBtn.style.cursor = 'pointer';
+            resendBtn.textContent = 'Resend Code';
+        }
+    }, 1000);
+}
+
+window.verifyPhoneOTP = async function() {
+    const otp = document.getElementById('otpInput').value.trim();
+    
+    if (!otp || otp.length !== 6) {
+        alert('❌ Please enter the 6-digit code');
+        return;
+    }
+
+    if (!window.confirmationResult) {
+        alert('❌ Please request a new verification code.');
+        return;
+    }
+
+    const btn = event.target;
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span> Verifying...';
+    btn.disabled = true;
+
+    try {
+        const result = await window.confirmationResult.confirm(otp);
+        console.log('✅ Phone verified:', result);
+        
+        const phoneNumber = document.getElementById('verifyPhoneInput').value;
+        
+        // Update Firestore
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        await updateDoc(userDocRef, {
+            'verification.phoneVerified': true,
+            'verification.phoneNumber': phoneNumber,
+            'verification.phoneVerifiedAt': new Date().toISOString()
+        });
+        
+        // Update phone input field
+        document.getElementById('phone').value = phoneNumber;
+        
+        // Reset attempts on success
+        smsAttempts = 0;
+        sessionStorage.removeItem('smsAttempts');
+        sessionStorage.removeItem('lastSMSAttempt');
+        
+        alert('✅ Phone number verified successfully!');
+        closePhoneModal();
+        await loadUserData(currentUser);
+        
+    } catch (error) {
+        console.error('❌ Error verifying OTP:', error);
+        
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+        
+        let errorMessage = '❌ ';
+        if (error.code === 'auth/invalid-verification-code') {
+            errorMessage += 'Invalid code. Please check and try again.';
+        } else if (error.code === 'auth/code-expired') {
+            errorMessage += 'Code expired. Please request a new one.';
+        } else {
+            errorMessage += 'Verification failed. Please try again.';
+        }
+        
+        alert(errorMessage);
+        document.getElementById('otpInput').value = '';
+        document.getElementById('otpInput').focus();
+    }
+}
+
+window.resetPhoneVerification = function() {
+    // Check if still in cooldown
+    if (smsCountdown > 0) {
+        alert(`⏰ Please wait ${Math.ceil(smsCountdown / 60)} more minute(s) before resending.`);
+        return;
+    }
+    
+    // Check attempts limit
+    if (smsAttempts >= 3) {
+        alert('⚠️ VIOLATION: SMS Protocol Limit Exceeded\n\n' +
+              'Maximum resend attempts reached (3).\n' +
+              'Please try again in 1 hour.\n\n' +
+              'If you did not receive the code, check your phone number or contact support.');
+        return;
+    }
+    
+    // Reset UI
+    document.getElementById('phoneInputStep').style.display = 'block';
+    document.getElementById('otpInputStep').style.display = 'none';
+    document.getElementById('otpInput').value = '';
+    
+    // Clear reCAPTCHA
+    if (window.recaptchaVerifier) {
+        try {
+            window.recaptchaVerifier.clear();
+        } catch (e) {}
+        window.recaptchaVerifier = null;
+    }
+    
+    // Clear timer
+    if (smsTimer) {
+        clearInterval(smsTimer);
+        smsTimer = null;
+    }
+    
+    window.confirmationResult = null;
+    
+    // Auto-click send button
+    setTimeout(() => {
+        const sendBtn = document.querySelector('#phoneInputStep button[onclick="sendPhoneOTP()"]');
+        if (sendBtn) {
+            alert(`📱 Resending code...\n\nAttempt ${smsAttempts + 1} of 3`);
         }
     }, 100);
 }
-
-        window.closePhoneModal = function() {
-            document.getElementById('phoneVerificationModal').style.display = 'none';
-        }
-
-        window.sendPhoneOTP = async function() {
-            const phoneNumber = document.getElementById('verifyPhoneInput').value.trim();
-            
-            if (!phoneNumber || phoneNumber.length < 10) {
-                alert('Please enter a valid phone number with country code (e.g., +639123456789)');
-                return;
-            }
-
-            try {
-                const appVerifier = window.recaptchaVerifier;
-                confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-                
-                // Switch to OTP input
-                document.getElementById('phoneInputStep').style.display = 'none';
-                document.getElementById('otpInputStep').style.display = 'block';
-                document.getElementById('sentPhoneNumber').textContent = phoneNumber;
-                
-                console.log('SMS sent successfully');
-            } catch (error) {
-                console.error('Error sending SMS:', error);
-                alert('Failed to send verification code: ' + error.message);
-                window.recaptchaVerifier.clear();
-                window.recaptchaVerifier = null;
-            }
-        }
-
-        window.verifyPhoneOTP = async function() {
-            const otp = document.getElementById('otpInput').value.trim();
-            
-            if (!otp || otp.length !== 6) {
-                alert('Please enter the 6-digit code');
-                return;
-            }
-
-            try {
-                const result = await confirmationResult.confirm(otp);
-                console.log('Phone verified successfully:', result);
-                
-                // Update Firestore
-                const phoneNumber = document.getElementById('verifyPhoneInput').value;
-                const userDocRef = doc(db, 'users', currentUser.uid);
-                await updateDoc(userDocRef, {
-                    'verification.phoneVerified': true,
-                    'verification.phoneNumber': phoneNumber,
-                    'verification.phoneVerifiedAt': new Date().toISOString()
-                });
-                
-                alert('✅ Phone number verified successfully!');
-                closePhoneModal();
-                await loadUserData(currentUser);
-                
-            } catch (error) {
-                console.error('Error verifying OTP:', error);
-                alert('Invalid verification code. Please try again.');
-            }
-        }
-
-        window.resetPhoneVerification = function() {
-            document.getElementById('phoneInputStep').style.display = 'block';
-            document.getElementById('otpInputStep').style.display = 'none';
-            document.getElementById('otpInput').value = '';
-            window.recaptchaVerifier.clear();
-            window.recaptchaVerifier = null;
-        }
 
         // ==========================================
       // ==========================================
