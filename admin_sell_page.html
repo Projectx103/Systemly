@@ -1587,11 +1587,43 @@ onAuthStateChanged(auth, async (user) => {
     
     if (userDoc.exists()) {
       const data = userDoc.data();
+      
+      // ✅ CHECK ROLE FIRST - Before doing anything else
+      console.log('🔐 Checking user role:', data.role);
+      
+      // Block access for non-sellers/non-admins
+      if (data.role !== 'seller' && data.role !== 'admin') {
+        console.warn('⚠️ ACCESS DENIED - User role is:', data.role);
+        
+        // Hide loading screen
+        document.getElementById('loadingScreen').classList.add('hidden');
+        document.body.classList.add('loaded');
+        
+        // Show error message
+        showToast(`Access denied. This page is for sellers/admins only.`, 'error');
+        
+        // Redirect based on role
+        setTimeout(() => {
+          if (data.role === 'buyer') {
+            console.log('➡️ Redirecting buyer to admin_buyer_page.html');
+            window.location.href = 'admin_buyer_page.html';
+          } else {
+            console.log('➡️ Redirecting to homepage');
+            window.location.href = 'index.html';
+          }
+        }, 1500);
+        
+        return; // ✅ STOP - Don't load dashboard or modify anything
+      }
+      
+      // ✅ User is seller or admin - Allow access
+      console.log('✅ Access granted - User is:', data.role);
+      
       userData = {
         id: user.uid,
         email: user.email,
         name: data.name || user.displayName || user.email.split('@')[0],
-        role: data.role || 'seller',
+        role: data.role, // ✅ Keep original role - NEVER change it
         subscriptionPlan: data.subscriptionPlan || 'free',
         verified: data.verified || false,
         profile: data.profile || {},
@@ -1601,41 +1633,29 @@ onAuthStateChanged(auth, async (user) => {
       
       console.log('✅ User document loaded:', userData);
       
-      // Validate plan
+      // Validate plan only (don't touch role)
       if (!['free', 'basic', 'premium'].includes(userData.subscriptionPlan)) {
         console.warn('⚠️ Invalid plan detected, defaulting to free');
         userData.subscriptionPlan = 'free';
         await updateDoc(userDocRef, { subscriptionPlan: 'free' });
       }
       
-      // Ensure seller role
-      if (userData.role !== 'seller') {
-        console.warn('⚠️ Non-seller role detected, updating to seller');
-        userData.role = 'seller';
-        await updateDoc(userDocRef, { role: 'seller' });
-      }
+      // ✅ DO NOT modify role - REMOVED all role-changing code
+      
     } else {
-      console.log('📝 Creating new user document...');
-      // Create new user document
-      userData = {
-        id: user.uid,
-        email: user.email,
-        name: user.displayName || user.email.split('@')[0],
-        role: 'seller',
-        subscriptionPlan: 'free',
-        verified: false,
-        profile: {},
-        listings: { active: 0, total: 0 },
-        stats: { totalViews: 0, inquiries: 0, sales: 0 }
-      };
+      // User document doesn't exist
+      console.warn('⚠️ No user document found');
       
-      await setDoc(userDocRef, {
-        ...userData,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
+      // Hide loading screen
+      document.getElementById('loadingScreen').classList.add('hidden');
+      document.body.classList.add('loaded');
       
-      console.log('✅ New user document created');
+      showToast('User profile not found. Please complete registration.', 'error');
+      
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 2000);
+      return;
     }
     
     // Load listings BEFORE initializing dashboard
@@ -1654,10 +1674,6 @@ onAuthStateChanged(auth, async (user) => {
     document.body.classList.add('loaded');
   }
 });
-
-
-
-
 
 // ============================================
 // HELPER FUNCTIONS
