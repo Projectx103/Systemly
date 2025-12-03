@@ -13,20 +13,21 @@
 
 :root {
   --primary: #F97316;
-  --orange-dark: #EA580C;
+  --secondary: #6366F1;
+  --accent: #14B8A6;
+  --bg: #0F172A;
+  --text: #F1F5F9;
   --white: #FFFFFF;
-  --gray-light: #F8FAFC;
+  --gray-light: #1E293B;
   --gray: #64748B;
-  --gray-dark: #334155;
   --error: #EF4444;
   --success: #10B981;
-  --border: #E2E8F0;
 }
 
 body {
   font-family: 'Sarabun', sans-serif;
-  background: var(--white);
-  color: var(--gray-dark);
+  background: var(--bg);
+  color: var(--text);
   line-height: 1.6;
   min-height: 100vh;
   opacity: 0;
@@ -38,7 +39,84 @@ body.loaded { opacity: 1; }
 
 h1,h2,h3,h4 { font-family: 'Archivo', sans-serif; }
 
+/* ————— Animated Background ————— */
+.bg-animation {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
 
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(249, 115, 22, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
+}
+
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  animation: float 25s infinite ease-in-out;
+  opacity: 0.4;
+}
+
+.orb-1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--primary), transparent);
+  top: -200px;
+  right: -200px;
+}
+
+.orb-2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--secondary), transparent);
+  bottom: -150px;
+  left: -150px;
+  animation-delay: 7s;
+}
+
+.orb-3 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--accent), transparent);
+  top: 40%;
+  left: 50%;
+  animation-delay: 14s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(80px, 120px) scale(1.2); }
+  66% { transform: translate(-80px, -100px) scale(0.9); }
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: particleFloat 15s infinite ease-in-out;
+  opacity: 0.3;
+}
+
+@keyframes particleFloat {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-100vh) translateX(100px); }
+}
 
 /* ————— Navigation ————— */
 nav {
@@ -46,8 +124,9 @@ nav {
   top: 0;
   width: 100%;
   padding: 1.5rem 5%;
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 1000;
   animation: slideDown 0.6s ease-out;
 }
@@ -69,7 +148,9 @@ nav {
   font-family: 'Archivo', sans-serif;
   font-size: 2rem;
   font-weight: 900;
-  color: var(--primary);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -93,16 +174,15 @@ nav {
 }
 
 .nav-back {
-  color: var(--gray-dark);
+  color: var(--text);
   text-decoration: none;
   font-weight: 500;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1.5rem;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--white);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s;
   position: relative;
   overflow: hidden;
@@ -146,15 +226,15 @@ nav {
 .auth-wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  max-width: 1100px;
+  max-width: 1200px;
   width: 100%;
-  background: var(--white);
-  border-radius: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(20px);
+  border-radius: 30px;
+  box-shadow: 0 25px 100px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   animation: slideUp 0.8s ease-out;
-  border: 1px solid var(--border);
-  min-height: 600px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 @keyframes slideUp {
@@ -164,14 +244,30 @@ nav {
 
 /* ————— Form Side ————— */
 .auth-form-side {
-  padding: 3rem 4rem;
+  padding: 4rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   position: relative;
-  background: var(--white);
 }
 
+.auth-form-side::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.1), transparent);
+  border-radius: 50%;
+  filter: blur(60px);
+  animation: pulse 4s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+}
 
 .auth-form-side h2 {
   font-size: 2.8rem;
@@ -182,7 +278,23 @@ nav {
 }
 
 .gradient-text {
-  color: var(--primary);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+}
+
+.gradient-text::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: blur(10px);
+  opacity: 0.5;
 }
 
 .auth-subtitle {
@@ -214,12 +326,12 @@ nav {
 
 .form-input {
   width: 100%;
-  padding: 0.9rem 1rem 0.9rem 3rem;
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  padding: 1.1rem 1.1rem 1.1rem 3.2rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
   font-size: 1rem;
-  color: var(--gray-dark);
+  color: var(--text);
   transition: all 0.3s;
   font-family: 'Sarabun', sans-serif;
 }
@@ -230,9 +342,9 @@ nav {
 
 .form-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15), 0 8px 25px rgba(249, 115, 22, 0.2);
   outline: none;
-  background: var(--white);
+  background: rgba(15, 23, 42, 0.8);
 }
 
 .form-input.error {
@@ -280,7 +392,6 @@ nav {
   background: rgba(249, 115, 22, 0.1);
 }
 
-/* Error Messages - Base Style */
 .error-message {
   color: var(--error);
   font-size: 0.85rem;
@@ -293,30 +404,6 @@ nav {
 .error-message.show {
   display: flex;
   animation: fadeInUp 0.3s;
-}
-
-/* Enhanced ROLE selection error - More prominent */
-#signupRoleError {
-  color: #fff;
-  font-size: 0.95rem;
-  margin-top: 1rem;
-  display: none;
-  align-items: center;
-  gap: 0.6rem;
-  background: var(--error);
-  padding: 1rem 1.2rem;
-  border-radius: 12px;
-  font-weight: 600;
-  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-}
-
-#signupRoleError.show {
-  display: flex;
-  animation: shake 0.5s, fadeInUp 0.3s;
-}
-
-#signupRoleError i {
-  font-size: 1.2rem;
 }
 
 @keyframes fadeInUp {
@@ -348,11 +435,11 @@ nav {
 /* Buttons */
 .btn-primary {
   width: 100%;
-  padding: 1rem;
-  background: var(--primary);
+  padding: 1.3rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 15px;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
@@ -367,7 +454,7 @@ nav {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--orange-dark);
+  background: linear-gradient(135deg, var(--secondary), var(--primary));
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -447,12 +534,12 @@ nav {
 
 .btn-social {
   flex: 1;
-  padding: 0.9rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  padding: 1.1rem;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
   cursor: pointer;
-  background: var(--white);
-  color: var(--gray-dark);
+  background: rgba(15, 23, 42, 0.5);
+  color: var(--text);
   font-size: 1rem;
   font-weight: 500;
   transition: all 0.3s;
@@ -489,91 +576,6 @@ nav {
   z-index: 1;
 }
 
-/* Role Selection Cards */
-.role-select-card {
-  background: rgba(15, 23, 42, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 1.5rem 1rem;
-  text-align: center;
-  transition: all 0.3s;
-  cursor: pointer;
-}
-
-.role-select-card:hover {
-  border-color: var(--primary);
-  background: rgba(249, 115, 22, 0.05);
-}
-
-.role-select-card.selected {
-  border-color: var(--primary);
-  background: rgba(249, 115, 22, 0.1);
-  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
-}
-
-.role-select-card i {
-  font-size: 2rem;
-  display: block;
-  margin-bottom: 0.5rem;
-  color: var(--gray);
-  transition: color 0.3s;
-}
-
-.role-select-card.selected i {
-  color: var(--primary);
-}
-
-.role-select-card span {
-  display: block;
-  font-weight: 600;
-  color: var(--text);
-}
-
-/* Enhanced role selection error */
-.form-group .error-message {
-  color: var(--error);
-  font-size: 0.9rem;
-  margin-top: 0.8rem;
-  display: none;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 0.8rem 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--error);
-}
-
-.form-group .error-message.show {
-  display: flex;
-  animation: shake 0.5s, fadeInUp 0.3s;
-}
-
-.form-group .error-message i {
-  font-size: 1.1rem;
-}
-
-/* Add pulse effect to role cards when error shows */
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-10px); }
-  50% { transform: translateX(10px); }
-  75% { transform: translateX(-10px); }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .switch-form {
   text-align: center;
   margin-top: 2rem;
@@ -609,7 +611,8 @@ nav {
 
 /* ————— Visual Side ————— */
 .auth-visual-side {
-  background: var(--primary);
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(99, 102, 241, 0.2));
+  backdrop-filter: blur(20px);
   padding: 4rem;
   display: flex;
   flex-direction: column;
@@ -626,7 +629,8 @@ nav {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.05);
+  background: radial-gradient(circle at center, rgba(249, 115, 22, 0.1), transparent);
+  animation: pulse 3s infinite;
 }
 
 .visual-content {
@@ -635,11 +639,11 @@ nav {
 }
 
 .visual-icon {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   margin: 0 auto 2rem;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -720,48 +724,6 @@ nav {
   animation: slideInDown 0.5s ease-out;
 }
 
-
-/* Email Verification Notice */
-.verification-notice {
-  background: linear-gradient(135deg, #FCD34D, #F59E0B);
-  color: var(--gray-dark);
-  padding: 1rem 1.2rem;
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
-  display: none;
-  align-items: center;
-  gap: 0.8rem;
-  font-weight: 500;
-  border: 2px solid #F59E0B;
-}
-
-.verification-notice.show {
-  display: flex;
-  animation: slideInDown 0.5s ease-out;
-}
-
-.verification-notice i {
-  font-size: 1.5rem;
-}
-
-.verification-notice .resend-link {
-  color: var(--primary);
-  text-decoration: underline;
-  cursor: pointer;
-  margin-left: 0.5rem;
-  font-weight: 600;
-}
-
-.verification-notice .resend-link:hover {
-  color: var(--orange-dark);
-}
-
-
-
-
-
-
-
 .success-message.show {
   display: flex;
 }
@@ -829,151 +791,16 @@ nav {
     padding: 1rem;
   }
 }
-
-/* Google Login Role Selection Modal */
-.google-role-modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.3s ease-out;
-}
-
-.google-role-modal.show {
-  display: flex;
-}
-
-.google-role-content {
-  background: var(--white);
-  padding: 3rem;
-  border-radius: 20px;
-  max-width: 500px;
-  width: 90%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.4s ease-out;
-  border: 1px solid var(--border);
-}
-
-.google-role-content h3 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  color: var(--gray-dark);
-  text-align: center;
-}
-
-.google-role-content p {
-  color: var(--gray);
-  margin-bottom: 2rem;
-  text-align: center;
-  font-size: 1.1rem;
-}
-
-.google-role-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.google-role-card {
-  background: var(--gray-light);
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  padding: 2rem 1.5rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.google-role-card:hover {
-  border-color: var(--primary);
-  background: rgba(249, 115, 22, 0.05);
-  transform: translateY(-5px);
-}
-
-.google-role-card.selected {
-  border-color: var(--primary);
-  background: rgba(249, 115, 22, 0.1);
-  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
-}
-
-.google-role-card i {
-  font-size: 3rem;
-  display: block;
-  margin-bottom: 1rem;
-  color: var(--gray);
-  transition: color 0.3s;
-}
-
-.google-role-card.selected i {
-  color: var(--primary);
-}
-
-.google-role-card span {
-  display: block;
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: var(--gray-dark);
-}
-
-.google-role-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.google-role-actions button {
-  flex: 1;
-  padding: 1rem;
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-family: 'Sarabun', sans-serif;
-}
-
-.btn-cancel-google {
-  background: var(--gray-light);
-  color: var(--gray-dark);
-  border: 1px solid var(--border);
-}
-
-.btn-cancel-google:hover {
-  background: var(--border);
-}
-
-.btn-confirm-google {
-  background: var(--primary);
-  color: white;
-  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4);
-}
-
-.btn-confirm-google:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(249, 115, 22, 0.5);
-}
-
-.btn-confirm-google:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-
-
-
-
-
-
 </style>
 </head>
 <body>
 
+<div class="bg-animation">
+  <div class="bg-grid"></div>
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+</div>
 
 <nav>
   <div class="nav-container">
@@ -1001,13 +828,6 @@ nav {
           <i class="fa-solid fa-circle-check"></i>
           <span>Login successful! Redirecting...</span>
         </div>
-
-<div class="verification-notice" id="verificationNotice">
-  <i class="fa-solid fa-triangle-exclamation"></i>
-  <span>Please verify your email to continue. Check your inbox or <a class="resend-link" id="resendVerification">click here to resend</a> (wait 60s between attempts)</span>
-</div>
-
-
 
         <div class="form-group">
           <label class="form-label">Email Address</label>
@@ -1064,105 +884,65 @@ nav {
         </div>
       </form>
 
-      <!-- SIGNUP FORM --><!-- Replace the SIGNUP FORM section in your login.html with this: -->
-
-<!-- SIGNUP FORM -->
-<form id="signupForm" class="auth-form">
-  <h2>Create Your <span class="gradient-text" data-text="Account">Account</span></h2>
-  <p class="auth-subtitle">Join thousands of entrepreneurs on Systemly</p>
-  <div class="success-message" id="signupSuccess">
-    <i class="fa-solid fa-circle-check"></i>
-    <span>Account created! Setting up your profile...</span>
-  </div>
-
-<div class="success-message" id="verificationSent" style="background: linear-gradient(135deg, #3B82F6, #2563EB);">
-  <i class="fa-solid fa-envelope-circle-check"></i>
-  <span>Verification email sent! Please check your inbox.</span>
-</div>
-
-
-
-
-
-
-
-
-
-  <!-- Role Selection -->
-  <div class="form-group">
-    <label class="form-label">I want to</label>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-      <label style="cursor: pointer;">
-        <input type="radio" name="signupRole" value="buyer" id="signupRoleBuyer" required style="display: none;">
-        <div class="role-select-card" data-role="buyer" onclick="selectSignupRole('buyer')">
-          <i class="fa-solid fa-cart-shopping"></i>
-          <span>Buy Systems</span>
+      <!-- SIGNUP FORM -->
+      <form id="signupForm" class="auth-form">
+        <h2>Create Your <span class="gradient-text" data-text="Account">Account</span></h2>
+        <p class="auth-subtitle">Join thousands of entrepreneurs on Systemly</p>
+        <div class="success-message" id="signupSuccess">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Account created! Redirecting...</span>
         </div>
-      </label>
-      <label style="cursor: pointer;">
-        <input type="radio" name="signupRole" value="seller" id="signupRoleSeller" required style="display: none;">
-        <div class="role-select-card" data-role="seller" onclick="selectSignupRole('seller')">
-          <i class="fa-solid fa-store"></i>
-          <span>Sell Systems</span>
+
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <div class="form-input-wrapper">
+            <input type="text" class="form-input" id="signupName" placeholder="John Doe" required>
+            <i class="fa-solid fa-user form-icon"></i>
+          </div>
+          <span class="error-message" id="signupNameError">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            Name is required
+          </span>
         </div>
-      </label>
-    </div>
-    <span class="error-message" id="signupRoleError">
-      <i class="fa-solid fa-circle-exclamation"></i>
-      Please select your account type
-    </span>
-  </div>
 
-  <div class="form-group">
-    <label class="form-label">Full Name</label>
-    <div class="form-input-wrapper">
-      <input type="text" class="form-input" id="signupName" placeholder="John Doe" required>
-      <i class="fa-solid fa-user form-icon"></i>
-    </div>
-    <span class="error-message" id="signupNameError">
-      <i class="fa-solid fa-circle-exclamation"></i>
-      Name is required
-    </span>
-  </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <div class="form-input-wrapper">
+            <input type="email" class="form-input" id="signupEmail" placeholder="you@example.com" required>
+            <i class="fa-solid fa-envelope form-icon"></i>
+          </div>
+          <span class="error-message" id="signupEmailError">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            Please enter a valid email
+          </span>
+        </div>
 
-  <div class="form-group">
-    <label class="form-label">Email Address</label>
-    <div class="form-input-wrapper">
-      <input type="email" class="form-input" id="signupEmail" placeholder="you@example.com" required>
-      <i class="fa-solid fa-envelope form-icon"></i>
-    </div>
-    <span class="error-message" id="signupEmailError">
-      <i class="fa-solid fa-circle-exclamation"></i>
-      Please enter a valid email
-    </span>
-  </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="form-input-wrapper">
+            <input type="password" class="form-input" id="signupPassword" placeholder="Minimum 8 characters" required>
+            <i class="fa-solid fa-lock form-icon"></i>
+            <button type="button" class="password-toggle" id="signupPasswordToggle">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+          <span class="error-message" id="signupPasswordError">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            Password must be at least 8 characters
+          </span>
+        </div>
 
-  <div class="form-group">
-    <label class="form-label">Password</label>
-    <div class="form-input-wrapper">
-      <input type="password" class="form-input" id="signupPassword" placeholder="Minimum 8 characters" required>
-      <i class="fa-solid fa-lock form-icon"></i>
-      <button type="button" class="password-toggle" id="signupPasswordToggle">
-        <i class="fa-solid fa-eye"></i>
-      </button>
-    </div>
-    <span class="error-message" id="signupPasswordError">
-      <i class="fa-solid fa-circle-exclamation"></i>
-      Password must be at least 8 characters
-    </span>
-  </div>
+        <button type="submit" class="btn-primary">
+          <span>
+            <i class="fa-solid fa-user-plus"></i>
+            Create Account
+          </span>
+        </button>
 
-  <button type="submit" class="btn-primary">
-    <span>
-      <i class="fa-solid fa-user-plus"></i>
-      Create Account
-    </span>
-  </button>
-
-  <div class="switch-form">
-    Already have an account? <a href="#" id="switchToLoginBtn">Log in</a>
-  </div>
-</form>
+        <div class="switch-form">
+          Already have an account? <a href="#" id="switchToLoginBtn">Log in</a>
+        </div>
+      </form>
     </div>
 
     <div class="auth-visual-side">
@@ -1203,37 +983,7 @@ nav {
     </div>
 
   </div>
-<!-- Google Login Role Selection Modal -->
-<div class="google-role-modal" id="googleRoleModal">
-  <div class="google-role-content">
-    <h3>Welcome! 👋</h3>
-    <p>Please select what you want to do on Systemly</p>
-    
-    <div class="google-role-options">
-      <div class="google-role-card" data-role="buyer" onclick="selectGoogleRole('buyer')">
-        <i class="fa-solid fa-cart-shopping"></i>
-        <span>Buy Systems</span>
-      </div>
-      <div class="google-role-card" data-role="seller" onclick="selectGoogleRole('seller')">
-        <i class="fa-solid fa-store"></i>
-        <span>Sell Systems</span>
-      </div>
-    </div>
-    
-    <div class="google-role-actions">
-      <button type="button" class="btn-cancel-google" onclick="cancelGoogleLogin()">
-        Cancel
-      </button>
-      <button type="button" class="btn-confirm-google" id="confirmGoogleRole" disabled>
-        Continue
-      </button>
-    </div>
-  </div>
 </div>
-</div>
-
-
-
 
 <!-- Firebase SDK -->
 <script type="module">
@@ -1248,8 +998,7 @@ import {
   signOut,
   setPersistence,
   browserLocalPersistence,
-  updateProfile,
-  sendEmailVerification
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import { 
@@ -1280,32 +1029,37 @@ const db = getFirestore(app);
 // Set persistence
 setPersistence(auth, browserLocalPersistence);
 
+// ==========================================
+// Create particles animation
+// ==========================================
+function createParticles() {
+  const bgAnimation = document.querySelector('.bg-animation');
+  const particleCount = 20;
+  
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.top = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 15 + 's';
+    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+    bgAnimation.appendChild(particle);
+  }
+}
 
-// FAST AUTH CHECK - Before page loads (REPLACE THE EXISTING ONE)
+createParticles();
+
+// ==========================================
+// FAST AUTH CHECK - Before page loads
+// ==========================================
 let authCheckComplete = false;
 
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, (user) => {
   if (!authCheckComplete) {
     authCheckComplete = true;
     if (user) {
-      // Check if profile is complete
-      const userDocRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userDocRef);
-      
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        
-        if (userData.profileComplete !== true) {
-          // Redirect to profile setup
-          window.location.replace("profile.html");
-        } else {
-          // Redirect to marketplace
-          window.location.replace("marketplace.html");
-        }
-      } else {
-        // No user document - redirect to profile setup
-        window.location.replace("profile.html");
-      }
+      // User is logged in, redirect immediately
+      window.location.replace("marketplace.html");
     } else {
       // No user, show login page
       document.body.classList.add('loaded');
@@ -1337,16 +1091,6 @@ function togglePasswordVisibility(inputId, toggleBtn) {
     icon.classList.add('fa-eye');
   }
 }
-
-
-
-
-
-
-
-
-
-
 
 function switchToSignup() {
   document.getElementById('loginForm').classList.remove('active');
@@ -1433,8 +1177,6 @@ document.getElementById('switchToLoginBtn').addEventListener('click', (e) => {
 // ==========================================
 // LOGIN HANDLER
 // ==========================================
-// LOGIN HANDLER (REPLACE THE EXISTING ONE)
-// LOGIN HANDLER WITH EMAIL VERIFICATION CHECK
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   
@@ -1443,12 +1185,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   const btn = e.target.querySelector('.btn-primary');
   const emailError = document.getElementById('loginEmailError');
   const passwordError = document.getElementById('loginPasswordError');
-  const verificationNotice = document.getElementById('verificationNotice');
 
   // Reset errors
   emailError.classList.remove('show');
   passwordError.classList.remove('show');
-  verificationNotice.classList.remove('show');
   document.getElementById('loginEmail').classList.remove('error');
   document.getElementById('loginPassword').classList.remove('error');
 
@@ -1469,52 +1209,26 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-    const user = userCredential.user;
     
-    // Check if email is verified
-   // Check if email is verified
-if (!user.emailVerified) {
-  btn.classList.remove('loading');
-  verificationNotice.classList.add('show');
-  
-  // Sign out to prevent session without verification
-  await signOut(auth);
-  
-  console.log('⚠️ Email not verified');
-  return;
-}
+    // Check if user document exists, create if not
+    await createUserDocument(userCredential.user, null);
     
-    // Check user document
-    const userDocRef = doc(db, 'users', user.uid);
+    // Check user status
+    const userDocRef = doc(db, 'users', userCredential.user.uid);
     const userDoc = await getDoc(userDocRef);
     
     if (userDoc.exists()) {
       const userData = userDoc.data();
-      
-      // Update emailVerified status in Firestore if needed
-      if (userData.emailVerified !== true) {
-        await setDoc(userDocRef, { emailVerified: true }, { merge: true });
-      }
-      
-      // Check if suspended
       if (userData.status === 'suspended') {
         await signOut(auth);
         alert('⚠️ Your account has been suspended. Please contact support.');
         btn.classList.remove('loading');
         return;
       }
-      
-      // Check if profile is complete
-      if (userData.profileComplete !== true) {
-        document.getElementById('loginSuccess').classList.add('show');
-        setTimeout(() => window.location.href = "profile.html", 1500);
-        return;
-      }
     }
     
     document.getElementById('loginSuccess').classList.add('show');
     setTimeout(() => window.location.href = "marketplace.html", 1500);
-    
   } catch (err) {
     btn.classList.remove('loading');
     let errorMsg = "Login failed. Please check your credentials.";
@@ -1545,81 +1259,9 @@ if (!user.emailVerified) {
   }
 });
 
-
-
-// RESEND VERIFICATION EMAIL
-document.getElementById('resendVerification').addEventListener('click', async (e) => {
-  e.preventDefault();
-  
-  const email = document.getElementById("loginEmail").value.trim();
-  const pass = document.getElementById("loginPassword").value;
-  
-  if (!email || !pass) {
-    alert('Please enter your email and password first, then try again.');
-    return;
-  }
-  
-  const link = e.target;
-  link.textContent = 'Sending...';
-  link.style.pointerEvents = 'none';
-  
-  try {
-    // Re-authenticate to get fresh user object
-    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-    const user = userCredential.user;
-    
-    await sendEmailVerification(user);
-    
-    alert('✅ Verification email sent! Please check your inbox.');
-    link.textContent = 'Email sent!';
-    
-    setTimeout(() => {
-      link.textContent = 'Resend verification email';
-      link.style.pointerEvents = 'auto';
-    }, 5000);
-    
-  } catch (err) {
-    console.error('Resend error:', err);
-    alert('Failed to resend email. Please try again.');
-    link.textContent = 'Resend verification email';
-    link.style.pointerEvents = 'auto';
-  }
-});
-
-
-
-
-
-
-
-
-
-
-
-
-// Role selection for signup
-let selectedSignupRole = null;
-
-window.selectSignupRole = function(role) {
-  selectedSignupRole = role;
-  
-  // Update UI
-  document.querySelectorAll('.role-select-card').forEach(card => {
-    card.classList.remove('selected');
-  });
-  document.querySelector(`.role-select-card[data-role="${role}"]`).classList.add('selected');
-  
-  // Update hidden radio
-  document.getElementById(`signupRole${role.charAt(0).toUpperCase() + role.slice(1)}`).checked = true;
-  
-  // Hide error if visible
-  const roleError = document.getElementById('signupRoleError');
-  if (roleError) {
-    roleError.classList.remove('show');
-  }
-};
-
-// SIGNUP HANDLER WITH EMAIL VERIFICATION
+// ==========================================
+// SIGNUP HANDLER
+// ==========================================
 document.getElementById('signupForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   
@@ -1631,67 +1273,38 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
   const nameError = document.getElementById('signupNameError');
   const emailError = document.getElementById('signupEmailError');
   const passwordError = document.getElementById('signupPasswordError');
-  const roleError = document.getElementById('signupRoleError');
 
-  // Reset ALL errors first
+  // Reset errors
   nameError.classList.remove('show');
   emailError.classList.remove('show');
   passwordError.classList.remove('show');
-  roleError.classList.remove('show');
   document.getElementById('signupName').classList.remove('error');
   document.getElementById('signupEmail').classList.remove('error');
   document.getElementById('signupPassword').classList.remove('error');
 
-  // Validation - CHECK ROLE FIRST
-  if (!selectedSignupRole) {
-    console.log('No role selected - showing error');
-    roleError.classList.add('show');
-    
-    const roleContainer = document.querySelector('.role-select-card').parentElement.parentElement;
-    roleContainer.scrollIntoView({ 
-      behavior: 'smooth', 
-      block: 'center' 
-    });
-    
-    document.querySelectorAll('.role-select-card').forEach(card => {
-      card.style.animation = 'shake 0.5s';
-      setTimeout(() => { card.style.animation = ''; }, 500);
-    });
-    
-    setTimeout(() => {
-      if (!selectedSignupRole) {
-        alert('⚠️ Please select your account type: Buyer or Seller');
-      }
-    }, 100);
-    
-    return;
-  }
-  
+  // Validation
   if (!name) {
     nameError.classList.add('show');
     document.getElementById('signupName').classList.add('error');
-    document.getElementById('signupName').focus();
     return;
   }
   
   if (!email) {
     emailError.classList.add('show');
     document.getElementById('signupEmail').classList.add('error');
-    document.getElementById('signupEmail').focus();
     return;
   }
   
   if (pass.length < 8) {
     passwordError.classList.add('show');
     document.getElementById('signupPassword').classList.add('error');
-    document.getElementById('signupPassword').focus();
     return;
   }
 
   btn.classList.add('loading');
 
   try {
-    // Create user account
+    // Create Firebase Auth user
     const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
     const user = userCredential.user;
 
@@ -1700,80 +1313,30 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
       displayName: name
     });
 
-    // Send verification email
-    await sendEmailVerification(user, {
-      url: window.location.origin + '/profile.html',
-      handleCodeInApp: true
-    });
-
-    // Create user document in Firestore
-    const userDocRef = doc(db, 'users', user.uid);
-    await setDoc(userDocRef, {
-      email: user.email,
-      name: name,
-      role: selectedSignupRole,
-      subscriptionPlan: 'free',
-      profileComplete: false,
-      emailVerified: false,
-      createdAt: new Date().toISOString(),
-      photoURL: user.photoURL || null,
-      status: 'active',
-      listings: {
-        active: 0,
-        total: 0
-      },
-      stats: {
-        totalViews: 0,
-        inquiries: 0,
-        sales: 0,
-        alerts: 0,
-        savedSearches: 0
-      },
-      profile: {
-        bio: '',
-        company: '',
-        website: '',
-        phone: '',
-        location: 'Quezon City, Metro Manila, PH',
-        verified: false
-      }
-    });
+    // Create complete Firestore user document
+    await createUserDocument(user, name);
 
     console.log('✅ User created successfully:', user.uid);
-    console.log('📧 Verification email sent to:', user.email);
     
-    btn.classList.remove('loading');
-    
-    // Show verification sent message
-    document.getElementById('verificationSent').classList.add('show');
-    
-    // Sign out user until they verify
-    await signOut(auth);
-    
-    // Switch to login form after 3 seconds
-    setTimeout(() => {
-      document.getElementById('verificationSent').classList.remove('show');
-      switchToLogin();
-      alert('✅ Account created! Please check your email and click the verification link before logging in.');
-    }, 3000);
-    
+    document.getElementById('signupSuccess').classList.add('show');
+    setTimeout(() => window.location.href = "marketplace.html", 1500);
   } catch (err) {
     btn.classList.remove('loading');
     let errorMsg = "Signup failed. Please try again.";
     
     if (err.code === 'auth/email-already-in-use') {
       errorMsg = "This email is already registered. Please log in.";
-      emailError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + errorMsg;
+      emailError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>' + errorMsg;
       emailError.classList.add('show');
       document.getElementById('signupEmail').classList.add('error');
     } else if (err.code === 'auth/invalid-email') {
       errorMsg = "Invalid email address.";
-      emailError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + errorMsg;
+      emailError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>' + errorMsg;
       emailError.classList.add('show');
       document.getElementById('signupEmail').classList.add('error');
     } else if (err.code === 'auth/weak-password') {
       errorMsg = "Password is too weak. Use at least 8 characters.";
-      passwordError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + errorMsg;
+      passwordError.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>' + errorMsg;
       passwordError.classList.add('show');
       document.getElementById('signupPassword').classList.add('error');
     } else {
@@ -1784,98 +1347,11 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
   }
 });
 
-// GOOGLE LOGIN - Variables
-let googleRoleSelected = null;
-let pendingGoogleUser = null;
-
-// Role selection for Google login
-window.selectGoogleRole = function(role) {
-  googleRoleSelected = role;
-  
-  document.querySelectorAll('.google-role-card').forEach(card => {
-    card.classList.remove('selected');
-  });
-  document.querySelector(`.google-role-card[data-role="${role}"]`).classList.add('selected');
-  
-  document.getElementById('confirmGoogleRole').disabled = false;
-};
-
-window.cancelGoogleLogin = async function() {
-  document.getElementById('googleRoleModal').classList.remove('show');
-  googleRoleSelected = null;
-  pendingGoogleUser = null;
-  
-  // Sign out the pending user
-  if (auth.currentUser) {
-    await signOut(auth);
-  }
-  
-  const btn = document.getElementById('googleLogin');
-  btn.style.opacity = '1';
-  btn.style.pointerEvents = 'auto';
-};
-
-// Confirm Google role and complete signup
-document.getElementById('confirmGoogleRole').addEventListener('click', async () => {
-  if (!googleRoleSelected || !pendingGoogleUser) return;
-  
-  const btn = document.getElementById('confirmGoogleRole');
-  btn.disabled = true;
-  btn.textContent = 'Creating account...';
-  
-  try {
-    const userDocRef = doc(db, 'users', pendingGoogleUser.uid);
-    
-    await setDoc(userDocRef, {
-      email: pendingGoogleUser.email,
-      name: pendingGoogleUser.displayName || pendingGoogleUser.email.split('@')[0],
-      role: googleRoleSelected,
-      subscriptionPlan: 'free',
-      profileComplete: false,
-      createdAt: new Date().toISOString(),
-      photoURL: pendingGoogleUser.photoURL || null,
-      status: 'active',
-      listings: {
-        active: 0,
-        total: 0
-      },
-      stats: {
-        totalViews: 0,
-        inquiries: 0,
-        sales: 0,
-        alerts: 0,
-        savedSearches: 0
-      },
-      profile: {
-        bio: '',
-        company: '',
-        website: '',
-        phone: '',
-        location: 'Quezon City, Metro Manila, PH',
-        verified: false
-      }
-    });
-    
-    console.log('✅ Google user created with role:', googleRoleSelected);
-    
-    document.getElementById('googleRoleModal').classList.remove('show');
-    window.location.href = "profile.html";
-    
-  } catch (err) {
-    console.error('Error creating Google user:', err);
-    alert('Failed to create account. Please try again.');
-    btn.disabled = false;
-    btn.textContent = 'Continue';
-  }
-});
-
+// ==========================================
 // GOOGLE LOGIN HANDLER
+// ==========================================
 document.getElementById('googleLogin').addEventListener('click', async () => {
   const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({
-    prompt: 'select_account'
-  });
-  
   const btn = document.getElementById('googleLogin');
   
   try {
@@ -1885,31 +1361,15 @@ document.getElementById('googleLogin').addEventListener('click', async () => {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
     
-    console.log('✅ Google sign-in successful:', user.email);
+    // Create or update user document with complete structure
+    await createUserDocument(user, user.displayName);
     
-    // Check if user document exists
+    // Check user status
     const userDocRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userDocRef);
     
-    if (!userDoc.exists()) {
-      // NEW USER - Show role selection modal
-      pendingGoogleUser = user;
-      googleRoleSelected = null;
-      
-      document.getElementById('confirmGoogleRole').disabled = true;
-      document.querySelectorAll('.google-role-card').forEach(card => {
-        card.classList.remove('selected');
-      });
-      
-      document.getElementById('googleRoleModal').classList.add('show');
-      
-      btn.style.opacity = '1';
-      btn.style.pointerEvents = 'auto';
-      
-    } else {
-      // EXISTING USER - Normal login flow
+    if (userDoc.exists()) {
       const userData = userDoc.data();
-      
       if (userData.status === 'suspended') {
         await signOut(auth);
         alert('⚠️ Your account has been suspended. Please contact support.');
@@ -1917,27 +1377,35 @@ document.getElementById('googleLogin').addEventListener('click', async () => {
         btn.style.pointerEvents = 'auto';
         return;
       }
-      
-      if (userData.profileComplete !== true) {
-        window.location.href = "profile.html";
-      } else {
-        window.location.href = "marketplace.html";
-      }
     }
+    
+    console.log('✅ Google sign-in successful:', user.uid);
+    
+    // Show success message for current form
+    const activeForm = document.querySelector('.auth-form.active');
+    const successMsg = activeForm.id === 'loginForm' ? 
+      document.getElementById('loginSuccess') : 
+      document.getElementById('signupSuccess');
+    successMsg.classList.add('show');
+    
+    setTimeout(() => window.location.href = "marketplace.html", 1500);
   } catch (err) {
     btn.style.opacity = '1';
     btn.style.pointerEvents = 'auto';
     
-    console.error('❌ Google sign-in error:', err);
-    
+    let errorMsg = "Google sign-in failed. Please try again.";
     if (err.code === 'auth/popup-closed-by-user') {
-      return;
+      errorMsg = "Sign-in cancelled.";
     } else if (err.code === 'auth/popup-blocked') {
-      alert('Popup blocked. Please allow popups for this site and try again.');
+      errorMsg = "Popup blocked. Please allow popups for this site.";
     } else if (err.code === 'auth/cancelled-popup-request') {
+      // User closed popup, no need to show error
       return;
-    } else {
-      alert('Google sign-in failed: ' + err.message);
+    }
+    
+    console.error('Google sign-in error:', err);
+    if (err.code !== 'auth/popup-closed-by-user') {
+      alert(errorMsg);
     }
   }
 });
