@@ -1147,7 +1147,87 @@ app.get('/api/buyer/file-reviews/:fileReviewId/download/:filename', async (req, 
 
 
 
-
+// Generate signed URLs for KYC documents
+app.get('/api/admin/kyc-signed-urls/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    console.log('🔐 Generating signed URLs for user:', userId);
+    
+    // Get user document from Firestore
+    const userRef = admin.firestore().collection('users').doc(userId);
+    const userDoc = await userRef.get();
+    
+    if (!userDoc.exists) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+    
+    const userData = userDoc.data();
+    const kycDocuments = userData?.verification?.kycDocuments;
+    
+    if (!kycDocuments) {
+      return res.status(404).json({ success: false, error: 'No KYC documents found' });
+    }
+    
+    // Extract file paths from URLs
+    const extractPath = (url) => {
+      if (!url) return null;
+      const match = url.match(/\/o\/(.*?)\?/);
+      return match ? decodeURIComponent(match[1]) : null;
+    };
+    
+    const idFrontPath = extractPath(kycDocuments.idFront);
+    const idBackPath = extractPath(kycDocuments.idBack);
+    const selfiePath = extractPath(kycDocuments.selfie);
+    
+    // Generate signed URLs (expire in 5 minutes)
+    const expiresIn = 5 * 60 * 1000; // 5 minutes in milliseconds
+    
+    const [idFrontUrl] = idFrontPath ? await admin.storage().bucket().file(idFrontPath).getSignedUrl({
+      action: 'read',
+      expires: Date.now() + expiresIn
+    }) : [null];
+    
+    const [idBackUrl] = idBackPath ? await admin.storage().bucket().file(idBackPath).getSignedUrl({
+      action: 'read',
+      expires: Date.now() + expiresIn
+    }) : [null];
+    
+    const [selfieUrl] = selfiePath ? await admin.storage().bucket().file(selfiePath).getSignedUrl({
+      action: 'read',
+      expires: Date.now() + expiresIn
+    }) : [null];
+    
+    // Log access for audit trail
+    await userRef.collection('auditLog').add({
+      action: 'KYC_DOCUMENTS_ACCESSED',
+      accessedBy: 'admin', // You can pass actual admin ID if available
+      accessedAt: admin.firestore.FieldValue.serverTimestamp(),
+      expiresAt: new Date(Date.now() + expiresIn),
+      ipAddress: req.ip
+    });
+    
+    console.log('✅ Signed URLs generated successfully');
+    
+    res.json({
+      success: true,
+      urls: {
+        idFront: idFrontUrl,
+        idBack: idBackUrl,
+        selfie: selfieUrl
+      },
+      expiresIn: 300, // seconds
+      generatedAt: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('❌ Error generating signed URLs:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+});
 
 
 
@@ -1176,6 +1256,7 @@ const server = app.listen(PORT, () => {
 server.timeout = 300000; // 5 minutes
 server.keepAliveTimeout = 300000;
 server.headersTimeout = 300000;
+
 
 
 
