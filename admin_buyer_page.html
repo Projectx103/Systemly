@@ -824,6 +824,319 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Archivo', sans-serif; }
   background: rgba(249, 115, 22, 0.05);
 }
 
+
+
+/* Chat-style ticket system */
+.ticket-container {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 1.5rem;
+  height: calc(100vh - 300px);
+}
+
+.tickets-sidebar {
+  background: white;
+  border-radius: 15px;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.ticket-item {
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+}
+
+.ticket-item:hover {
+  background: var(--gray-light);
+}
+
+.ticket-item.active {
+  background: var(--bg);
+  border-color: var(--primary);
+}
+
+.ticket-item.unread {
+  background: rgba(249, 115, 22, 0.05);
+  border-left: 4px solid var(--primary);
+}
+
+.ticket-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.ticket-status-dot.open { background: var(--warning); }
+.ticket-status-dot.in-progress { background: var(--info); }
+.ticket-status-dot.resolved { background: var(--success); }
+.ticket-status-dot.closed { background: var(--gray); }
+
+.chat-container {
+  background: white;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chat-header {
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--gray-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.message-bubble {
+  max-width: 75%;
+  padding: 1rem 1.25rem;
+  border-radius: 15px;
+  position: relative;
+  animation: messageSlideIn 0.3s ease-out;
+}
+
+@keyframes messageSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message-bubble.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border-bottom-right-radius: 5px;
+}
+
+.message-bubble.support {
+  align-self: flex-start;
+  background: var(--gray-light);
+  color: var(--text);
+  border-bottom-left-radius: 5px;
+}
+
+.message-bubble.system {
+  align-self: center;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--info);
+  font-size: 0.85rem;
+  text-align: center;
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+}
+
+.message-content {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.chat-input-area {
+  padding: 1.5rem;
+  border-top: 2px solid var(--gray-light);
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.chat-input-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.chat-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--gray-light);
+  border-radius: 10px;
+  resize: vertical;
+  min-height: 50px;
+  max-height: 150px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 1rem;
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.send-btn {
+  padding: 0.8rem 1.5rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+}
+
+.send-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Rating Section */
+.rating-section {
+  padding: 1.5rem;
+  background: var(--bg);
+  border-radius: 10px;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.rating-stars {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 2rem;
+  margin: 1rem 0;
+}
+
+.rating-star {
+  cursor: pointer;
+  color: #D1D5DB;
+  transition: all 0.2s;
+  font-size: 2.5rem;
+}
+
+.rating-star:hover,
+.rating-star.active {
+  color: var(--warning);
+  transform: scale(1.15);
+}
+
+.rating-categories {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.rating-category {
+  padding: 0.6rem 1rem;
+  background: white;
+  border: 2px solid var(--gray-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+.rating-category:hover {
+  border-color: var(--secondary);
+}
+
+.rating-category.selected {
+  background: linear-gradient(135deg, var(--secondary), var(--accent));
+  color: white;
+  border-color: transparent;
+}
+
+.empty-chat-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--gray);
+}
+
+.ticket-metadata {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.metadata-item {
+  flex: 1;
+  min-width: 150px;
+}
+
+.metadata-label {
+  font-size: 0.75rem;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metadata-value {
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 1024px) {
+  .ticket-container {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  
+  .tickets-sidebar {
+    max-height: 300px;
+  }
+  
+  .chat-container {
+    min-height: 500px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Professional Offer Card Redesign */
 .offer-card {
   background: var(--white);
@@ -1180,10 +1493,6 @@ body:not(.loaded) .dashboard-layout {
           <i class="fa-solid fa-calculator"></i>
           <span>ROI Calculator</span>
         </div>
-        <div class="nav-item" onclick="navigateTo('inquiries')">
-          <i class="fa-solid fa-envelope"></i>
-          <span>My Inquiries</span>
-        </div>
       </div>
       
      <div class="nav-section">
@@ -1200,9 +1509,22 @@ body:not(.loaded) .dashboard-layout {
   <div class="nav-item" onclick="navigateTo('inquiries')">
     <i class="fa-solid fa-comments"></i>
     <span>My Inquiries</span>
+  </div> 
+<div class="nav-section">
+  <div class="nav-section-title">Support</div>
+  <div class="nav-item" onclick="navigateTo('contact-sales')">
+    <i class="fa-solid fa-headset"></i>
+    <span>Contact Sales</span>
   </div>
 </div>
-    
+
+
+
+
+
+
+
+
     <div class="sidebar-footer">
       <button class="logout-btn" onclick="logout()">
         <i class="fa-solid fa-right-from-bracket"></i>
@@ -1465,7 +1787,111 @@ body:not(.loaded) .dashboard-layout {
 
 
 
-
+<!-- CONTACT SALES TAB - CHAT SYSTEM -->
+<div id="tab-contact-sales" class="tab-content">
+  <!-- New Ticket Form (Collapsible) -->
+  <div class="content-card" id="newTicketCard">
+    <div class="card-header">
+      <h3>Contact Sales Support</h3>
+      <button class="card-action" onclick="toggleNewTicketForm()">
+        <i class="fa-solid fa-plus"></i> <span id="newTicketToggleText">New Ticket</span>
+      </button>
+    </div>
+    
+    <div id="newTicketFormContainer" style="display: none;">
+      <div style="background: linear-gradient(135deg, var(--secondary), var(--accent)); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
+        <h4 style="color: white; margin-bottom: 0.5rem;">Need Help?</h4>
+        <p style="opacity: 0.95;">Our sales representatives are here to assist you with payment issues, invoice inquiries, and general support.</p>
+      </div>
+      
+      <form id="contactSalesForm" onsubmit="submitSalesInquiry(event)">
+        <div class="form-group">
+          <label class="form-label">Inquiry Type *</label>
+          <select id="inquiryType" class="form-select" required>
+            <option value="">Select inquiry type...</option>
+            <option value="payment-issue">Payment Issue</option>
+            <option value="offer-question">Offer Question</option>
+            <option value="invoice-inquiry">Invoice Inquiry</option>
+            <option value="technical-support">Technical Support</option>
+            <option value="general-inquiry">General Inquiry</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div class="form-group" id="relatedOfferGroup" style="display: none;">
+          <label class="form-label">Related Offer (Optional)</label>
+          <select id="relatedOffer" class="form-select">
+            <option value="">Select an offer...</option>
+          </select>
+        </div>
+        
+        <div class="form-group" id="relatedInvoiceGroup" style="display: none;">
+          <label class="form-label">Related Invoice (Optional)</label>
+          <select id="relatedInvoice" class="form-select">
+            <option value="">Select an invoice...</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Subject *</label>
+          <input type="text" id="inquirySubject" class="form-input" required placeholder="Brief description of your concern">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Message *</label>
+          <textarea id="inquiryMessage" class="form-input" rows="6" required placeholder="Please provide detailed information about your inquiry..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Contact Phone (Optional)</label>
+          <input type="tel" id="inquiryPhone" class="form-input" placeholder="+63 XXX XXX XXXX">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Preferred Contact Method *</label>
+          <select id="contactMethod" class="form-select" required>
+            <option value="email">Email</option>
+            <option value="phone">Phone</option>
+            <option value="both">Both Email & Phone</option>
+          </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-full" id="submitSalesBtn">
+          <i class="fa-solid fa-paper-plane"></i> Submit Inquiry
+        </button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Chat-style Ticket System -->
+  <div class="content-card">
+    <div class="card-header">
+      <h3>My Support Tickets</h3>
+      <button class="card-action" onclick="loadSalesInquiries()">
+        <i class="fa-solid fa-sync"></i> Refresh
+      </button>
+    </div>
+    
+    <div class="ticket-container">
+      <!-- Tickets Sidebar -->
+      <div class="tickets-sidebar" id="ticketsSidebar">
+        <div class="empty-state" style="padding: 2rem;">
+          <i class="fa-solid fa-ticket"></i>
+          <p>No tickets yet</p>
+        </div>
+      </div>
+      
+      <!-- Chat Area -->
+      <div class="chat-container" id="chatContainer">
+        <div class="empty-chat-state">
+          <i class="fa-solid fa-comments" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem;"></i>
+          <h4>Select a ticket to view conversation</h4>
+          <p style="font-size: 0.9rem;">Choose a ticket from the sidebar to start chatting</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 
@@ -1574,6 +2000,9 @@ let myOffers = [];
 let myMessages = [];
 let fileReviews = [];
 let listingsUnsubscribe = null;
+let salesInquiries = [];
+let salesInquiriesUnsubscribe = null;
+
 
 // ============================================
 // LOAD OFFERS
@@ -1637,6 +2066,7 @@ async function loadOffers() {
 
 
 // ✅ CHECK INVOICE STATUS FOR ALL OFFERS
+// ✅ CHECK INVOICE STATUS FOR ALL OFFERS
 async function checkOfferInvoiceStatus() {
   try {
     console.log('🔍 Checking invoice status for all offers...');
@@ -1645,21 +2075,33 @@ async function checkOfferInvoiceStatus() {
       // Only check for offers with approved files
       if (offer.fileReviewStatus === 'admin-approved' && offer.status === 'admin-approved') {
         try {
-          const invoicesRef = collection(db, 'invoices');
-          const q = query(invoicesRef, where('offerId', '==', offer.id));
-          const snapshot = await getDocs(q);
+          // ✅ STEP 1: Find transaction for this offer
+          const transactionsRef = collection(db, 'transactions');
+          const tq = query(transactionsRef, where('offerId', '==', offer.id));
+          const transactionSnapshot = await getDocs(tq);
           
-          if (!snapshot.empty) {
-            const invoiceDoc = snapshot.docs[0];
-            const invoiceData = invoiceDoc.data();
+          if (!transactionSnapshot.empty) {
+            const transactionId = transactionSnapshot.docs[0].id;
+            console.log(`✅ Found transaction ${transactionId} for offer ${offer.id}`);
             
-            offer.hasInvoice = true;
-            offer.invoiceId = invoiceDoc.id;
-            offer.invoiceStatus = invoiceData.status;
+            // ✅ STEP 2: Check if invoice exists using transaction ID as doc ID
+            const invoiceRef = doc(db, 'invoices', transactionId);
+            const invoiceDoc = await getDoc(invoiceRef);
             
-            console.log(`✅ Offer ${offer.id} has invoice: ${invoiceData.invoiceNumber} (${invoiceData.status})`);
+            if (invoiceDoc.exists()) {
+              const invoiceData = invoiceDoc.data();
+              
+              offer.hasInvoice = true;
+              offer.invoiceId = invoiceDoc.id;
+              offer.invoiceStatus = invoiceData.status;
+              offer.invoiceNumber = invoiceData.invoiceNumber;
+              
+              console.log(`✅ Offer ${offer.id} has invoice: ${invoiceData.invoiceNumber} (${invoiceData.status})`);
+            } else {
+              console.log(`ℹ️ Offer ${offer.id}: Transaction exists but no invoice generated yet`);
+            }
           } else {
-            console.log(`ℹ️ Offer ${offer.id}: No invoice found`);
+            console.log(`ℹ️ Offer ${offer.id}: No transaction found`);
           }
         } catch (err) {
           console.warn(`⚠️ Error checking invoice for offer ${offer.id}:`, err);
@@ -1673,7 +2115,6 @@ async function checkOfferInvoiceStatus() {
     console.error('❌ Error in checkOfferInvoiceStatus:', error);
   }
 }
-
 
 
 
@@ -3876,6 +4317,7 @@ window.navigateTo = function(page) {
   invoices: 'Invoice History',
   inquiries: 'My Inquiries',
   purchases: 'Purchase History',
+  'contact-sales': 'Contact Sales',
   settings: 'Settings'
 };
   
@@ -4036,6 +4478,727 @@ window.addEventListener('DOMContentLoaded', () => {
   // Clear after 10 seconds to prevent infinite loop
   setTimeout(() => clearInterval(checkUserData), 10000);
 });
+
+
+// ============================================
+// CONTACT SALES FUNCTIONS
+// ============================================
+
+// Populate related offers/invoices when inquiry type changes
+document.addEventListener('DOMContentLoaded', () => {
+  const inquiryTypeSelect = document.getElementById('inquiryType');
+  
+  if (inquiryTypeSelect) {
+    inquiryTypeSelect.addEventListener('change', (e) => {
+      const type = e.target.value;
+      const offerGroup = document.getElementById('relatedOfferGroup');
+      const invoiceGroup = document.getElementById('relatedInvoiceGroup');
+      
+      // Show/hide related fields
+      if (type === 'payment-issue' || type === 'offer-question') {
+        offerGroup.style.display = 'block';
+        populateOfferSelect();
+      } else {
+        offerGroup.style.display = 'none';
+      }
+      
+      if (type === 'invoice-inquiry') {
+        invoiceGroup.style.display = 'block';
+        populateInvoiceSelect();
+      } else {
+        invoiceGroup.style.display = 'none';
+      }
+    });
+  }
+});
+
+function populateOfferSelect() {
+  const select = document.getElementById('relatedOffer');
+  if (!select) return;
+  
+  select.innerHTML = '<option value="">Select an offer...</option>';
+  
+  myOffers.forEach(offer => {
+    const option = document.createElement('option');
+    option.value = offer.id;
+    option.textContent = `${offer.listing_name} - ₱${parseFloat(offer.offer_amount).toLocaleString()} (${offer.status})`;
+    select.appendChild(option);
+  });
+}
+
+function populateInvoiceSelect() {
+  const select = document.getElementById('relatedInvoice');
+  if (!select) return;
+  
+  select.innerHTML = '<option value="">Select an invoice...</option>';
+  
+  myInvoices.forEach(invoice => {
+    const option = document.createElement('option');
+    option.value = invoice.id;
+    option.textContent = `${invoice.invoiceNumber} - ₱${invoice.totalDue.toLocaleString()} (${invoice.status})`;
+    select.appendChild(option);
+  });
+}
+
+window.submitSalesInquiry = async function(event) {
+  event.preventDefault();
+  
+  const submitBtn = document.getElementById('submitSalesBtn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+  
+  try {
+    const inquiryType = document.getElementById('inquiryType').value;
+    const subject = document.getElementById('inquirySubject').value.trim();
+    const message = document.getElementById('inquiryMessage').value.trim();
+    const phone = document.getElementById('inquiryPhone').value.trim();
+    const contactMethod = document.getElementById('contactMethod').value;
+    const relatedOfferId = document.getElementById('relatedOffer')?.value || null;
+    const relatedInvoiceId = document.getElementById('relatedInvoice')?.value || null;
+    
+    // Get related offer/invoice details
+    let relatedOfferDetails = null;
+    let relatedInvoiceDetails = null;
+    
+    if (relatedOfferId) {
+      const offer = myOffers.find(o => o.id === relatedOfferId);
+      if (offer) {
+        relatedOfferDetails = {
+          id: offer.id,
+          listingName: offer.listing_name,
+          amount: offer.offer_amount,
+          status: offer.status
+        };
+      }
+    }
+    
+    if (relatedInvoiceId) {
+      const invoice = myInvoices.find(i => i.id === relatedInvoiceId);
+      if (invoice) {
+        relatedInvoiceDetails = {
+          id: invoice.id,
+          invoiceNumber: invoice.invoiceNumber,
+          amount: invoice.totalDue,
+          status: invoice.status
+        };
+      }
+    }
+    
+    // Create inquiry document
+    const inquiryData = {
+      userId: userData.id,
+      userName: userData.name,
+      userEmail: userData.email,
+      userPhone: phone || userData.profile?.phone || 'Not provided',
+      inquiryType: inquiryType,
+      subject: subject,
+      message: message,
+      contactMethod: contactMethod,
+      relatedOfferId: relatedOfferId,
+      relatedInvoiceId: relatedInvoiceId,
+      relatedOfferDetails: relatedOfferDetails,
+      relatedInvoiceDetails: relatedInvoiceDetails,
+      status: 'open',
+      priority: determinePriority(inquiryType),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+    
+    console.log('📤 Submitting sales inquiry:', inquiryData);
+    
+    await addDoc(collection(db, 'salesInquiries'), inquiryData);
+    
+    showToast('✅ Inquiry submitted! Our sales team will contact you soon.', 'success');
+    
+    // Reset form
+    document.getElementById('contactSalesForm').reset();
+    document.getElementById('relatedOfferGroup').style.display = 'none';
+    document.getElementById('relatedInvoiceGroup').style.display = 'none';
+    
+    // Reload inquiries
+    await loadSalesInquiries();
+    
+  } catch (error) {
+    console.error('❌ Error submitting inquiry:', error);
+    showToast('Failed to submit inquiry: ' + error.message, 'error');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Inquiry';
+  }
+}
+
+
+
+
+// ============================================
+// CHAT SYSTEM FUNCTIONS
+// ============================================
+
+let activeTicketId = null;
+let messagesUnsubscribe = null;
+
+window.toggleNewTicketForm = function() {
+  const container = document.getElementById('newTicketFormContainer');
+  const toggleText = document.getElementById('newTicketToggleText');
+  
+  if (container.style.display === 'none') {
+    container.style.display = 'block';
+    toggleText.textContent = 'Cancel';
+  } else {
+    container.style.display = 'none';
+    toggleText.textContent = 'New Ticket';
+    document.getElementById('contactSalesForm').reset();
+  }
+}
+
+function renderTicketsSidebar() {
+  const sidebar = document.getElementById('ticketsSidebar');
+  
+  if (salesInquiries.length === 0) {
+    sidebar.innerHTML = `
+      <div class="empty-state" style="padding: 2rem;">
+        <i class="fa-solid fa-ticket"></i>
+        <p>No tickets yet</p>
+        <p style="font-size: 0.85rem; margin-top: 0.5rem;">Submit a new ticket to get started</p>
+      </div>
+    `;
+    return;
+  }
+  
+  sidebar.innerHTML = salesInquiries.map(ticket => {
+    const hasUnreadReplies = ticket.messages && ticket.messages.some(m => 
+      m.sender === 'support' && !m.readByBuyer
+    );
+    
+    const lastMessage = ticket.messages && ticket.messages.length > 0 
+      ? ticket.messages[ticket.messages.length - 1]
+      : null;
+    
+    return `
+      <div class="ticket-item ${activeTicketId === ticket.id ? 'active' : ''} ${hasUnreadReplies ? 'unread' : ''}" 
+           onclick="openTicketChat('${ticket.id}')">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-weight: 600; font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+              ${ticket.subject}
+            </div>
+            <div style="font-size: 0.75rem; color: var(--gray); margin-top: 0.25rem;">
+              ${ticket.inquiryType.replace('-', ' ').toUpperCase()}
+            </div>
+          </div>
+          <span class="ticket-status-dot ${ticket.status}"></span>
+        </div>
+        
+        ${lastMessage ? `
+          <div style="font-size: 0.85rem; color: var(--gray); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 0.5rem;">
+            ${lastMessage.sender === 'support' ? '💬' : '👤'} ${lastMessage.message.substring(0, 40)}...
+          </div>
+        ` : ''}
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--gray);">
+          <span>${new Date(ticket.createdAt?.toDate?.() || Date.now()).toLocaleDateString()}</span>
+          ${hasUnreadReplies ? '<span style="color: var(--primary); font-weight: 600;">● New</span>' : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.openTicketChat = async function(ticketId) {
+  activeTicketId = ticketId;
+  const ticket = salesInquiries.find(t => t.id === ticketId);
+  
+  if (!ticket) return;
+  
+  renderTicketsSidebar();
+  
+  if (ticket.messages) {
+    const unreadMessages = ticket.messages.filter(m => m.sender === 'support' && !m.readByBuyer);
+    if (unreadMessages.length > 0) {
+      try {
+        const updatedMessages = ticket.messages.map(m => ({
+          ...m,
+          readByBuyer: m.sender === 'support' ? true : (m.readByBuyer || false)
+        }));
+        
+        await updateDoc(doc(db, 'salesInquiries', ticketId), {
+          messages: updatedMessages
+        });
+      } catch (err) {
+        console.warn('Error marking messages as read:', err);
+      }
+    }
+  }
+  
+  renderTicketChat(ticket);
+  
+  if (messagesUnsubscribe) {
+    messagesUnsubscribe();
+  }
+  
+  messagesUnsubscribe = onSnapshot(doc(db, 'salesInquiries', ticketId), (docSnap) => {
+    if (docSnap.exists()) {
+      const updatedTicket = { id: docSnap.id, ...docSnap.data() };
+      
+      const index = salesInquiries.findIndex(t => t.id === ticketId);
+      if (index !== -1) {
+        salesInquiries[index] = updatedTicket;
+      }
+      
+      if (activeTicketId === ticketId) {
+        renderTicketChat(updatedTicket);
+      }
+      
+      renderTicketsSidebar();
+    }
+  });
+}
+
+function renderTicketChat(ticket) {
+  const container = document.getElementById('chatContainer');
+  
+  const canChat = ticket.status === 'open' || ticket.status === 'in-progress';
+  const isResolved = ticket.status === 'resolved';
+  const isClosed = ticket.status === 'closed';
+  const hasRated = ticket.rating && ticket.rating.score > 0;
+  
+  const ratingStarsHtml = isResolved && !hasRated && !isClosed ? `
+  <i class="fa-solid fa-star rating-star" data-star="1" onclick="selectRating(1)"></i>
+  <i class="fa-solid fa-star rating-star" data-star="2" onclick="selectRating(2)"></i>
+  <i class="fa-solid fa-star rating-star" data-star="3" onclick="selectRating(3)"></i>
+  <i class="fa-solid fa-star rating-star" data-star="4" onclick="selectRating(4)"></i>
+  <i class="fa-solid fa-star rating-star" data-star="5" onclick="selectRating(5)"></i>
+` : '';
+  container.innerHTML = `
+    <div class="chat-header">
+      <div>
+        <h4>${ticket.subject}</h4>
+        <div style="font-size: 0.85rem; color: var(--gray); margin-top: 0.25rem;">
+          Ticket ID: ${ticket.id.substring(0, 8).toUpperCase()}
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <span class="offer-status-badge ${ticket.status}">${ticket.status.toUpperCase()}</span>
+        ${canChat ? `<button class="btn btn-sm" style="background: var(--success); color: white;" onclick="resolveTicket('${ticket.id}')"><i class="fa-solid fa-check"></i> Resolve</button>` : ''}
+        ${!isClosed ? `<button class="btn btn-sm" style="background: var(--gray); color: white;" onclick="closeTicket('${ticket.id}')"><i class="fa-solid fa-times"></i> Close</button>` : ''}
+      </div>
+    </div>
+    
+    <div class="ticket-metadata">
+      <div class="metadata-item">
+        <div class="metadata-label">Type</div>
+        <div class="metadata-value">${ticket.inquiryType.replace('-', ' ')}</div>
+      </div>
+      <div class="metadata-item">
+        <div class="metadata-label">Priority</div>
+        <div class="metadata-value" style="color: ${ticket.priority === 'high' ? 'var(--error)' : ticket.priority === 'medium' ? 'var(--warning)' : 'var(--gray)'}">
+          ${ticket.priority.toUpperCase()}
+        </div>
+      </div>
+      <div class="metadata-item">
+        <div class="metadata-label">Created</div>
+        <div class="metadata-value">${new Date(ticket.createdAt?.toDate?.() || Date.now()).toLocaleString()}</div>
+      </div>
+      ${ticket.resolvedAt ? `<div class="metadata-item"><div class="metadata-label">Resolved</div><div class="metadata-value">${new Date(ticket.resolvedAt.toDate()).toLocaleString()}</div></div>` : ''}
+    </div>
+    
+    <div class="chat-messages" id="chatMessages">
+      <div class="message-bubble system"><div class="message-content">Ticket created</div></div>
+      <div class="message-bubble user">
+        <div class="message-content">${ticket.message}</div>
+        <div class="message-time">${new Date(ticket.createdAt?.toDate?.() || Date.now()).toLocaleTimeString()}</div>
+      </div>
+      
+      ${(ticket.messages || []).map(msg => `
+        <div class="message-bubble ${msg.sender}">
+          <div class="message-content">${msg.message}</div>
+          <div class="message-time">${new Date(msg.timestamp?.toDate?.() || Date.now()).toLocaleTimeString()}${msg.sender === 'support' ? ' • by ' + (msg.senderName || 'Support') : ''}</div>
+        </div>
+      `).join('')}
+      
+      ${ticket.status === 'resolved' && !isClosed ? '<div class="message-bubble system"><div class="message-content"><i class="fa-solid fa-circle-check" style="color: var(--success);"></i> Ticket marked as resolved</div></div>' : ''}
+      ${isClosed ? '<div class="message-bubble system"><div class="message-content"><i class="fa-solid fa-lock" style="color: var(--gray);"></i> Ticket closed</div></div>' : ''}
+    </div>
+    
+    ${isResolved && !hasRated && !isClosed ? `
+  <div class="rating-section" style="margin: 1.5rem; padding: 2rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(20, 184, 166, 0.05)); border: 2px solid var(--gray-light); border-radius: 15px;">
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+      <i class="fa-solid fa-star" style="font-size: 2.5rem; color: var(--warning); margin-bottom: 0.75rem;"></i>
+      <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text);">Rate Your Support Experience</h4>
+      <p style="font-size: 0.95rem; color: var(--gray); margin: 0;">Your feedback helps us improve our service quality</p>
+    </div>
+    
+    <div style="background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.25rem;">
+      <label style="display: block; font-weight: 600; margin-bottom: 1rem; color: var(--text); font-size: 0.95rem;">
+        <i class="fa-solid fa-stars" style="color: var(--warning);"></i> Overall Satisfaction
+      </label>
+      <div class="rating-stars" id="ratingStars" style="justify-content: center; gap: 1rem; font-size: 2.5rem;">
+        ${ratingStarsHtml}
+      </div>
+    </div>
+    
+    <div style="background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.25rem;">
+      <label style="display: block; font-weight: 600; margin-bottom: 1rem; color: var(--text); font-size: 0.95rem;">
+        <i class="fa-solid fa-badge-check" style="color: var(--secondary);"></i> What did we do well?
+      </label>
+      <div class="rating-categories" id="ratingCategories" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+        <div class="rating-category" data-category="helpful" onclick="toggleCategory(this)">
+          <i class="fa-solid fa-thumbs-up"></i> Helpful
+        </div>
+        <div class="rating-category" data-category="quick" onclick="toggleCategory(this)">
+          <i class="fa-solid fa-bolt"></i> Quick Response
+        </div>
+        <div class="rating-category" data-category="professional" onclick="toggleCategory(this)">
+          <i class="fa-solid fa-user-tie"></i> Professional
+        </div>
+        <div class="rating-category" data-category="clear" onclick="toggleCategory(this)">
+          <i class="fa-solid fa-comments"></i> Clear Communication
+        </div>
+      </div>
+    </div>
+    
+    <div style="background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.25rem;">
+      <label style="display: block; font-weight: 600; margin-bottom: 0.75rem; color: var(--text); font-size: 0.95rem;">
+        <i class="fa-solid fa-message-lines" style="color: var(--accent);"></i> Additional Feedback (Optional)
+      </label>
+      <textarea id="ratingFeedback" class="form-input" rows="4" placeholder="Share more about your experience..." style="resize: vertical; font-size: 0.95rem;"></textarea>
+    </div>
+    
+    <button class="btn btn-success btn-full" onclick="submitRating('${ticket.id}')" style="padding: 1rem; font-size: 1rem; font-weight: 700;">
+      <i class="fa-solid fa-paper-plane"></i> Submit Feedback
+    </button>
+  </div>
+` : hasRated ? `
+      <div style="padding: 1.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 10px; text-align: center;">
+        <h4 style="color: var(--success); margin-bottom: 0.5rem;"><i class="fa-solid fa-check-circle"></i> Thank You for Your Feedback!</h4>
+        <div style="font-size: 1.5rem; color: var(--warning); margin: 0.75rem 0;">${'★'.repeat(ticket.rating.score) + '☆'.repeat(5 - ticket.rating.score)}</div>
+        ${ticket.rating.categories && ticket.rating.categories.length > 0 ? `<div style="font-size: 0.9rem; color: var(--gray);">${ticket.rating.categories.join(', ')}</div>` : ''}
+      </div>
+    ` : ''}
+    
+    ${canChat ? `
+      <div class="chat-input-area">
+        <div class="chat-input-wrapper">
+          <textarea id="chatMessageInput" class="chat-input" placeholder="Type your message..." onkeydown="handleChatEnter(event, '${ticket.id}')"></textarea>
+        </div>
+        <button class="send-btn" onclick="sendChatMessage('${ticket.id}')"><i class="fa-solid fa-paper-plane"></i> Send</button>
+      </div>
+    ` : isClosed ? `
+      <div style="padding: 1.5rem; text-align: center; background: var(--gray-light); border-top: 2px solid var(--gray-light);">
+        <p style="color: var(--gray);"><i class="fa-solid fa-lock"></i> This ticket is closed. Contact support to reopen if needed.</p>
+      </div>
+    ` : `
+      <div style="padding: 1.5rem; text-align: center; background: rgba(16, 185, 129, 0.1); border-top: 2px solid var(--gray-light);">
+        <p style="color: var(--success);"><i class="fa-solid fa-check-circle"></i> This issue has been resolved. Rate your experience above!</p>
+      </div>
+    `}
+  `;
+  
+  setTimeout(() => {
+    const messagesContainer = document.getElementById('chatMessages');
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  }, 100);
+}
+
+window.handleChatEnter = function(event, ticketId) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendChatMessage(ticketId);
+  }
+}
+
+window.sendChatMessage = async function(ticketId) {
+  const input = document.getElementById('chatMessageInput');
+  const message = input.value.trim();
+  
+  if (!message) {
+    showToast('Please enter a message', 'error');
+    return;
+  }
+  
+  try {
+    const ticket = salesInquiries.find(t => t.id === ticketId);
+    const messages = ticket.messages || [];
+    
+    // Use current date instead of serverTimestamp for arrays
+    messages.push({
+      sender: 'user',
+      message: message,
+      timestamp: new Date(),
+      readBySupport: false
+    });
+    
+    await updateDoc(doc(db, 'salesInquiries', ticketId), {
+      messages: messages,
+      updatedAt: serverTimestamp(),
+      status: ticket.status === 'closed' ? 'open' : ticket.status
+    });
+    
+    input.value = '';
+    input.style.height = 'auto';
+    showToast('Message sent', 'success');
+    
+  } catch (error) {
+    console.error('Error sending message:', error);
+    showToast('Failed to send message', 'error');
+  }
+}
+
+window.resolveTicket = async function(ticketId) {
+  if (!confirm('Mark this ticket as resolved? You can still rate your experience afterwards.')) return;
+  
+  try {
+    await updateDoc(doc(db, 'salesInquiries', ticketId), {
+      status: 'resolved',
+      resolvedAt: serverTimestamp(),
+      resolvedBy: 'buyer',
+      updatedAt: serverTimestamp()
+    });
+    showToast('Ticket marked as resolved', 'success');
+  } catch (error) {
+    console.error('Error resolving ticket:', error);
+    showToast('Failed to resolve ticket', 'error');
+  }
+}
+
+window.closeTicket = async function(ticketId) {
+  if (!confirm('Close this ticket? This action cannot be undone.')) return;
+  
+  try {
+    await updateDoc(doc(db, 'salesInquiries', ticketId), {
+      status: 'closed',
+      closedAt: serverTimestamp(),
+      closedBy: 'buyer',
+      updatedAt: serverTimestamp()
+    });
+    showToast('Ticket closed', 'success');
+  } catch (error) {
+    console.error('Error closing ticket:', error);
+    showToast('Failed to close ticket', 'error');
+  }
+}
+
+let selectedRating = 0;
+let selectedCategories = [];
+
+window.selectRating = function(star) {
+  selectedRating = star;
+  const stars = document.querySelectorAll('.rating-star');
+  stars.forEach((el, index) => {
+    if (index < star) {
+      el.classList.add('active');
+      el.style.color = 'var(--warning)';
+    } else {
+      el.classList.remove('active');
+      el.style.color = '#D1D5DB';
+    }
+  });
+}
+
+window.toggleCategory = function(element) {
+  const category = element.dataset.category;
+  if (element.classList.contains('selected')) {
+    element.classList.remove('selected');
+    selectedCategories = selectedCategories.filter(c => c !== category);
+  } else {
+    element.classList.add('selected');
+    selectedCategories.push(category);
+  }
+}
+
+window.submitRating = async function(ticketId) {
+  if (selectedRating === 0) {
+    showToast('Please select a star rating', 'error');
+    return;
+  }
+  
+  try {
+    const feedback = document.getElementById('ratingFeedback')?.value || '';
+    await updateDoc(doc(db, 'salesInquiries', ticketId), {
+      rating: {
+        score: selectedRating,
+        categories: selectedCategories,
+        feedback: feedback,
+        ratedAt: serverTimestamp()
+      },
+      updatedAt: serverTimestamp()
+    });
+    
+    showToast('Thank you for your feedback!', 'success');
+    selectedRating = 0;
+    selectedCategories = [];
+    
+    setTimeout(() => {
+      closeTicket(ticketId);
+    }, 1500);
+    
+  } catch (error) {
+    console.error('Error submitting rating:', error);
+    showToast('Failed to submit rating', 'error');
+  }
+}
+
+function determinePriority(inquiryType) {
+  const highPriority = ['payment-issue', 'invoice-inquiry'];
+  const mediumPriority = ['offer-question', 'technical-support'];
+  if (highPriority.includes(inquiryType)) return 'high';
+  if (mediumPriority.includes(inquiryType)) return 'medium';
+  return 'low';
+}
+
+async function loadSalesInquiries() {
+  try {
+    console.log('📥 Loading sales inquiries for user:', userData.id);
+    const inquiriesRef = collection(db, 'salesInquiries');
+    const q = query(inquiriesRef, where('userId', '==', userData.id));
+    
+    if (salesInquiriesUnsubscribe) {
+      salesInquiriesUnsubscribe();
+    }
+    
+    salesInquiriesUnsubscribe = onSnapshot(q, (snapshot) => {
+      salesInquiries = [];
+      snapshot.forEach((doc) => {
+        salesInquiries.push({ id: doc.id, ...doc.data() });
+      });
+      
+      salesInquiries.sort((a, b) => {
+        const dateA = a.createdAt?.toDate?.() || new Date(0);
+        const dateB = b.createdAt?.toDate?.() || new Date(0);
+        return dateB - dateA;
+      });
+      
+      console.log('✅ Loaded', salesInquiries.length, 'sales inquiries');
+      renderTicketsSidebar();
+      
+    }, (error) => {
+      console.error('❌ Error in sales inquiries snapshot:', error);
+    });
+    
+  } catch (error) {
+    console.error('❌ Error loading sales inquiries:', error);
+    salesInquiries = [];
+  }
+}
+
+console.log('🚀 Systemly Buyer Dashboard - Complete Version Loaded');
+function renderSalesInquiries() {
+  const container = document.getElementById('salesInquiriesList');
+  
+  if (!container) return;
+  
+  if (salesInquiries.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fa-solid fa-ticket"></i>
+        <p>No inquiries submitted yet</p>
+        <p style="font-size: 0.9rem; color: var(--gray);">Submit an inquiry above to contact our sales team</p>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = salesInquiries.map(inquiry => {
+    const statusColors = {
+      open: 'status-pending',
+      'in-progress': 'status-countered',
+      resolved: 'status-approved',
+      closed: 'status-draft'
+    };
+    
+    const priorityIcons = {
+      high: '<i class="fa-solid fa-circle-exclamation" style="color: var(--error);"></i>',
+      medium: '<i class="fa-solid fa-circle-info" style="color: var(--warning);"></i>',
+      low: '<i class="fa-solid fa-circle" style="color: var(--gray);"></i>'
+    };
+    
+    const date = inquiry.createdAt?.toDate?.() || new Date();
+    
+    return `
+      <div class="inquiry-card ${inquiry.status === 'open' ? 'unread' : ''}">
+        <div class="inquiry-header">
+          <div>
+            <h4>
+              ${priorityIcons[inquiry.priority] || ''} 
+              ${inquiry.subject}
+            </h4>
+            <p style="color: var(--gray); font-size: 0.9rem; margin-top: 0.3rem;">
+              Type: ${inquiry.inquiryType.replace('-', ' ').toUpperCase()}
+            </p>
+          </div>
+          <span class="status-badge ${statusColors[inquiry.status]}">${inquiry.status.toUpperCase()}</span>
+        </div>
+        
+        <div style="margin: 1rem 0; padding: 1rem; background: white; border-radius: 5px;">
+          <p style="color: var(--text); line-height: 1.6;">${inquiry.message}</p>
+        </div>
+        
+        ${inquiry.relatedOfferDetails ? `
+          <div style="background: rgba(249, 115, 22, 0.1); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.75rem;">
+            <strong style="font-size: 0.85rem;">Related Offer:</strong>
+            <div style="font-size: 0.9rem; margin-top: 0.25rem;">
+              ${inquiry.relatedOfferDetails.listingName} - ₱${parseFloat(inquiry.relatedOfferDetails.amount).toLocaleString()}
+            </div>
+          </div>
+        ` : ''}
+        
+        ${inquiry.relatedInvoiceDetails ? `
+          <div style="background: rgba(99, 102, 241, 0.1); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.75rem;">
+            <strong style="font-size: 0.85rem;">Related Invoice:</strong>
+            <div style="font-size: 0.9rem; margin-top: 0.25rem;">
+              ${inquiry.relatedInvoiceDetails.invoiceNumber} - ₱${parseFloat(inquiry.relatedInvoiceDetails.amount).toLocaleString()}
+            </div>
+          </div>
+        ` : ''}
+        
+        ${inquiry.response ? `
+          <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--success); margin-top: 1rem;">
+            <strong style="font-size: 0.85rem; color: var(--success);">
+              <i class="fa-solid fa-reply"></i> Sales Team Response:
+            </strong>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem; line-height: 1.6;">${inquiry.response}</p>
+            ${inquiry.respondedAt ? `
+              <p style="font-size: 0.8rem; color: var(--gray); margin-top: 0.5rem;">
+                ${new Date(inquiry.respondedAt.seconds * 1000).toLocaleString()}
+              </p>
+            ` : ''}
+          </div>
+        ` : ''}
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--gray); margin-top: 1rem;">
+          <span>
+            <i class="fa-solid fa-calendar"></i> 
+            ${date.toLocaleDateString()} ${date.toLocaleTimeString()}
+          </span>
+          <span>Priority: ${inquiry.priority.toUpperCase()}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+const originalNavigateTo = window.navigateTo;
+window.navigateTo = function(page) {
+  originalNavigateTo(page);
+  
+  if (page === 'contact-sales') {
+    setTimeout(() => {
+      loadSalesInquiries();
+      populateOfferSelect();
+      populateInvoiceSelect();
+      renderTicketsSidebar(); // Add this line
+    }, 100);
+  }
+};
+
+
+
+
+
+
+
 
 console.log('🚀 Systemly Buyer Dashboard - Complete Version Loaded');
 
