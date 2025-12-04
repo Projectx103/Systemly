@@ -1147,6 +1147,118 @@ app.get('/api/buyer/file-reviews/:fileReviewId/download/:filename', async (req, 
 
 
 
+// ============================================
+// KYC SIGNED URL GENERATION
+// ============================================
+
+// Generate signed Cloudinary URLs for KYC documents
+app.post('/api/admin/generate-kyc-urls', async (req, res) => {
+  try {
+    const { userId, adminToken } = req.body;
+    
+    // Verify admin token
+    const decodedToken = await admin.auth().verifyIdToken(adminToken);
+    
+    // Check if user is admin in Firestore
+    const adminDoc = await admin.firestore().collection('users').doc(decodedToken.uid).get();
+    if (!adminDoc.exists || adminDoc.data().role !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        error: 'Unauthorized: Admin access required' 
+      });
+    }
+    
+    console.log('🔐 Admin verified:', decodedToken.uid);
+    
+    // Get user's KYC documents from Firestore
+    const userDoc = await admin.firestore().collection('users').doc(userId).get();
+    
+    if (!userDoc.exists) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+    
+    const userData = userDoc.data();
+    const kycDocs = userData?.verification?.kycDocuments;
+    
+    if (!kycDocs) {
+      return res.status(404).json({ success: false, error: 'No KYC documents found' });
+    }
+    
+    // Generate signed URLs with 5 minute expiry
+    const cloudinary = require('cloudinary').v2;
+    
+    cloudinary.config({
+      cloud_name: 'dxv11m11i',
+      api_key: '529854585619313',
+      api_secret: 'fvA38y_hoN6A_3-CL-ANMd94CZI'
+    });
+    
+    const expiresAt = Math.floor(Date.now() / 1000) + (5 * 60); // 5 minutes
+    
+    const signedUrls = {
+      idFront: kycDocs.idFrontUrl || cloudinary.url(kycDocs.idFront, {
+        type: 'authenticated',
+        sign_url: true,
+        secure: true,
+        expires_at: expiresAt
+      }),
+      idBack: kycDocs.idBackUrl || cloudinary.url(kycDocs.idBack, {
+        type: 'authenticated',
+        sign_url: true,
+        secure: true,
+        expires_at: expiresAt
+      }),
+      selfie: kycDocs.selfieUrl || cloudinary.url(kycDocs.selfie, {
+        type: 'authenticated',
+        sign_url: true,
+        secure: true,
+        expires_at: expiresAt
+      })
+    };
+    
+    // Log access for audit trail
+    await admin.firestore().collection('audit_logs').add({
+      action: 'KYC_DOCUMENTS_ACCESSED',
+      adminId: decodedToken.uid,
+      adminEmail: decodedToken.email,
+      targetUserId: userId,
+      accessedAt: admin.firestore.FieldValue.serverTimestamp(),
+      expiresAt: new Date(expiresAt * 1000),
+      ipAddress: req.ip || 'Unknown'
+    });
+    
+    console.log('✅ Signed URLs generated for user:', userId);
+    
+    res.json({
+      success: true,
+      urls: signedUrls,
+      expiresIn: 300
+    });
+    
+  } catch (error) {
+    console.error('❌ Error generating KYC URLs:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Generate signed URLs for KYC documents
 app.get('/api/admin/kyc-signed-urls/:userId', async (req, res) => {
   try {
@@ -1256,6 +1368,7 @@ const server = app.listen(PORT, () => {
 server.timeout = 300000; // 5 minutes
 server.keepAliveTimeout = 300000;
 server.headersTimeout = 300000;
+
 
 
 
