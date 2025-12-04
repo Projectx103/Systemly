@@ -1512,6 +1512,14 @@
                 <span class="nav-icon"><i class="fas fa-cog"></i></span>
                 <span>Settings</span>
             </div>
+
+<div class="nav-item" data-view="reports">
+    <span class="nav-icon"><i class="fas fa-file-alt"></i></span>
+    <span>DPA Reports</span>
+</div>
+
+
+
                 </div>
             </nav>
         </aside>
@@ -1889,6 +1897,168 @@
                 </div>
             </div>
 
+
+
+
+
+
+<!-- ============================================ -->
+<!-- REPORTS VIEW -->
+<!-- ============================================ -->
+<div id="reportsView" style="display: none;">
+    <div class="top-bar">
+        <div class="page-title">
+            <h1>Data Privacy Compliance Reports</h1>
+            <p>Generate audit reports for KYC document access and retention compliance</p>
+        </div>
+        <div class="top-actions">
+            <button class="btn btn-outline" onclick="refreshReports()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <div class="content-area" style="display: grid; gap: 1.5rem;">
+        
+        <!-- Report Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+            
+            <!-- KYC Access Audit Report -->
+            <div class="stat-card" style="cursor: pointer;" onclick="generateKYCAuditReport()">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--info);">
+                            <i class="fas fa-eye"></i> KYC Access Audit
+                        </h3>
+                        <p style="font-size: 0.9rem; color: var(--gray-medium); line-height: 1.5;">
+                            Who accessed KYC documents, when, and why (DPA Art. 25)
+                        </p>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1);">
+                        <i class="fas fa-file-download" style="color: var(--info);"></i>
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-download"></i> Generate Report
+                </button>
+            </div>
+
+            <!-- KYC Retention Status Report -->
+            <div class="stat-card" style="cursor: pointer;" onclick="generateRetentionReport()">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--warning);">
+                            <i class="fas fa-clock"></i> Retention Status
+                        </h3>
+                        <p style="font-size: 0.9rem; color: var(--gray-medium); line-height: 1.5;">
+                            KYC documents approaching 5-year retention limit
+                        </p>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1);">
+                        <i class="fas fa-calendar-alt" style="color: var(--warning);"></i>
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-download"></i> Generate Report
+                </button>
+            </div>
+
+            <!-- Rejected KYC Cleanup Report -->
+            <div class="stat-card" style="cursor: pointer;" onclick="generateRejectedCleanupReport()">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--error);">
+                            <i class="fas fa-trash-alt"></i> Rejected KYC Cleanup
+                        </h3>
+                        <p style="font-size: 0.9rem; color: var(--gray-medium); line-height: 1.5;">
+                            Rejected documents deleted after 14 days (data minimization)
+                        </p>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1);">
+                        <i class="fas fa-check-circle" style="color: var(--error);"></i>
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-download"></i> Generate Report
+                </button>
+            </div>
+
+            <!-- All KYC Status Report -->
+            <div class="stat-card" style="cursor: pointer;" onclick="generateAllKYCReport()">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--success);">
+                            <i class="fas fa-list"></i> All KYC Status
+                        </h3>
+                        <p style="font-size: 0.9rem; color: var(--gray-medium); line-height: 1.5;">
+                            Complete list of all KYC verifications and their status
+                        </p>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1);">
+                        <i class="fas fa-database" style="color: var(--success);"></i>
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-download"></i> Generate Report
+                </button>
+            </div>
+
+        </div>
+
+        <!-- DPA Compliance Info -->
+        <div class="content-container">
+            <div class="content-header" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));">
+                <h2><i class="fas fa-shield-alt"></i> Data Privacy Act Compliance</h2>
+            </div>
+            <div style="padding: 2rem;">
+                <div style="display: grid; gap: 1rem;">
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--info);">
+                        <strong><i class="fas fa-info-circle"></i> What These Reports Do:</strong>
+                        <p style="margin: 0.5rem 0 0 0; line-height: 1.6;">
+                            These reports help you comply with the Data Privacy Act of 2012 (Republic Act No. 10173) by documenting:
+                            <br>• Who accessed personal data (KYC documents)
+                            <br>• When they accessed it
+                            <br>• Why they accessed it (purpose)
+                            <br>• How long data is retained
+                            <br>• When data is deleted (data minimization)
+                        </p>
+                    </div>
+                    
+                    <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--success);">
+                        <strong><i class="fas fa-check-circle"></i> Required for NPC Audits:</strong>
+                        <p style="margin: 0.5rem 0 0 0; line-height: 1.6;">
+                            The National Privacy Commission may request these reports during compliance audits. Keep them ready and update regularly.
+                        </p>
+                    </div>
+                    
+                    <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--warning);">
+                        <strong><i class="fas fa-exclamation-triangle"></i> Retention Policy:</strong>
+                        <p style="margin: 0.5rem 0 0 0; line-height: 1.6;">
+                            • <strong>Approved KYC:</strong> 5 years (AMLA/AML regulations)
+                            <br>• <strong>Rejected KYC:</strong> 14 days (data minimization)
+                            <br>• <strong>Audit Logs:</strong> 7 years (evidence of compliance)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           <!-- Settings View -->
 <div id="settingsView" style="display: none;">
     <div class="top-bar">
@@ -1905,6 +2075,16 @@
             </button>
         </div>
     </div>
+
+
+
+
+
+
+
+
+
+
 
     <!-- Success Message -->
     <div id="settingsSavedMessage" style="display: none; background: var(--success); color: white; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; animation: slideInDown 0.3s;">
@@ -3092,6 +3272,42 @@ try {
         
         console.log('✅ Admin authenticated successfully');
         
+        // AUTO-CHECK FOR EXPIRED KYC DOCUMENTS (DPA COMPLIANCE)
+        setInterval(async () => {
+            try {
+                const fiveYearsAgo = new Date();
+                fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
+                
+                const expiredQuery = query(
+                    collection(db, 'users'),
+                    where('verification.kycSubmittedAt', '<', fiveYearsAgo.toISOString())
+                );
+                
+                const snapshot = await getDocs(expiredQuery);
+                
+                if (snapshot.size > 0) {
+                    console.log(`⚠️ COMPLIANCE ALERT: ${snapshot.size} KYC documents past 5-year retention - admin review needed`);
+                    
+                    // Show admin notification badge
+                    const kycBadge = document.getElementById('kycReviewBadge');
+                    if (kycBadge) {
+                        kycBadge.style.display = 'inline';
+                        kycBadge.textContent = snapshot.size;
+                    }
+                }
+            } catch (error) {
+                console.error('⚠️ Error checking KYC retention:', error);
+            }
+        }, 24 * 60 * 60 * 1000); // Check daily
+
+
+
+
+
+
+
+
+
     } catch (error) {
         console.error('Error checking admin status:', error);
         authLoading.style.display = 'none';
@@ -7391,6 +7607,10 @@ window.viewKYCReview = async function(userId) {
         
 // Log document access for audit compliance
 try {
+    // Get IP address
+    const ipResponse = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipResponse.json();
+    
     await addDoc(collection(db, 'audit_logs'), {
         action: 'KYC_DOCUMENT_VIEWED',
         adminId: auth.currentUser.uid,
@@ -7400,7 +7620,9 @@ try {
         timestamp: serverTimestamp(),
         documentsAccessed: ['idFront', 'idBack', 'selfie'],
         purpose: 'Identity Verification Review',
-        ipAddress: 'Not collected (privacy compliance)'
+        ipAddress: ipData.ip,
+        userAgent: navigator.userAgent,
+        sessionId: auth.currentUser.uid + '-' + Date.now()
     });
     console.log('✅ Document access logged for audit');
 } catch (error) {
@@ -7650,7 +7872,289 @@ window.refreshKYCReviews = function() {
 
 
 
+// ============================================
+// DATA PRIVACY COMPLIANCE REPORTS
+// ============================================
 
+window.refreshReports = function() {
+    alert('📊 Reports page refreshed!');
+}
+
+// Generate KYC Access Audit Report
+window.generateKYCAuditReport = async function() {
+    try {
+        console.log('📊 Generating KYC Access Audit Report...');
+        
+        // Query both action types
+        const auditLogsQuery1 = query(
+            collection(db, 'audit_logs'),
+            where('action', '==', 'KYC_DOCUMENT_VIEWED'),
+            orderBy('timestamp', 'desc')
+        );
+        
+        const auditLogsQuery2 = query(
+            collection(db, 'audit_logs'),
+            where('action', '==', 'KYC_DOCUMENTS_ACCESSED'),
+            orderBy('accessedAt', 'desc')
+        );
+        
+        const [snapshot1, snapshot2] = await Promise.all([
+            getDocs(auditLogsQuery1),
+            getDocs(auditLogsQuery2)
+        ]);
+        
+        if (snapshot1.empty && snapshot2.empty) {
+            alert('ℹ️ No KYC access logs found');
+            return;
+        }
+        
+        let csvContent = 'Date & Time,Admin Email,Admin ID,Target User,Target User ID,Documents Accessed,Purpose,IP Address,User Agent,Session ID,Expires At\n';
+        
+        // Process both snapshots
+        const allDocs = [...snapshot1.docs, ...snapshot2.docs];
+        
+        allDocs.forEach(doc => {
+            const data = doc.data();
+            const timestamp = data.timestamp?.toDate ? data.timestamp.toDate().toLocaleString() : 
+                             data.accessedAt?.toDate ? data.accessedAt.toDate().toLocaleString() : 'N/A';
+            const expiresAt = data.expiresAt?.toDate ? data.expiresAt.toDate().toLocaleString() : 'N/A';
+            const docs = data.documentsAccessed ? data.documentsAccessed.join('; ') : 'All Documents';
+            
+const userAgent = data.userAgent ? data.userAgent.replace(/"/g, '""') : 'N/A';
+const purpose = data.purpose ? data.purpose.replace(/"/g, '""') : 'N/A';
+csvContent += `"${timestamp}","${data.adminEmail || 'N/A'}","${data.adminId || 'N/A'}","${data.targetUserName || 'N/A'}","${data.targetUserId || 'N/A'}","${docs}","${purpose}","${data.ipAddress || 'N/A'}","${userAgent}","${data.sessionId || 'N/A'}","${expiresAt}"\n`;
+      
+  });
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `KYC-Access-Audit-Report-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        alert(`✅ KYC Access Audit Report generated!\n\n${allDocs.length} access logs exported`);
+        
+    } catch (error) {
+        console.error('Error generating audit report:', error);
+        alert('Failed to generate report: ' + error.message);
+    }
+}
+
+
+// Generate KYC Retention Status Report
+window.generateRetentionReport = async function() {
+    try {
+        console.log('📊 Generating KYC Retention Status Report...');
+        
+        const usersQuery = query(
+            collection(db, 'users'),
+            where('verification.kycStatus', '==', 'approved')
+        );
+        
+        const snapshot = await getDocs(usersQuery);
+        
+        if (snapshot.empty) {
+            alert('ℹ️ No approved KYC documents found');
+            return;
+        }
+        
+        const now = new Date();
+        const fiveYears = 5 * 365 * 24 * 60 * 60 * 1000;
+        
+        let csvContent = 'User Name,User Email,User ID,KYC Approved Date,Days Since Approval,Days Until Deletion,Auto-Delete Date,Status\n';
+        
+        snapshot.forEach(doc => {
+    const data = doc.data();
+    const verification = data.verification || {};
+    const submittedAt = verification.kycSubmittedAt;
+    
+    if (!submittedAt) return;
+    
+    const submittedDate = new Date(submittedAt);
+    const daysSince = Math.floor((now - submittedDate) / (24 * 60 * 60 * 1000));
+    const daysUntilDeletion = Math.floor((fiveYears - (now - submittedDate)) / (24 * 60 * 60 * 1000));
+    const deletionDate = new Date(submittedDate.getTime() + fiveYears);
+    
+    let status = 'Active';
+    if (daysUntilDeletion < 0) status = 'OVERDUE FOR DELETION';
+    else if (daysUntilDeletion < 30) status = 'Delete in less than 30 days';
+    else if (daysUntilDeletion < 90) status = 'Delete in less than 90 days';
+    else if (daysUntilDeletion < 180) status = 'Delete in less than 6 months';
+    else status = 'Active - ' + Math.floor(daysUntilDeletion / 365) + ' years remaining';
+    
+    const userName = data.name ? data.name.replace(/"/g, '""') : 'N/A';
+    csvContent += `"${userName}","${data.email || 'N/A'}","${doc.id}","${submittedDate.toLocaleDateString()}","${daysSince}","${daysUntilDeletion}","${deletionDate.toLocaleDateString()}","${status}"\n`;
+});
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `KYC-Retention-Status-Report-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        alert(`✅ KYC Retention Status Report generated!\n\n${snapshot.size} approved KYC records exported`);
+        
+    } catch (error) {
+        console.error('Error generating retention report:', error);
+        alert('Failed to generate report: ' + error.message);
+    }
+}
+// Generate Rejected KYC Cleanup Report
+window.generateRejectedCleanupReport = async function() {
+    try {
+        console.log('📊 Generating Rejected KYC Cleanup Report...');
+        
+        // Get all users with rejected KYC
+        const usersQuery = query(
+            collection(db, 'users'),
+            where('verification.kycStatus', '==', 'rejected')
+        );
+        
+        const snapshot = await getDocs(usersQuery);
+        
+        if (snapshot.empty) {
+            alert('ℹ️ No rejected KYC records found');
+            return;
+        }
+        
+        const now = new Date();
+        let csvContent = 'User Name,User Email,User ID,Rejected Date,Days Since Rejection,Auto-Delete Date (14 days),Status,Rejection Reason\n';
+        
+        // Properly escape CSV special characters function
+        const escapeCsvField = (field) => {
+            if (!field) return 'N/A';
+            // Convert to string and escape quotes
+            let escaped = String(field).replace(/"/g, '""');
+            // Always wrap in quotes if contains special chars
+            if (escaped.includes(',') || escaped.includes('\n') || escaped.includes('"') || escaped.includes('!')) {
+                return `"${escaped}"`;
+            }
+            return `"${escaped}"`;
+        };
+        
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const verification = data.verification || {};
+            const reviewedAt = verification.kycReviewedAt?.toDate ? verification.kycReviewedAt.toDate() : null;
+            
+            if (!reviewedAt) return;
+            
+            const daysSince = Math.floor((now - reviewedAt) / (24 * 60 * 60 * 1000));
+            const deleteDate = new Date(reviewedAt.getTime() + (14 * 24 * 60 * 60 * 1000));
+            
+            let status = 'Active';
+            if (daysSince >= 14) status = 'Should be deleted (14+ days)';
+            else if (daysSince >= 10) status = 'Delete soon (10-13 days)';
+            else status = `Delete in ${14 - daysSince} days`;
+            
+            const userName = escapeCsvField(data.name);
+            const userEmail = escapeCsvField(data.email);
+            const rejectionReason = escapeCsvField(verification.kycRejectionReason);
+            
+            csvContent += `${userName},${userEmail},"${doc.id}","${reviewedAt.toLocaleDateString()}","${daysSince}","${deleteDate.toLocaleDateString()}","${status}",${rejectionReason}\n`;
+        });
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Rejected-KYC-Cleanup-Report-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        alert(`✅ Rejected KYC Cleanup Report generated!\n\n${snapshot.size} rejected KYC records exported\n\nNote: Records older than 14 days should be manually deleted for DPA compliance`);
+        
+    } catch (error) {
+        console.error('Error generating cleanup report:', error);
+        alert('Failed to generate report: ' + error.message);
+    }
+}
+window.generateAllKYCReport = async function() {
+    try {
+        console.log('📊 Generating All KYC Status Report...');
+        
+        const usersQuery = query(collection(db, 'users'));
+        const snapshot = await getDocs(usersQuery);
+        
+        if (snapshot.empty) {
+            alert('ℹ️ No users found');
+            return;
+        }
+        
+        let csvContent = 'User Name,Email,User ID,KYC Status,Submitted Date,Reviewed Date,Reviewed By Admin ID,Rejection Reason,Days Since Submission,Retention Status\n';
+        let kycCount = 0;
+        
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const verification = data.verification || {};
+            
+            if (!verification.kycStatus) return; // Skip users without KYC submission
+            
+            kycCount++;
+            
+            const submittedAt = verification.kycSubmittedAt ? new Date(verification.kycSubmittedAt) : null;
+            const reviewedAt = verification.kycReviewedAt?.toDate ? verification.kycReviewedAt.toDate() : null;
+            
+            const daysSince = submittedAt ? Math.floor((new Date() - submittedAt) / (24 * 60 * 60 * 1000)) : 0;
+            
+            let retentionStatus = 'N/A';
+            if (verification.kycStatus === 'approved' && submittedAt) {
+                const daysUntilDeletion = Math.floor((5 * 365 * 24 * 60 * 60 * 1000 - (new Date() - submittedAt)) / (24 * 60 * 60 * 1000));
+                if (daysUntilDeletion < 0) retentionStatus = '🔴 OVERDUE (5+ years)';
+                else if (daysUntilDeletion < 30) retentionStatus = '🔴 Delete in < 30 days';
+                else if (daysUntilDeletion < 90) retentionStatus = '🟡 Delete in < 90 days';
+                else retentionStatus = `🟢 ${Math.floor(daysUntilDeletion / 365)} years remaining`;
+            } else if (verification.kycStatus === 'rejected' && reviewedAt) {
+                const daysSinceRejection = Math.floor((new Date() - reviewedAt) / (24 * 60 * 60 * 1000));
+                if (daysSinceRejection >= 14) retentionStatus = '🔴 Should be deleted (14+ days)';
+                else retentionStatus = `🟡 Delete in ${14 - daysSinceRejection} days`;
+            }
+            
+// Properly escape CSV special characters
+const escapeCsvField = (field) => {
+    if (!field) return 'N/A';
+    let escaped = String(field).replace(/"/g, '""');
+    if (escaped.includes(',') || escaped.includes('\n') || escaped.includes('"') || escaped.includes('!')) {
+        return `"${escaped}"`;
+    }
+    return `"${escaped}"`;
+};
+
+const userName = escapeCsvField(data.name);
+const userEmail = escapeCsvField(data.email);
+const rejectionReason = escapeCsvField(verification.kycRejectionReason);
+
+csvContent += `${userName},${userEmail},"${doc.id}","${verification.kycStatus || 'N/A'}","${submittedAt ? submittedAt.toLocaleDateString() : 'N/A'}","${reviewedAt ? reviewedAt.toLocaleDateString() : 'N/A'}","${verification.kycReviewedBy || 'N/A'}",${rejectionReason},"${daysSince}","${retentionStatus}"\n`;
+
+        });
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `All-KYC-Status-Report-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        alert(`✅ All KYC Status Report generated!\n\n${kycCount} users with KYC submissions exported`);
+        
+    } catch (error) {
+        console.error('Error generating all KYC report:', error);
+        alert('Failed to generate report: ' + error.message);
+    }
+}
 
 
 
@@ -7690,6 +8194,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
         document.getElementById('fileReviewView').style.display = 'none';
         document.getElementById('invoicesView').style.display = 'none'; // ADD THIS LINE
         document.getElementById('kycReviewView').style.display = 'none';
+	document.getElementById('reportsView').style.display = 'none';
 
         // Show selected view
         if (view === 'analytics') {
@@ -7707,6 +8212,8 @@ document.querySelectorAll('.nav-item').forEach(item => {
     document.getElementById('kycReviewView').style.display = 'block';
     loadKYCReviews();
 
+} else if (view === 'reports') {
+    document.getElementById('reportsView').style.display = 'block';
 
 
         } else if (view === 'invoices') {  // ADD THIS BLOCK
