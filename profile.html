@@ -2207,6 +2207,21 @@
             <button onclick="closeKycConsentModal()" style="flex: 1; padding: 0.85rem; border-radius: 8px; background: white; color: var(--gray-dark); border: 1px solid var(--border); font-weight: 600; cursor: pointer;">
                 <i class="fas fa-times"></i> Decline
             </button>
+
+
+<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+    <button type="button" onclick="downloadMyKYCData()" style="width: 100%; padding: 0.75rem; border-radius: 8px; background: var(--info); color: white; border: none; font-weight: 600; cursor: pointer; margin-bottom: 0.5rem;">
+        <i class="fas fa-download"></i> Download My KYC Data (GDPR Right)
+    </button>
+    <button type="button" onclick="requestKYCDeletion()" style="width: 100%; padding: 0.75rem; border-radius: 8px; background: var(--error); color: white; border: none; font-weight: 600; cursor: pointer;">
+        <i class="fas fa-trash-alt"></i> Request Data Deletion
+    </button>
+</div>
+
+
+
+
+
             <button id="kycConsentAcceptBtn" onclick="acceptKycConsent()" disabled style="flex: 1; padding: 0.85rem; border-radius: 8px; background: var(--primary); color: white; border: none; font-weight: 600; cursor: not-allowed; opacity: 0.5;">
                 <i class="fas fa-check"></i> Accept & Continue
             </button>
@@ -2623,14 +2638,37 @@ window.closeKycConsentModal = function() {
     updateConsentButton();
 }
 
-window.acceptKycConsent = function() {
+window.acceptKycConsent = async function() {
     if (!document.getElementById('kycConsentCheckbox').checked) {
         alert('Please read and accept the Data Privacy Notice to continue.');
         return;
     }
     
-    // Log consent
-    console.log('✅ User consented to KYC data processing:', new Date().toISOString());
+    // COMPLIANCE: Log consent to Firestore for audit trail
+    try {
+        const { addDoc, collection, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+        
+        // Get IP address for consent record
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        
+        await addDoc(collection(db, 'user_consents'), {
+            userId: currentUser.uid,
+            userEmail: currentUser.email,
+            consentType: 'kyc_data_processing',
+            consentText: 'I have read and understood the Data Privacy Notice. I hereby give my free, voluntary, and informed consent to Systemly to collect, process, and store my personal identification documents for identity verification purposes in accordance with RA 10173.',
+            agreed: true,
+            timestamp: serverTimestamp(),
+            ipAddress: ipData.ip,
+            userAgent: navigator.userAgent,
+            consentVersion: '1.0'
+        });
+        
+        console.log('✅ User consent logged for audit compliance');
+    } catch (error) {
+        console.error('⚠️ Failed to log consent:', error);
+    }
+
     
     // Close consent modal
     closeKycConsentModal();
@@ -2803,6 +2841,13 @@ function updateConsentButton() {
        // REPLACE the uploadKYCToCloudinary function with this secure version:
 
 async function uploadKYCToCloudinary(file, type, buttonId) {
+    console.log('📤 Starting upload:', {
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        uploadType: type
+    });
+    
     const uploadProgress = document.getElementById('kycUploadProgress');
     const uploadStatus = document.getElementById('kycUploadStatus');
     const uploadPercentage = document.getElementById('kycUploadPercentage');
@@ -2815,14 +2860,21 @@ async function uploadKYCToCloudinary(file, type, buttonId) {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', CLOUDINARY_KYC_PRESET); // Make sure this preset exists in your Cloudinary
+    formData.append('upload_preset', 'systemly_kyc_uploads'); // ← Make sure this matches your preset
     formData.append('folder', `systemly-kyc/${currentUser.uid}`);
-// Preserve original file extension
-const fileExtension = file.name.split('.').pop().toLowerCase();
-const customFilename = `${type}_${Date.now()}.${fileExtension}`;
-formData.append('public_id', customFilename);
-formData.append('use_filename', false); // Don't use original filename
+    
+    // Preserve original file extension
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    const customFilename = `${type}_${Date.now()}.${fileExtension}`;
+    formData.append('public_id', customFilename);
+    //formData.append('use_filename', false);
     formData.append('tags', `kyc,${type},${currentUser.uid}`);
+    
+    console.log('📦 FormData prepared:', {
+        preset: 'systemly_kyc_uploads',
+        folder: `systemly-kyc/${currentUser.uid}`,
+        filename: customFilename
+    });
 
     try {
         const xhr = new XMLHttpRequest();
@@ -2835,23 +2887,22 @@ formData.append('use_filename', false); // Don't use original filename
             }
         });
 
-    xhr.addEventListener('load', () => {
-    if (xhr.status === 200) {
-        const response = JSON.parse(xhr.responseText);
-        
-        console.log('✅ Cloudinary upload response:', response);
-        
-        // Store the COMPLETE secure_url (no need to reconstruct later)
-        kycUploadedFiles[type] = {
-            publicId: response.public_id,
-            secureUrl: response.secure_url, // ← This has the correct extension
-            format: response.format,
-            uploadedAt: new Date().toISOString(),
-            fileType: file.type,
-            fileSize: file.size
-        };
+        xhr.addEventListener('load', () => {
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
                 
-                console.log(`✅ ${type} uploaded. Public ID: ${response.public_id}`);
+                console.log('✅ Cloudinary upload response:', response);
+                
+                kycUploadedFiles[type] = {
+                    publicId: response.public_id,
+                    secureUrl: response.secure_url,
+                    format: response.format,
+                    uploadedAt: new Date().toISOString(),
+                    fileType: file.type,
+                    fileSize: file.size
+                };
+                
+                console.log(`✅ ${type} uploaded successfully`);
                 
                 uploadStatus.textContent = 'Upload complete!';
                 uploadPercentage.textContent = '100%';
@@ -2862,22 +2913,28 @@ formData.append('use_filename', false); // Don't use original filename
                     uploadProgress.style.display = 'none';
                 }, 1000);
             } else {
-                throw new Error(`Upload failed with status ${xhr.status}`);
+                console.error('❌ Upload failed:', {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    response: xhr.responseText
+                });
+                throw new Error(`Upload failed with status ${xhr.status}: ${xhr.responseText}`);
             }
         });
 
         xhr.addEventListener('error', () => {
-            console.error('Upload error');
-            alert(`Failed to upload ${type}. Please try again.`);
+            console.error('❌ XHR error occurred');
+            alert(`Failed to upload ${type}. Please check console for details.`);
             uploadProgress.style.display = 'none';
         });
 
+        console.log('🚀 Sending request to Cloudinary...');
         xhr.open('POST', 'https://api.cloudinary.com/v1_1/dxv11m11i/image/upload');
         xhr.send(formData);
 
     } catch (error) {
-        console.error('Error uploading:', error);
-        alert(`Failed to upload ${type}. Please try again.`);
+        console.error('❌ Upload error:', error);
+        alert(`Failed to upload ${type}: ${error.message}`);
         uploadProgress.style.display = 'none';
     }
 }
@@ -2892,11 +2949,14 @@ window.submitKYCVerification = async function() {
 
     const submitBtn = document.getElementById('kycSubmitBtn');
 // Record consent timestamp
-const consentTimestamp = new Date().toISOString();
+// Get IP for consent record
+const ipResponse = await fetch('https://api.ipify.org?format=json');
+const ipData = await ipResponse.json();
+
 const consentData = {
     consented: true,
-    consentedAt: consentTimestamp,
-    ipAddress: 'Not collected (privacy compliance)',
+    consentedAt: new Date().toISOString(),
+    ipAddress: ipData.ip,
     userAgent: navigator.userAgent,
     consentVersion: '1.0'
 };
@@ -2968,7 +3028,122 @@ window.requestKYCDeletion = async function() {
     }
 }
 
+// User downloads their own KYC data (GDPR Article 15)
+window.downloadMyKYCData = async function() {
+    if (!currentUser) return;
+    
+    try {
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (!userDoc.exists()) {
+            alert('No data found');
+            return;
+        }
+        
+        const userData = userDoc.data();
+        const verification = userData.verification || {};
+        
+        // Get consent history
+        const consentsQuery = query(
+            collection(db, 'user_consents'),
+            where('userId', '==', currentUser.uid)
+        );
+        const consentsSnapshot = await getDocs(consentsQuery);
+        const consents = [];
+        consentsSnapshot.forEach(doc => consents.push(doc.data()));
+        
+        const exportData = {
+            exportInfo: {
+                exportedAt: new Date().toISOString(),
+                dataProtectionNote: 'This export contains all personal data as per RA 10173 (Data Privacy Act)'
+            },
+            personalInfo: {
+                userId: currentUser.uid,
+                name: userData.name,
+                email: userData.email,
+                phone: userData.profile?.phone
+            },
+            kycVerification: {
+                status: verification.kycStatus,
+                submittedAt: verification.kycSubmittedAt,
+                reviewedAt: verification.kycReviewedAt,
+                documentsStored: verification.kycDocuments ? 'Yes' : 'No',
+                retentionPeriod: '5 years from submission',
+                scheduledDeletion: verification.kycSubmittedAt ? 
+                    new Date(new Date(verification.kycSubmittedAt).getTime() + (5 * 365 * 24 * 60 * 60 * 1000)).toISOString() : 
+                    'N/A'
+            },
+            consentHistory: consents,
+            yourRights: {
+                rightToAccess: 'You can request copies of your data',
+                rightToRectification: 'You can request corrections',
+                rightToErasure: 'You can request deletion (after legal requirements)',
+                rightToObject: 'You can refuse processing',
+                contactDPO: 'privacy@systemly.com'
+            }
+        };
+        
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `systemly-kyc-data-${currentUser.uid}-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        alert('✅ Your KYC data has been exported.\n\nThis includes all personal information we store about you.');
+        
+    } catch (error) {
+        console.error('Error exporting data:', error);
+        alert('Failed to export data: ' + error.message);
+    }
+}
 
+// Request KYC data deletion (GDPR Article 17)
+window.requestKYCDeletion = async function() {
+    if (!currentUser) return;
+    
+    if (!confirm('⚠️ REQUEST DELETION OF YOUR ID DOCUMENTS?\n\nThis will:\n• Remove your verification status\n• Require re-verification for future transactions\n• Process within 30 days per DPA requirements\n\nYour account will remain active, only KYC documents will be deleted.\n\nContinue?')) {
+        return;
+    }
+    
+    const reason = prompt('Why are you requesting deletion? (Optional, helps us improve)');
+    
+    try {
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        
+        await updateDoc(userDocRef, {
+            'verification.deletionRequested': true,
+            'verification.deletionRequestedAt': new Date().toISOString(),
+            'verification.deletionReason': reason || 'User requested under Data Privacy Act',
+            'verification.deletionStatus': 'pending'
+        });
+        
+        // Log deletion request for audit
+        await addDoc(collection(db, 'audit_logs'), {
+            action: 'KYC_DELETION_REQUESTED',
+            userId: currentUser.uid,
+            userEmail: currentUser.email,
+            timestamp: serverTimestamp(),
+            reason: reason || 'No reason provided',
+            expectedCompletionDate: new Date(Date.now() + (30 * 24 * 60 * 60 * 1000)).toISOString()
+        });
+        
+        alert('✅ DELETION REQUEST SUBMITTED\n\n' +
+              'Your ID documents will be deleted within 30 days as required by the Data Privacy Act.\n\n' +
+              'You will receive:\n' +
+              '• Email confirmation within 24 hours\n' +
+              '• Final confirmation when deletion is complete\n\n' +
+              'Your account remains active, only verification documents will be removed.');
+        
+        await loadUserData(currentUser);
+        
+    } catch (error) {
+        console.error('Error requesting deletion:', error);
+        alert('Failed to submit deletion request: ' + error.message);
+    }
+}
 
 
 
