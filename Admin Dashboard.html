@@ -7188,26 +7188,28 @@ async function loadKYCReviews() {
 
 async function generateSignedUrls(userId) {
     try {
-        const userDoc = await getDoc(doc(db, 'users', userId));
-        if (!userDoc.exists()) {
-            throw new Error('User not found');
+        const adminToken = await auth.currentUser.getIdToken();
+        
+        const response = await fetch('https://systemly.onrender.com/api/admin/generate-kyc-urls', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: userId,
+                adminToken: adminToken
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.error || 'Failed to generate signed URLs');
         }
         
-        const userData = userDoc.data();
-        const kycDocs = userData.verification?.kycDocuments;
+        console.log('✅ Secure signed URLs generated (expire in 5 min)');
         
-        if (!kycDocs) {
-            throw new Error('KYC documents not found');
-        }
-        
-        // Use saved secure URLs (new uploads) or construct from public_id (old uploads)
-        const cloudName = 'dxv11m11i';
-        
-        return {
-            idFront: kycDocs.idFrontUrl || `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.idFront}.jpg`,
-            idBack: kycDocs.idBackUrl || `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.idBack}.jpg`,
-            selfie: kycDocs.selfieUrl || `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.selfie}.jpg`
-        };
+        return data.urls;
         
     } catch (error) {
         console.error('❌ Error generating signed URLs:', error);
