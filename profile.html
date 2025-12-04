@@ -152,10 +152,12 @@
 
 .completion-circle {
     fill: none;
-    stroke: var(--primary);
+    stroke: url(#gradient);
     stroke-width: 6;
     stroke-linecap: round;
-    transition: stroke-dashoffset 1s ease;
+    stroke-dasharray: 377;
+    stroke-dashoffset: 377;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .profile-avatar-wrapper {
@@ -331,16 +333,36 @@
 
         /* Plan Card - Flippa Style */
         .plan-card {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 1.75rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.75rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+}
 
-        .plan-card::before {
-            display: none;
-        }
+.plan-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.plan-card.plan-basic::before {
+    background: linear-gradient(90deg, #3B82F6, #60A5FA);
+    opacity: 1;
+}
+
+.plan-card.plan-premium::before {
+    background: linear-gradient(90deg, #F59E0B, #FBBF24);
+    opacity: 1;
+}
 
         .plan-header {
             display: flex;
@@ -1066,6 +1088,102 @@
                 font-size: 0.85rem;
             }
         }
+
+/* Verification Link Style */
+.verify-link {
+    background: none;
+    border: none;
+    color: var(--primary);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.verify-link:hover {
+    color: var(--primary-dark);
+}
+
+.verify-link:disabled {
+    color: var(--success);
+    cursor: default;
+    text-decoration: none;
+}
+
+.verify-link.verified {
+    color: var(--success);
+    text-decoration: none;
+    cursor: default;
+}
+
+.verify-link.coming-soon {
+    color: var(--gray-400);
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+/* Multi-select chips */
+.chip-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.chip:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.chip.selected {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary-dark);
+}
+
+.chip i {
+    font-size: 0.75rem;
+}
+
+/* Phone input editable style */
+.form-input.editable {
+    background: var(--white) !important;
+    cursor: text !important;
+}
+
+/* Spinner animation for avatar upload */
+.fa-spin {
+    animation: fa-spin 1s linear infinite;
+}
+
+@keyframes fa-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+
+
+
 </style>
 </head>
 <body>
@@ -1128,29 +1246,29 @@
                 <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--gray-light); border-radius: 15px;">
                     <h4 style="font-size: 0.95rem; margin-bottom: 1rem; color: var(--gray-dark); font-weight: 600;">Verification Status</h4>
                     
-                    <div id="emailVerificationStatus" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--white);">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fa-solid fa-envelope" style="color: var(--gray-medium);"></i>
-                            <span style="font-size: 0.9rem;">Email</span>
-                        </div>
-                        <button onclick="sendEmailVerification()" id="emailVerifyBtn" style="background: var(--primary); color: white; border: none; padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 600;">Verify</button>
-                    </div>
+<div id="emailVerificationStatus" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--white);">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-envelope" style="color: var(--gray-medium);"></i>
+        <span style="font-size: 0.9rem;">Email</span>
+    </div>
+    <a href="javascript:void(0);" onclick="sendEmailVerification()" id="emailVerifyBtn" class="verify-link">Verify</a>
+</div>
 
-                    <div id="phoneVerificationStatus" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--white);">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fa-solid fa-mobile-screen-button" style="color: var(--gray-medium);"></i>
-                            <span style="font-size: 0.9rem;">Phone</span>
-                        </div>
-                        <button onclick="openPhoneModal()" id="phoneVerifyBtn" style="background: var(--primary); color: white; border: none; padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 600;">Verify</button>
-                    </div>
+<div id="phoneVerificationStatus" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--white);">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-mobile-screen-button" style="color: var(--gray-medium);"></i>
+        <span style="font-size: 0.9rem;">Phone</span>
+    </div>
+    <span id="phoneVerifyBtn" class="verify-link coming-soon"> Coming Soon</span>
+</div>
 
-                    <div id="kycVerificationStatus" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fa-solid fa-id-card" style="color: var(--gray-medium);"></i>
-                            <span style="font-size: 0.9rem;">Government ID</span>
-                        </div>
-                        <button onclick="openKYCModal()" id="kycVerifyBtn" style="background: var(--primary); color: white; border: none; padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 600;">Verify</button>
-                    </div>
+<div id="kycVerificationStatus" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0;">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-id-card" style="color: var(--gray-medium);"></i>
+        <span style="font-size: 0.9rem;">Government ID</span>
+    </div>
+    <a href="javascript:void(0);" onclick="openKYCModal()" id="kycVerifyBtn" class="verify-link">Verify</a>
+</div>
                 </div>
             </div>
 
@@ -1221,6 +1339,14 @@
             <i class="fa-solid fa-star"></i>
             <span>Seller Info</span>
         </button>
+<button class="tab-btn" onclick="switchTab('experience')" data-tab="experience">
+    <i class="fa-solid fa-briefcase"></i>
+    <span>Experience</span>
+</button>
+<button class="tab-btn" onclick="switchTab('interests')" data-tab="interests">
+    <i class="fa-solid fa-heart"></i>
+    <span>Interests</span>
+</button>
     </div>
 
     <form id="profileForm">
@@ -1290,12 +1416,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input type="tel" class="form-input" id="phone" placeholder="+63 917 XXX XXXX" readonly style="background: var(--gray-light); cursor: not-allowed;">
-                    <div class="form-hint">
-                        <i class="fa-solid fa-shield-halved"></i> Verify your phone number in the left sidebar verification section
-                    </div>
-                </div>
+    <label for="phone">Phone Number</label>
+    <input type="tel" class="form-input editable" id="phone" placeholder="+63 917 XXX XXXX">
+    <div class="form-hint">
+        <i class="fa-solid fa-info-circle"></i> Phone verification coming soon. You can update your number anytime.
+    </div>
+</div>
             </div>
         </div>
 
@@ -1510,6 +1636,128 @@
                 </div>
             </div>
         </div>
+
+<!-- TAB 7: INDUSTRY EXPERIENCE -->
+<div class="tab-content" id="experience-tab">
+    <div class="profile-section-card">
+        <div class="section-header-new">
+            <div class="section-icon-new">
+                <i class="fa-solid fa-briefcase"></i>
+            </div>
+            <div style="flex: 1;">
+                <h3>Industry Experience</h3>
+                <p>Help buyers understand your background</p>
+            </div>
+            <button type="button" onclick="openIndustryModal()" class="verify-link" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-pen"></i> Edit
+            </button>
+        </div>
+
+        <div class="help-box">
+            <p><strong><i class="fa-solid fa-lightbulb"></i> Why this matters:</strong> Showcasing your experience builds credibility and helps match you with the right opportunities.</p>
+        </div>
+
+        <!-- Display Selected Industries -->
+        <div class="form-group">
+            <label>Industries You've Worked In</label>
+            <div class="chip-container" id="selectedIndustries" style="min-height: 40px;">
+                <span style="color: var(--text-light); font-size: 0.9rem;">No industries selected yet. Click Edit to add.</span>
+            </div>
+        </div>
+
+        <div class="form-row-new">
+            <div class="form-group">
+                <label for="yearsExperience">Years of Business Experience</label>
+                <select class="form-select" id="yearsExperience">
+                    <option value="">Select experience</option>
+                    <option value="0-1">Less than 1 year</option>
+                    <option value="1-3">1-3 years</option>
+                    <option value="3-5">3-5 years</option>
+                    <option value="5-10">5-10 years</option>
+                    <option value="10+">10+ years</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="businessesOwned">Businesses Owned/Operated</label>
+                <select class="form-select" id="businessesOwned">
+                    <option value="">Select number</option>
+                    <option value="0">This is my first</option>
+                    <option value="1-2">1-2 businesses</option>
+                    <option value="3-5">3-5 businesses</option>
+                    <option value="5+">5+ businesses</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- TAB 8: INTERESTS & BUSINESS MODELS -->
+<div class="tab-content" id="interests-tab">
+    <div class="profile-section-card">
+        <div class="section-header-new">
+            <div class="section-icon-new">
+                <i class="fa-solid fa-heart"></i>
+            </div>
+            <div style="flex: 1;">
+                <h3>Interests & Business Models</h3>
+                <p>What types of businesses interest you?</p>
+            </div>
+            <button type="button" onclick="openInterestsModal()" class="verify-link" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-pen"></i> Edit
+            </button>
+        </div>
+
+        <div class="help-box">
+            <p><strong><i class="fa-solid fa-rocket"></i> Get better matches:</strong> Tell us what you're looking for and we'll recommend relevant opportunities.</p>
+        </div>
+
+        <!-- Display Selected Business Models -->
+        <div class="form-group">
+            <label>Business Models You're Interested In</label>
+            <div class="chip-container" id="selectedBusinessModels" style="min-height: 40px;">
+                <span style="color: var(--text-light); font-size: 0.9rem;">No business models selected yet. Click Edit to add.</span>
+            </div>
+        </div>
+
+        <!-- Display Selected Looking For -->
+        <div class="form-group">
+            <label>What are you looking for?</label>
+            <div class="chip-container" id="selectedLookingFor" style="min-height: 40px;">
+                <span style="color: var(--text-light); font-size: 0.9rem;">Nothing selected yet. Click Edit to add.</span>
+            </div>
+        </div>
+
+        <div class="form-row-new">
+            <div class="form-group">
+                <label for="budgetRange">Investment Budget Range (Optional)</label>
+                <select class="form-select" id="budgetRange">
+                    <option value="">Select range</option>
+                    <option value="0-50k">₱0 - ₱50,000</option>
+                    <option value="50k-200k">₱50,000 - ₱200,000</option>
+                    <option value="200k-500k">₱200,000 - ₱500,000</option>
+                    <option value="500k-1m">₱500,000 - ₱1M</option>
+                    <option value="1m-5m">₱1M - ₱5M</option>
+                    <option value="5m+">₱5M+</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="preferredLocation">Preferred Business Location</label>
+                <select class="form-select" id="preferredLocation">
+                    <option value="">Select location</option>
+                    <option value="anywhere">Anywhere</option>
+                    <option value="local">My city/province only</option>
+                    <option value="national">Philippines only</option>
+                    <option value="international">International OK</option>
+                    <option value="online">Online/Remote only</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
         <!-- FLOATING SAVE BUTTON -->
         <div class="floating-save-container">
@@ -1726,6 +1974,161 @@
 </div>
 
 
+<!-- Industry Selection Modal -->
+<div id="industryModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 20px; padding: 2.5rem; max-width: 600px; width: 90%; position: relative; max-height: 80vh; overflow-y: auto;">
+        <button onclick="closeIndustryModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-medium);">&times;</button>
+        
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                <i class="fa-solid fa-briefcase" style="font-size: 2rem; color: white;"></i>
+            </div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Select Your Industries</h3>
+            <p style="color: var(--gray-medium); font-size: 0.95rem;">Choose all that apply</p>
+        </div>
+
+        <div class="form-group">
+            <div class="chip-container" id="industryChips">
+                <div class="chip" data-value="ecommerce">
+                    <i class="fa-solid fa-cart-shopping"></i> E-commerce
+                </div>
+                <div class="chip" data-value="saas">
+                    <i class="fa-solid fa-cloud"></i> SaaS
+                </div>
+                <div class="chip" data-value="marketplace">
+                    <i class="fa-solid fa-store"></i> Marketplace
+                </div>
+                <div class="chip" data-value="digital-products">
+                    <i class="fa-solid fa-laptop"></i> Digital Products
+                </div>
+                <div class="chip" data-value="retail">
+                    <i class="fa-solid fa-shopping-bag"></i> Retail
+                </div>
+                <div class="chip" data-value="food-beverage">
+                    <i class="fa-solid fa-utensils"></i> Food & Beverage
+                </div>
+                <div class="chip" data-value="consulting">
+                    <i class="fa-solid fa-user-tie"></i> Consulting
+                </div>
+                <div class="chip" data-value="real-estate">
+                    <i class="fa-solid fa-building"></i> Real Estate
+                </div>
+                <div class="chip" data-value="finance">
+                    <i class="fa-solid fa-coins"></i> Finance
+                </div>
+                <div class="chip" data-value="healthcare">
+                    <i class="fa-solid fa-heart-pulse"></i> Healthcare
+                </div>
+                <div class="chip" data-value="education">
+                    <i class="fa-solid fa-graduation-cap"></i> Education
+                </div>
+                <div class="chip" data-value="technology">
+                    <i class="fa-solid fa-microchip"></i> Technology
+                </div>
+            </div>
+            <input type="hidden" id="industries" name="industries">
+        </div>
+
+        <button onclick="saveIndustries()" class="save-btn" style="width: 100%; margin-top: 1.5rem;">
+            <i class="fa-solid fa-check"></i> Save & Close
+        </button>
+    </div>
+</div>
+
+<!-- Interests Selection Modal -->
+<div id="interestsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 20px; padding: 2.5rem; max-width: 600px; width: 90%; position: relative; max-height: 80vh; overflow-y: auto;">
+        <button onclick="closeInterestsModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-medium);">&times;</button>
+        
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #8B5CF6, #EC4899); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                <i class="fa-solid fa-heart" style="font-size: 2rem; color: white;"></i>
+            </div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Select Your Interests</h3>
+            <p style="color: var(--gray-medium); font-size: 0.95rem;">Choose all that apply</p>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 2rem;">
+            <label style="font-weight: 600; margin-bottom: 1rem; display: block;">Business Models You're Interested In</label>
+            <div class="chip-container" id="businessModelChips">
+                <div class="chip" data-value="b2b">
+                    <i class="fa-solid fa-handshake"></i> B2B
+                </div>
+                <div class="chip" data-value="b2c">
+                    <i class="fa-solid fa-users"></i> B2C
+                </div>
+                <div class="chip" data-value="subscription">
+                    <i class="fa-solid fa-repeat"></i> Subscription
+                </div>
+                <div class="chip" data-value="marketplace">
+                    <i class="fa-solid fa-shop"></i> Marketplace
+                </div>
+                <div class="chip" data-value="affiliate">
+                    <i class="fa-solid fa-link"></i> Affiliate
+                </div>
+                <div class="chip" data-value="dropshipping">
+                    <i class="fa-solid fa-truck"></i> Dropshipping
+                </div>
+                <div class="chip" data-value="franchise">
+                    <i class="fa-solid fa-store"></i> Franchise
+                </div>
+                <div class="chip" data-value="content">
+                    <i class="fa-solid fa-newspaper"></i> Content/Media
+                </div>
+                <div class="chip" data-value="service">
+                    <i class="fa-solid fa-wrench"></i> Service-based
+                </div>
+                <div class="chip" data-value="product">
+                    <i class="fa-solid fa-box"></i> Product-based
+                </div>
+                <div class="chip" data-value="licensing">
+                    <i class="fa-solid fa-certificate"></i> Licensing
+                </div>
+                <div class="chip" data-value="digital">
+                    <i class="fa-solid fa-download"></i> Digital Downloads
+                </div>
+            </div>
+            <input type="hidden" id="businessModels" name="businessModels">
+        </div>
+
+        <div class="form-group">
+            <label style="font-weight: 600; margin-bottom: 1rem; display: block;">What are you looking for?</label>
+            <div class="chip-container" id="lookingForChips">
+                <div class="chip" data-value="buying">
+                    <i class="fa-solid fa-shopping-cart"></i> Buying a business
+                </div>
+                <div class="chip" data-value="selling">
+                    <i class="fa-solid fa-tag"></i> Selling a business
+                </div>
+                <div class="chip" data-value="investing">
+                    <i class="fa-solid fa-chart-line"></i> Investment opportunities
+                </div>
+                <div class="chip" data-value="partnership">
+                    <i class="fa-solid fa-handshake-angle"></i> Finding partners
+                </div>
+                <div class="chip" data-value="browsing">
+                    <i class="fa-solid fa-eye"></i> Just browsing
+                </div>
+            </div>
+            <input type="hidden" id="lookingFor" name="lookingFor">
+        </div>
+
+        <button onclick="saveInterests()" class="save-btn" style="width: 100%; margin-top: 1.5rem;">
+            <i class="fa-solid fa-check"></i> Save & Close
+        </button>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1753,6 +2156,8 @@
         const db = getFirestore(app);
         const CLOUDINARY_CLOUD_NAME = 'dxv11m11i';
         const CLOUDINARY_UPLOAD_PRESET = 'systemly_uploads';
+        const CLOUDINARY_KYC_PRESET = 'systemly_kyc_uploads';
+
         let uploadedAvatarURL = null;
 
         let kycCurrentStep = 1;
@@ -1790,10 +2195,10 @@
             btn.innerHTML = '<span class="spinner"></span> Sending...';
             btn.disabled = true;
             
-            try {
-                await firebaseSendEmailVerification(currentUser);
-                
-                alert('✉️ Verification email sent! Please check your inbox and spam folder.\n\nAfter verifying, refresh this page to see the update.');
+              try {
+        await firebaseSendEmailVerification(currentUser);
+        
+        alert('Verification email sent! Please check your inbox and spam folder.\n\nAfter verifying, refresh this page to see the update.');
                 
                 // Update button to show "Check Email"
                 btn.textContent = '📧 Check Email';
@@ -1935,7 +2340,7 @@ window.sendPhoneOTP = async function() {
         // Start 2-minute timer
         startResendTimer();
         
-        alert(`✅ Code sent to ${phoneNumber}\n\nAttempt ${smsAttempts} of 3`);
+        alert('Code sent to ' + phoneNumber + '\n\nAttempt ' + smsAttempts + ' of 3');
         
     } catch (error) {
         console.error('❌ Error:', error);
@@ -1998,7 +2403,7 @@ window.verifyPhoneOTP = async function() {
     const otp = document.getElementById('otpInput').value.trim();
     
     if (!otp || otp.length !== 6) {
-        alert('❌ Please enter the 6-digit code');
+        alert('Please enter the 6-digit code');
         return;
     }
 
@@ -2068,7 +2473,7 @@ window.resetPhoneVerification = function() {
     
     // Check attempts limit
     if (smsAttempts >= 3) {
-        alert('⚠️ VIOLATION: SMS Protocol Limit Exceeded\n\n' +
+        alert('WARNING: SMS Protocol Limit Exceeded\n\n' +
               'Maximum resend attempts reached (3).\n' +
               'Please try again in 1 hour.\n\n' +
               'If you did not receive the code, check your phone number or contact support.');
@@ -2247,165 +2652,190 @@ window.resetPhoneVerification = function() {
             await uploadKYCToCloudinary(file, type, buttonId);
         }
 
-        async function uploadKYCToCloudinary(file, type, buttonId) {
-            const uploadProgress = document.getElementById('kycUploadProgress');
-            const uploadStatus = document.getElementById('kycUploadStatus');
-            const uploadPercentage = document.getElementById('kycUploadPercentage');
-            const progressBar = document.getElementById('kycProgressBar');
+       // REPLACE the uploadKYCToCloudinary function with this secure version:
 
-            uploadProgress.style.display = 'block';
-            uploadStatus.textContent = `Uploading ${type}...`;
-            uploadPercentage.textContent = '0%';
-            progressBar.style.width = '0%';
+async function uploadKYCToCloudinary(file, type, buttonId) {
+    const uploadProgress = document.getElementById('kycUploadProgress');
+    const uploadStatus = document.getElementById('kycUploadStatus');
+    const uploadPercentage = document.getElementById('kycUploadPercentage');
+    const progressBar = document.getElementById('kycProgressBar');
 
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-            formData.append('folder', `systemly-kyc/${currentUser.uid}`);
+    uploadProgress.style.display = 'block';
+    uploadStatus.textContent = `Uploading ${type}...`;
+    uploadPercentage.textContent = '0%';
+    progressBar.style.width = '0%';
 
-            try {
-                const xhr = new XMLHttpRequest();
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_KYC_PRESET); // Make sure this preset exists in your Cloudinary
+    formData.append('folder', `systemly-kyc/${currentUser.uid}`);
+    formData.append('tags', `kyc,${type},${currentUser.uid}`);
 
-                xhr.upload.addEventListener('progress', (e) => {
-                    if (e.lengthComputable) {
-                        const percentComplete = Math.round((e.loaded / e.total) * 100);
-                        uploadPercentage.textContent = percentComplete + '%';
-                        progressBar.style.width = percentComplete + '%';
-                    }
-                });
+    try {
+        const xhr = new XMLHttpRequest();
 
-                xhr.addEventListener('load', () => {
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        kycUploadedFiles[type] = response.secure_url;
-                        
-                        uploadStatus.textContent = 'Upload complete!';
-                        uploadPercentage.textContent = '100%';
-                        
-                        // Enable next button
-                        document.getElementById(buttonId).disabled = false;
-                        
-                        setTimeout(() => {
-                            uploadProgress.style.display = 'none';
-                        }, 1000);
-                    } else {
-                        throw new Error(`Upload failed with status ${xhr.status}`);
-                    }
-                });
-
-                xhr.addEventListener('error', () => {
-                    console.error('Upload error');
-                    alert(`Failed to upload ${type}. Please try again.`);
-                    uploadProgress.style.display = 'none';
-                });
-
-                xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`);
-                xhr.send(formData);
-
-            } catch (error) {
-                console.error('Error uploading:', error);
-                alert(`Failed to upload ${type}. Please try again.`);
-                uploadProgress.style.display = 'none';
+        xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+                const percentComplete = Math.round((e.loaded / e.total) * 100);
+                uploadPercentage.textContent = percentComplete + '%';
+                progressBar.style.width = percentComplete + '%';
             }
-        }
+        });
 
-
-       window.submitKYCVerification = async function() {
-            // Check if all files are uploaded
-            if (!kycUploadedFiles.idFront || !kycUploadedFiles.idBack || !kycUploadedFiles.selfie) {
-                alert('❌ Please upload all required documents');
-                return;
-            }
-
-            const submitBtn = document.getElementById('kycSubmitBtn');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<span class="spinner"></span> Submitting...';
-            submitBtn.disabled = true;
-
-            try {
-                // Update Firestore with Cloudinary URLs
-                const userDocRef = doc(db, 'users', currentUser.uid);
-                await updateDoc(userDocRef, {
-                    'verification.kycStatus': 'pending',
-                    'verification.kycSubmittedAt': new Date().toISOString(),
-                    'verification.kycDocuments': {
-                        idFront: kycUploadedFiles.idFront,
-                        idBack: kycUploadedFiles.idBack,
-                        selfie: kycUploadedFiles.selfie
-                    }
-                });
-
-                alert('✅ KYC documents submitted successfully! Our team will review within 24-48 hours.');
-                closeKYCModal();
-                await loadUserData(currentUser);
+        xhr.addEventListener('load', () => {
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
                 
-            } catch (error) {
-                console.error('Error submitting KYC:', error);
-                alert('Failed to submit verification: ' + error.message);
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+                // Store the full public_id including folder path
+                kycUploadedFiles[type] = {
+                    publicId: response.public_id, // This should be like "systemly-kyc/USER_ID/filename"
+                    uploadedAt: new Date().toISOString(),
+                    fileType: file.type,
+                    fileSize: file.size
+                };
+                
+                console.log(`✅ ${type} uploaded. Public ID: ${response.public_id}`);
+                
+                uploadStatus.textContent = 'Upload complete!';
+                uploadPercentage.textContent = '100%';
+                
+                document.getElementById(buttonId).disabled = false;
+                
+                setTimeout(() => {
+                    uploadProgress.style.display = 'none';
+                }, 1000);
+            } else {
+                throw new Error(`Upload failed with status ${xhr.status}`);
             }
-        }
+        });
 
-        // ==========================================
-        // UPDATE VERIFICATION STATUS UI
-        // ==========================================
-        function updateVerificationUI(data) {
-            const verification = data.verification || {};
-            
-            // Email Verification
-            if (currentUser.emailVerified) {
-                document.getElementById('emailVerifiedBadge').style.display = 'flex';
-                document.getElementById('emailVerifyBtn').textContent = '✓ Verified';
-                document.getElementById('emailVerifyBtn').style.background = 'var(--success)';
-                document.getElementById('emailVerifyBtn').disabled = true;
-            } else {
-                document.getElementById('emailVerifyBtn').textContent = 'Verify';
-                document.getElementById('emailVerifyBtn').style.background = 'var(--primary)';
-                document.getElementById('emailVerifyBtn').disabled = false;
-            }
-            
-            // Phone Verification
-            if (verification.phoneVerified) {
-                document.getElementById('phoneVerifiedBadge').style.display = 'flex';
-                document.getElementById('phoneVerifyBtn').textContent = '✓ Verified';
-                document.getElementById('phoneVerifyBtn').style.background = 'var(--success)';
-                document.getElementById('phoneVerifyBtn').disabled = true;
-                document.getElementById('phone').value = verification.phoneNumber || '';
-            } else {
-                document.getElementById('phoneVerifyBtn').textContent = 'Verify';
-                document.getElementById('phoneVerifyBtn').style.background = 'var(--primary)';
-                document.getElementById('phoneVerifyBtn').disabled = false;
-            }
-            
-            // KYC Verification
-            const kycStatus = verification.kycStatus || 'none';
-            const kycBtn = document.getElementById('kycVerifyBtn');
-            
-            if (kycStatus === 'approved') {
-                document.getElementById('kycVerifiedBadge').style.display = 'flex';
-                kycBtn.textContent = '✓ Verified';
-                kycBtn.style.background = 'var(--success)';
-                kycBtn.disabled = true;
-            } else if (kycStatus === 'pending') {
-                kycBtn.textContent = '⏳ Pending';
-                kycBtn.style.background = 'var(--warning)';
-                kycBtn.disabled = true;
-            } else if (kycStatus === 'rejected') {
-                kycBtn.textContent = '✗ Retry';
-                kycBtn.style.background = 'var(--error)';
-                kycBtn.disabled = false;
-            } else {
-                kycBtn.textContent = 'Verify';
-                kycBtn.style.background = 'var(--primary)';
-                kycBtn.disabled = false;
-            }
-        }
+        xhr.addEventListener('error', () => {
+            console.error('Upload error');
+            alert(`Failed to upload ${type}. Please try again.`);
+            uploadProgress.style.display = 'none';
+        });
 
-        // ==========================================
-        // UPDATE PROFILE COMPLETION WITH VERIFICATIONS
-        // ==========================================
-        function calculateProfileCompletionWithVerifications(data) {
+        xhr.open('POST', 'https://api.cloudinary.com/v1_1/dxv11m11i/image/upload');
+        xhr.send(formData);
+
+    } catch (error) {
+        console.error('Error uploading:', error);
+        alert(`Failed to upload ${type}. Please try again.`);
+        uploadProgress.style.display = 'none';
+    }
+}
+      // REPLACE the submitKYCVerification function with this:
+
+window.submitKYCVerification = async function() {
+    // Check if all files are uploaded
+    if (!kycUploadedFiles.idFront || !kycUploadedFiles.idBack || !kycUploadedFiles.selfie) {
+        alert('Please upload all required documents');
+        return;
+    }
+
+    const submitBtn = document.getElementById('kycSubmitBtn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="spinner"></span> Submitting...';
+    submitBtn.disabled = true;
+
+    try {
+        // ✅ SECURITY: Store only public_id in Firestore (NO URLs)
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        await updateDoc(userDocRef, {
+            'verification.kycStatus': 'pending',
+            'verification.kycSubmittedAt': new Date().toISOString(),
+            'verification.kycDocuments': {
+                idFront: kycUploadedFiles.idFront.publicId,
+                idBack: kycUploadedFiles.idBack.publicId,
+                selfie: kycUploadedFiles.selfie.publicId,
+                // Store metadata separately
+                metadata: {
+                    idFrontUploadedAt: kycUploadedFiles.idFront.uploadedAt,
+                    idBackUploadedAt: kycUploadedFiles.idBack.uploadedAt,
+                    selfieUploadedAt: kycUploadedFiles.selfie.uploadedAt
+                }
+            }
+        });
+
+        console.log('✅ KYC submitted with public_ids only (secure)');
+        alert('KYC documents submitted successfully! Our team will review within 24-48 hours.');
+        closeKYCModal();
+        await loadUserData(currentUser);
+        
+    } catch (error) {
+        console.error('Error submitting KYC:', error);
+        alert('Failed to submit verification: ' + error.message);
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+   // ==========================================
+// UPDATE VERIFICATION STATUS UI
+// ==========================================
+function updateVerificationUI(data) {
+    const verification = data.verification || {};
+    
+    // Email Verification
+    const emailBtn = document.getElementById('emailVerifyBtn');
+    if (emailBtn) {
+        if (currentUser.emailVerified) {
+            document.getElementById('emailVerifiedBadge').style.display = 'flex';
+            emailBtn.textContent = '✓ Verified';
+            emailBtn.classList.add('verified');
+            emailBtn.style.pointerEvents = 'none'; // Disable clicking
+            emailBtn.onclick = null;
+        } else {
+            emailBtn.textContent = 'Verify';
+            emailBtn.classList.remove('verified');
+            emailBtn.style.pointerEvents = ''; // Enable clicking
+            emailBtn.style.color = '';
+            emailBtn.onclick = function() { sendEmailVerification(); };
+        }
+    }
+    
+    // Phone Verification (Coming Soon - Always show coming soon)
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+        phoneInput.readOnly = false;
+        phoneInput.classList.add('editable');
+    }
+    
+    // KYC Verification
+    const kycStatus = verification.kycStatus || 'none';
+    const kycBtn = document.getElementById('kycVerifyBtn');
+    
+    if (kycBtn) {
+        if (kycStatus === 'approved') {
+            document.getElementById('kycVerifiedBadge').style.display = 'flex';
+            kycBtn.textContent = '✓ Verified';
+            kycBtn.classList.add('verified');
+            kycBtn.style.pointerEvents = 'none';
+            kycBtn.onclick = null;
+        } else if (kycStatus === 'pending') {
+            kycBtn.textContent = ' Pending';
+            kycBtn.style.color = 'var(--warning)';
+            kycBtn.style.pointerEvents = 'none';
+            kycBtn.onclick = null;
+        } else if (kycStatus === 'rejected') {
+            kycBtn.textContent = '✗ Retry';
+            kycBtn.style.color = 'var(--error)';
+            kycBtn.style.pointerEvents = '';
+            kycBtn.onclick = function() { openKYCModal(); };
+        } else {
+            kycBtn.textContent = 'Verify';
+            kycBtn.classList.remove('verified');
+            kycBtn.style.color = '';
+            kycBtn.style.pointerEvents = '';
+            kycBtn.onclick = function() { openKYCModal(); };
+        }
+    }
+}
+
+// ==========================================
+// UPDATE PROFILE COMPLETION WITH VERIFICATIONS
+// ==========================================
+function calculateProfileCompletionWithVerifications(data) {
     let completedFields = 0;
     const verification = data.verification || {};
     const profile = data.profile || {};
@@ -2437,17 +2867,23 @@ window.resetPhoneVerification = function() {
         { check: !!profile.phone, weight: 0.5 },
         { check: !!profile.bio && profile.bio.trim().length >= 20, weight: 1 },
         { check: !!data.companyName, weight: 0.5 },
-        { check: !!profile.website, weight: 0.5 }
+        { check: !!profile.website, weight: 0.5 },
+        
+        // NEW: Experience & Interests
+        { check: !!profile.yearsExperience, weight: 0.5 },
+        { check: !!profile.businessesOwned, weight: 0.5 },
+        { check: !!profile.industries && profile.industries.length > 0, weight: 0.5 },
+        { check: !!profile.businessModels && profile.businessModels.length > 0, weight: 0.5 },
+        { check: !!profile.lookingFor && profile.lookingFor.length > 0, weight: 0.5 }
     ];
     
-    const totalWeight = 18;
+    const totalWeight = 20.5;
     completedFields = completionCriteria.filter(c => c.check).reduce((sum, c) => sum + c.weight, 0);
     const percentage = Math.min(100, Math.round((completedFields / totalWeight) * 100));
     
     updateCompletionDisplay(percentage);
     return percentage;
 }
-
 
 
 
@@ -2549,117 +2985,523 @@ window.resetPhoneVerification = function() {
         });
 
         async function loadUserData(user) {
-            try {
-                const userDocRef = doc(db, 'users', user.uid);
-                const userDoc = await getDoc(userDocRef);
-                
-                if (userDoc.exists()) {
-                    userData = userDoc.data();
-                    const currentPlan = userData.subscriptionPlan || 'free';
-                    
-                    populateProfileData(user, userData);
-                    updatePlanDisplay(currentPlan);
-                    updateVerificationUI(userData);
-                    calculateProfileCompletionWithVerifications(userData);
-                    
-                    // Update right sidebar name only
-                    const navName = document.getElementById('navName');
-                    if (navName) {
-                        const userName = userData.name || user.displayName || 'User';
-                        navName.textContent = `${userName}'s Dashboard`;
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading user data:', error);
+    try {
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+            userData = userDoc.data();
+            const currentPlan = userData.subscriptionPlan || 'free';
+            
+            populateProfileData(user, userData);
+            updatePlanDisplay(currentPlan);
+            updateVerificationUI(userData);
+            calculateProfileCompletionWithVerifications(userData); // ← This should be here
+            
+            // Update right sidebar name only
+            const navName = document.getElementById('navName');
+            if (navName) {
+                const userName = userData.name || user.displayName || 'User';
+                navName.textContent = `${userName}'s Dashboard`;
             }
         }
-
-        // ==========================================
-        // PROFILE POPULATION & COMPLETION LOGIC
-        // ==========================================
-
-       function populateProfileData(user, data) {
+    } catch (error) {
+        console.error('Error loading user data:', error);
+    }
+}
+function populateProfileData(user, data) {
     const profile = data.profile || {};
     const banking = data.banking || {};
     
-    document.getElementById('profileName').textContent = data.name || user.displayName || 'User';
-    document.getElementById('profileEmail').textContent = user.email;
+    // Profile name and email
+    const profileNameEl = document.getElementById('profileName');
+    const profileEmailEl = document.getElementById('profileEmail');
+    const profileAvatarEl = document.getElementById('profileAvatar');
     
-    const avatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || user.email)}&size=100&background=F97316&color=fff`;
-    document.getElementById('profileAvatar').src = avatar;
+    if (profileNameEl) {
+        profileNameEl.textContent = data.name || user.displayName || 'User';
+    }
+    
+    if (profileEmailEl) {
+        profileEmailEl.textContent = user.email;
+    }
+    
+    if (profileAvatarEl) {
+        const avatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || user.email)}&size=100&background=F97316&color=fff`;
+        profileAvatarEl.src = avatar;
+    }
     
     // Personal/Business Information
-    document.getElementById('fullName').value = data.name || '';
-    document.getElementById('email').value = user.email;
-    document.getElementById('companyName').value = data.companyName || '';
-    document.getElementById('businessType').value = data.businessType || '';
+    const fullNameEl = document.getElementById('fullName');
+    const emailEl = document.getElementById('email');
+    const companyNameEl = document.getElementById('companyName');
+    const businessTypeEl = document.getElementById('businessType');
+    
+    if (fullNameEl) fullNameEl.value = data.name || '';
+    if (emailEl) emailEl.value = user.email;
+    if (companyNameEl) companyNameEl.value = data.companyName || '';
+    if (businessTypeEl) businessTypeEl.value = data.businessType || '';
     
     // Contact
-    document.getElementById('phone').value = profile.phone || '';
+    const phoneEl = document.getElementById('phone');
+    if (phoneEl) phoneEl.value = profile.phone || '';
     
     // Address
-    document.getElementById('address').value = profile.address || '';
-    document.getElementById('barangay').value = profile.barangay || '';
-    document.getElementById('city').value = profile.city || '';
-    document.getElementById('province').value = profile.province || profile.state || '';
-    document.getElementById('postalCode').value = profile.postalCode || '';
-    document.getElementById('country').value = profile.country || 'Philippines';
+    const addressEl = document.getElementById('address');
+    const barangayEl = document.getElementById('barangay');
+    const cityEl = document.getElementById('city');
+    const provinceEl = document.getElementById('province');
+    const postalCodeEl = document.getElementById('postalCode');
+    const countryEl = document.getElementById('country');
+    
+    if (addressEl) addressEl.value = profile.address || '';
+    if (barangayEl) barangayEl.value = profile.barangay || '';
+    if (cityEl) cityEl.value = profile.city || '';
+    if (provinceEl) provinceEl.value = profile.province || profile.state || '';
+    if (postalCodeEl) postalCodeEl.value = profile.postalCode || '';
+    if (countryEl) countryEl.value = profile.country || 'Philippines';
     
     // Tax/Legal
-    document.getElementById('taxId').value = data.taxId || '';
-    document.getElementById('vatRegistered').checked = data.vatRegistered || false;
+    const taxIdEl = document.getElementById('taxId');
+    const vatRegisteredEl = document.getElementById('vatRegistered');
+    
+    if (taxIdEl) taxIdEl.value = data.taxId || '';
+    if (vatRegisteredEl) vatRegisteredEl.checked = data.vatRegistered || false;
     
     // Banking
-    document.getElementById('bankName').value = banking.bankName || '';
-    document.getElementById('accountType').value = banking.accountType || '';
-    document.getElementById('accountName').value = banking.accountName || '';
-    document.getElementById('accountNumber').value = banking.accountNumber || '';
+    const bankNameEl = document.getElementById('bankName');
+    const accountTypeEl = document.getElementById('accountType');
+    const accountNameEl = document.getElementById('accountName');
+    const accountNumberEl = document.getElementById('accountNumber');
+    
+    if (bankNameEl) bankNameEl.value = banking.bankName || '';
+    if (accountTypeEl) accountTypeEl.value = banking.accountType || '';
+    if (accountNameEl) accountNameEl.value = banking.accountName || '';
+    if (accountNumberEl) accountNumberEl.value = banking.accountNumber || '';
     
     // Seller Enhancements (Optional)
-    document.getElementById('registrationNumber').value = data.registrationNumber || '';
-    document.getElementById('supportEmail').value = data.supportEmail || '';
-    document.getElementById('website').value = profile.website || '';
-    document.getElementById('bio').value = profile.bio || '';
+    const registrationNumberEl = document.getElementById('registrationNumber');
+    const supportEmailEl = document.getElementById('supportEmail');
+    const websiteEl = document.getElementById('website');
+    const bioEl = document.getElementById('bio');
     
-    updateCharCount();
+    if (registrationNumberEl) registrationNumberEl.value = data.registrationNumber || '';
+    if (supportEmailEl) supportEmailEl.value = data.supportEmail || '';
+    if (websiteEl) websiteEl.value = profile.website || '';
+    if (bioEl) bioEl.value = profile.bio || '';
+
+    // Experience fields
+    const yearsExperienceEl = document.getElementById('yearsExperience');
+    const businessesOwnedEl = document.getElementById('businessesOwned');
     
-    // Show seller enhancements if user has seller role
-    if (data.role === 'seller' || data.isSeller) {
-        document.getElementById('sellerEnhancementsSection').style.display = 'block';
-    }
-}
+    if (yearsExperienceEl) yearsExperienceEl.value = profile.yearsExperience || '';
+    if (businessesOwnedEl) businessesOwnedEl.value = profile.businessesOwned || '';
+    
+    // Interests fields
+    const budgetRangeEl = document.getElementById('budgetRange');
+    const preferredLocationEl = document.getElementById('preferredLocation');
+    
+    if (budgetRangeEl) budgetRangeEl.value = profile.budgetRange || '';
+    if (preferredLocationEl) preferredLocationEl.value = profile.preferredLocation || '';
+    
+    // Load and display selected chips
+    try {
+        displaySelectedIndustries(profile.industries || []);
+        displaySelectedBusinessModels(profile.businessModels || []);
+        displaySelectedLookingFor(profile.lookingFor || []);
         
-
-
+        // Set hidden input values
+        const industriesInput = document.getElementById('industries');
+        const businessModelsInput = document.getElementById('businessModels');
+        const lookingForInput = document.getElementById('lookingFor');
+        
+        if (industriesInput) industriesInput.value = JSON.stringify(profile.industries || []);
+        if (businessModelsInput) businessModelsInput.value = JSON.stringify(profile.businessModels || []);
+        if (lookingForInput) lookingForInput.value = JSON.stringify(profile.lookingFor || []);
+    } catch (error) {
+        console.warn('Error loading selections:', error);
+    }
+    
+    // Update character count
+    updateCharCount();
+}
 
 
 
         function updateCompletionDisplay(percentage) {
-            const radius = 60;
-            const circumference = 2 * Math.PI * radius; // Approx 377
-            const offset = circumference - (percentage / 100) * circumference;
-            
-            const circle = document.getElementById('completionCircle');
-            const percentageText = document.getElementById('completionPercentage');
+    const circle = document.getElementById('completionCircle');
+    const percentageText = document.getElementById('completionPercentage');
+    
+    // Add null checks
+    if (!circle || !percentageText) {
+        console.warn('Completion display elements not found');
+        return;
+    }
+    
+    const radius = 60;
+    const circumference = 2 * Math.PI * radius; // Approx 377
+    const offset = circumference - (percentage / 100) * circumference;
 
-            percentageText.textContent = `${percentage}%`;
-            circle.style.strokeDashoffset = offset;
+    // Update text
+    percentageText.textContent = `${percentage}%`;
+    
+    // Update circle - force immediate update
+    circle.style.strokeDashoffset = offset;
+    
+    // Trigger reflow to ensure animation works
+    void circle.offsetWidth;
 
-            // Use the success color if 100% complete
-            if (percentage === 100) {
-                circle.style.stroke = 'var(--success)';
-                percentageText.style.color = 'var(--success)';
-            } else {
-                // Re-apply the gradient for less than 100%
-                circle.style.stroke = 'url(#gradient)';
-                percentageText.style.color = 'var(--primary)';
+    // Use the success color if 100% complete
+    if (percentage === 100) {
+        circle.style.stroke = 'var(--success)';
+        percentageText.style.color = 'var(--success)';
+        
+        // Show completion badge
+        const completionBadge = document.getElementById('overallCompletion');
+        if (completionBadge) {
+            completionBadge.style.display = 'inline-flex';
+        }
+    } else {
+        // Re-apply the gradient for less than 100%
+        circle.style.stroke = 'url(#gradient)';
+        percentageText.style.color = 'var(--primary)';
+        
+        // Hide completion badge
+        const completionBadge = document.getElementById('overallCompletion');
+        if (completionBadge) {
+            completionBadge.style.display = 'none';
+        }
+    }
+    
+    console.log(`Profile completion updated: ${percentage}%`);
+}
+function updateCharCount() {
+    const bio = document.getElementById('bio');
+    const bioCount = document.getElementById('bioCount');
+    
+    if (bio && bioCount) {
+        bioCount.textContent = bio.value.length;
+    }
+}
+
+
+// ==========================================
+// CHIP SELECTION FUNCTIONALITY
+// ==========================================
+function initializeChips() {
+    const chipContainers = ['industryChips', 'businessModelChips', 'lookingForChips'];
+    
+    chipContainers.forEach(containerId => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        
+        const chips = container.querySelectorAll('.chip');
+        const hiddenInput = container.nextElementSibling;
+        
+        chips.forEach(chip => {
+            chip.addEventListener('click', function() {
+                this.classList.toggle('selected');
+                updateHiddenInput(container, hiddenInput);
+            });
+        });
+    });
+}
+
+
+// ==========================================
+// INDUSTRY & INTERESTS MODAL FUNCTIONS
+// ==========================================
+
+// Industry icon mapping
+const industryIcons = {
+    'ecommerce': 'fa-cart-shopping',
+    'saas': 'fa-cloud',
+    'marketplace': 'fa-store',
+    'digital-products': 'fa-laptop',
+    'retail': 'fa-shopping-bag',
+    'food-beverage': 'fa-utensils',
+    'consulting': 'fa-user-tie',
+    'real-estate': 'fa-building',
+    'finance': 'fa-coins',
+    'healthcare': 'fa-heart-pulse',
+    'education': 'fa-graduation-cap',
+    'technology': 'fa-microchip'
+};
+
+const industryLabels = {
+    'ecommerce': 'E-commerce',
+    'saas': 'SaaS',
+    'marketplace': 'Marketplace',
+    'digital-products': 'Digital Products',
+    'retail': 'Retail',
+    'food-beverage': 'Food & Beverage',
+    'consulting': 'Consulting',
+    'real-estate': 'Real Estate',
+    'finance': 'Finance',
+    'healthcare': 'Healthcare',
+    'education': 'Education',
+    'technology': 'Technology'
+};
+
+const businessModelIcons = {
+    'b2b': 'fa-handshake',
+    'b2c': 'fa-users',
+    'subscription': 'fa-repeat',
+    'marketplace': 'fa-shop',
+    'affiliate': 'fa-link',
+    'dropshipping': 'fa-truck',
+    'franchise': 'fa-store',
+    'content': 'fa-newspaper',
+    'service': 'fa-wrench',
+    'product': 'fa-box',
+    'licensing': 'fa-certificate',
+    'digital': 'fa-download'
+};
+
+const businessModelLabels = {
+    'b2b': 'B2B',
+    'b2c': 'B2C',
+    'subscription': 'Subscription',
+    'marketplace': 'Marketplace',
+    'affiliate': 'Affiliate',
+    'dropshipping': 'Dropshipping',
+    'franchise': 'Franchise',
+    'content': 'Content/Media',
+    'service': 'Service-based',
+    'product': 'Product-based',
+    'licensing': 'Licensing',
+    'digital': 'Digital Downloads'
+};
+
+const lookingForIcons = {
+    'buying': 'fa-shopping-cart',
+    'selling': 'fa-tag',
+    'investing': 'fa-chart-line',
+    'partnership': 'fa-handshake-angle',
+    'browsing': 'fa-eye'
+};
+
+const lookingForLabels = {
+    'buying': 'Buying a business',
+    'selling': 'Selling a business',
+    'investing': 'Investment opportunities',
+    'partnership': 'Finding partners',
+    'browsing': 'Just browsing'
+};
+
+// Open Industry Modal
+window.openIndustryModal = function() {
+    document.getElementById('industryModal').style.display = 'flex';
+    initializeModalChips('industryChips', 'industries');
+};
+
+// Close Industry Modal
+window.closeIndustryModal = function() {
+    document.getElementById('industryModal').style.display = 'none';
+};
+
+// Save Industries
+window.saveIndustries = function() {
+    const container = document.getElementById('industryChips');
+    const selected = Array.from(container.querySelectorAll('.chip.selected'))
+        .map(chip => chip.dataset.value);
+    
+    document.getElementById('industries').value = JSON.stringify(selected);
+    displaySelectedIndustries(selected);
+    closeIndustryModal();
+};
+
+// Display Selected Industries
+function displaySelectedIndustries(industries) {
+    const container = document.getElementById('selectedIndustries');
+    if (!container) return;
+    
+    if (!industries || industries.length === 0) {
+        container.innerHTML = '<span style="color: var(--text-light); font-size: 0.9rem;">No industries selected yet. Click Edit to add.</span>';
+        return;
+    }
+    
+    container.innerHTML = industries.map(value => `
+        <div class="chip selected" style="cursor: default;">
+            <i class="fa-solid ${industryIcons[value]}"></i> ${industryLabels[value]}
+        </div>
+    `).join('');
+}
+
+// Open Interests Modal
+window.openInterestsModal = function() {
+    document.getElementById('interestsModal').style.display = 'flex';
+    initializeModalChips('businessModelChips', 'businessModels');
+    initializeModalChips('lookingForChips', 'lookingFor');
+};
+
+// Close Interests Modal
+window.closeInterestsModal = function() {
+    document.getElementById('interestsModal').style.display = 'none';
+};
+
+// Save Interests
+window.saveInterests = function() {
+    // Save Business Models
+    const businessModelContainer = document.getElementById('businessModelChips');
+    const selectedBusinessModels = Array.from(businessModelContainer.querySelectorAll('.chip.selected'))
+        .map(chip => chip.dataset.value);
+    document.getElementById('businessModels').value = JSON.stringify(selectedBusinessModels);
+    
+    // Save Looking For
+    const lookingForContainer = document.getElementById('lookingForChips');
+    const selectedLookingFor = Array.from(lookingForContainer.querySelectorAll('.chip.selected'))
+        .map(chip => chip.dataset.value);
+    document.getElementById('lookingFor').value = JSON.stringify(selectedLookingFor);
+    
+    // Display selected items
+    displaySelectedBusinessModels(selectedBusinessModels);
+    displaySelectedLookingFor(selectedLookingFor);
+    
+    closeInterestsModal();
+};
+
+// Display Selected Business Models
+function displaySelectedBusinessModels(models) {
+    const container = document.getElementById('selectedBusinessModels');
+    if (!container) return;
+    
+    if (!models || models.length === 0) {
+        container.innerHTML = '<span style="color: var(--text-light); font-size: 0.9rem;">No business models selected yet. Click Edit to add.</span>';
+        return;
+    }
+    
+    container.innerHTML = models.map(value => `
+        <div class="chip selected" style="cursor: default;">
+            <i class="fa-solid ${businessModelIcons[value]}"></i> ${businessModelLabels[value]}
+        </div>
+    `).join('');
+}
+
+// Display Selected Looking For
+function displaySelectedLookingFor(items) {
+    const container = document.getElementById('selectedLookingFor');
+    if (!container) return;
+    
+    if (!items || items.length === 0) {
+        container.innerHTML = '<span style="color: var(--text-light); font-size: 0.9rem;">Nothing selected yet. Click Edit to add.</span>';
+        return;
+    }
+    
+    container.innerHTML = items.map(value => `
+        <div class="chip selected" style="cursor: default;">
+            <i class="fa-solid ${lookingForIcons[value]}"></i> ${lookingForLabels[value]}
+        </div>
+    `).join('');
+}
+
+// Initialize modal chips with current selections
+// Initialize modal chips with current selections
+function initializeModalChips(containerId, fieldName) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const hiddenInput = document.getElementById(fieldName);
+    const currentValues = hiddenInput ? JSON.parse(hiddenInput.value || '[]') : [];
+    
+    // Remove any existing event listeners by cloning
+    const newContainer = container.cloneNode(true);
+    container.parentNode.replaceChild(newContainer, container);
+    
+    // Clear all selections first
+    newContainer.querySelectorAll('.chip').forEach(chip => {
+        chip.classList.remove('selected');
+    });
+    
+    // Apply current selections
+    currentValues.forEach(value => {
+        const chip = newContainer.querySelector(`[data-value="${value}"]`);
+        if (chip) chip.classList.add('selected');
+    });
+    
+    // Add click handlers with proper event listeners
+    newContainer.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.toggle('selected');
+        });
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function updateHiddenInput(container, hiddenInput) {
+    const selected = Array.from(container.querySelectorAll('.chip.selected'))
+        .map(chip => chip.dataset.value);
+    hiddenInput.value = JSON.stringify(selected);
+}
+
+function loadSelectedChips(fieldName, values) {
+    const containerMap = {
+        'industries': 'industryChips',
+        'businessModels': 'businessModelChips',
+        'lookingFor': 'lookingForChips'
+    };
+    
+    const containerId = containerMap[fieldName];
+    if (!containerId) return;
+    
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.warn(`Container ${containerId} not found`);
+        return;
+    }
+    
+    // Clear any existing selections first
+    container.querySelectorAll('.chip.selected').forEach(chip => {
+        chip.classList.remove('selected');
+    });
+    
+    // Apply new selections
+    if (Array.isArray(values)) {
+        values.forEach(value => {
+            const chip = container.querySelector(`[data-value="${value}"]`);
+            if (chip) {
+                chip.classList.add('selected');
             }
-        }
+        });
+    }
+    
+    // Update hidden input
+    const hiddenInput = document.getElementById(fieldName);
+    if (hiddenInput) {
+        hiddenInput.value = JSON.stringify(values);
+    }
+}
 
-        function updateCharCount() {
-            const bio = document.getElementById('bio');
-            document.getElementById('bioCount').textContent = bio.value.length;
-        }
+// Initialize chips when page loads
+document.addEventListener('DOMContentLoaded', initializeChips);
+
+
+
+
+
+
+
+
+
+
+
 
 
         // ==========================================
@@ -2715,89 +3557,104 @@ window.resetPhoneVerification = function() {
 
         // Basic avatar update placeholder
       // Avatar upload with Cloudinary
-        document.getElementById('avatarUpload').addEventListener('change', async function(e) {
-            if (e.target.files && e.target.files[0]) {
-                const file = e.target.files[0];
-                
-                // Validate file
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('Image is too large. Maximum size is 5MB.');
-                    return;
-                }
+// Avatar upload with Cloudinary
+document.getElementById('avatarUpload').addEventListener('change', async function(e) {
+    if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        
+        // Validate file
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image is too large. Maximum size is 5MB.');
+            return;
+        }
 
-                if (!file.type.startsWith('image/')) {
-                    alert('Please upload an image file.');
-                    return;
-                }
-                
-                // Show preview immediately
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('profileAvatar').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-                
-                // Show uploading status
-                saveBtn.innerHTML = '<span class="spinner"></span> Uploading avatar...';
-                saveBtn.disabled = true;
-                
-                // Upload to Cloudinary
-                await uploadAvatarToCloudinary(file);
-            }
+        if (!file.type.startsWith('image/')) {
+            alert('Please upload an image file.');
+            return;
+        }
+        
+        // Show preview immediately
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('profileAvatar').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        
+        // Show uploading status on the edit button itself
+        const editBtn = document.querySelector('.edit-avatar-btn');
+        const originalEditHTML = editBtn.innerHTML;
+        editBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        editBtn.style.pointerEvents = 'none';
+
+        saveBtn.innerHTML = '<span class="spinner"></span> Uploading avatar...';
+        saveBtn.disabled = true;
+        
+        // Upload to Cloudinary
+        await uploadAvatarToCloudinary(file, editBtn, originalEditHTML);
+    }
+});
+
+// Function to upload avatar to Cloudinary
+async function uploadAvatarToCloudinary(file, editBtn, originalEditHTML) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    formData.append('folder', `systemly-avatars/${currentUser.uid}`);
+
+    try {
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Upload failed');
+        }
+
+        const data = await response.json();
+        uploadedAvatarURL = data.secure_url;
+        
+        // Update Firebase Auth profile immediately
+        await updateProfile(currentUser, {
+            photoURL: uploadedAvatarURL
         });
         
-        // Function to upload avatar to Cloudinary
-        async function uploadAvatarToCloudinary(file) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-            formData.append('folder', `systemly-avatars/${currentUser.uid}`);
+        // Update Firestore
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        await updateDoc(userDocRef, {
+            photoURL: uploadedAvatarURL,
+            updatedAt: new Date().toISOString()
+        });
+        
+        // Restore edit button
+        editBtn.innerHTML = originalEditHTML;
+        editBtn.style.pointerEvents = '';
 
-            try {
-                const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
+        // Show success
+        saveBtn.innerHTML = '<i class="fa-solid fa-check"></i> Avatar Updated!';
+        saveBtn.style.background = 'var(--success)';
 
-                if (!response.ok) {
-                    throw new Error('Upload failed');
-                }
-
-                const data = await response.json();
-                uploadedAvatarURL = data.secure_url;
-                
-                // Update Firebase Auth profile immediately
-                await updateProfile(currentUser, {
-                    photoURL: uploadedAvatarURL
-                });
-                
-                // Update Firestore
-                const userDocRef = doc(db, 'users', currentUser.uid);
-                await updateDoc(userDocRef, {
-                    photoURL: uploadedAvatarURL,
-                    updatedAt: new Date().toISOString()
-                });
-                
-                // Show success
-                saveBtn.innerHTML = '<i class="fa-solid fa-check"></i> Avatar Updated!';
-                saveBtn.style.background = 'var(--success)';
-                
-                setTimeout(() => {
-                    saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
-                    saveBtn.style.background = '';
-                    saveBtn.disabled = false;
-                }, 2000);
-                
-                // Recalculate profile completion
-                await loadUserData(currentUser);
-                
-            } catch (error) {
-                console.error('Error uploading avatar:', error);
-                alert('Failed to upload avatar. Please try again.');
-                saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
-                saveBtn.disabled = false;
-            }
-        }
+        setTimeout(() => {
+            saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+            saveBtn.style.background = '';
+            saveBtn.disabled = false;
+        }, 2000);
+        
+        // Recalculate profile completion
+        await loadUserData(currentUser);
+        
+    } catch (error) {
+        console.error('Error uploading avatar:', error);
+        alert('Failed to upload avatar. Please try again.');
+        
+        // Restore edit button
+        editBtn.innerHTML = originalEditHTML;
+        editBtn.style.pointerEvents = '';
+        
+        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+        saveBtn.disabled = false;
+    }
+}
         
 async function handleProfileUpdate(e) {
     e.preventDefault();
@@ -2837,7 +3694,7 @@ async function handleProfileUpdate(e) {
                 }, 2000);
             }, 300);
             
-            alert(`❌ Please fill in: ${field.name}\n\nTab: ${field.tab.charAt(0).toUpperCase() + field.tab.slice(1)}`);
+            alert('Please fill in: ' + field.name + '\n\nTab: ' + field.tab.charAt(0).toUpperCase() + field.tab.slice(1));
             return;
         }
     }
@@ -2864,7 +3721,18 @@ async function handleProfileUpdate(e) {
     const registrationNumber = document.getElementById('registrationNumber').value;
     const supportEmail = document.getElementById('supportEmail').value;
     const website = document.getElementById('website').value;
-    const bio = document.getElementById('bio').value;
+        const bio = document.getElementById('bio').value;
+    
+    // NEW: Experience & Interests data
+    const yearsExperience = document.getElementById('yearsExperience').value;
+    const businessesOwned = document.getElementById('businessesOwned').value;
+    const budgetRange = document.getElementById('budgetRange').value;
+    const preferredLocation = document.getElementById('preferredLocation').value;
+    
+    const industries = JSON.parse(document.getElementById('industries').value || '[]');
+    const businessModels = JSON.parse(document.getElementById('businessModels').value || '[]');
+    const lookingFor = JSON.parse(document.getElementById('lookingFor').value || '[]');
+
 
     try {
         // Update Firebase Auth
@@ -2895,6 +3763,13 @@ async function handleProfileUpdate(e) {
                 bio: bio,
                 company: companyName,
                 website: website,
+                yearsExperience: yearsExperience,
+    		businessesOwned: businessesOwned,
+    		industries: industries,
+    		businessModels: businessModels,
+    		lookingFor: lookingFor,
+    		budgetRange: budgetRange,
+    		preferredLocation: preferredLocation,
                 verified: userData.profile?.verified || false
             },
             banking: {
@@ -3000,7 +3875,10 @@ function updateTabCompletionIndicators() {
         { name: 'address', fields: ['address', 'barangay', 'city', 'province', 'postalCode', 'country'] },
         { name: 'tax', fields: ['taxId'] },
         { name: 'banking', fields: ['bankName', 'accountType', 'accountName', 'accountNumber'] },
-        { name: 'seller', fields: [] } // Optional fields
+        { name: 'seller', fields: [] }, // Optional fields
+        { name: 'experience', fields: [] }, // Optional fields
+        { name: 'interests', fields: [] } // Optional fields
+	
     ];
 
     tabs.forEach(tab => {
