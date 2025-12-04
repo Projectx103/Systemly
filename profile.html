@@ -2121,7 +2121,103 @@
 
 
 
+<!-- Data Privacy Consent Modal -->
+<div id="kycConsentModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10001; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 20px; padding: 2.5rem; max-width: 600px; width: 90%; position: relative; max-height: 85vh; overflow-y: auto;">
+        <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--primary);">
+            <i class="fas fa-shield-alt"></i> Data Privacy Notice
+        </h2>
+        
+        <div style="background: rgba(99, 102, 241, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--secondary); margin-bottom: 1.5rem;">
+            <p style="font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                <strong>Republic Act No. 10173 - Data Privacy Act of 2012</strong><br>
+                In compliance with Philippine data privacy laws, we need your explicit consent before collecting your personal identification documents.
+            </p>
+        </div>
 
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--text);">
+                <i class="fas fa-info-circle"></i> What We Collect
+            </h3>
+            <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.8; font-size: 0.9rem;">
+                <li>Front and back images of your government-issued ID</li>
+                <li>A selfie photo holding your ID</li>
+                <li>Your name, as it appears on the ID</li>
+            </ul>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--text);">
+                <i class="fas fa-lock"></i> How We Protect Your Data
+            </h3>
+            <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.8; font-size: 0.9rem;">
+                <li>Encrypted storage using industry-standard 256-bit encryption</li>
+                <li>Access restricted to authorized verification personnel only</li>
+                <li>No sharing with third parties without your consent</li>
+                <li>Automatic deletion after verification (unless legally required to retain)</li>
+                <li>All access logged for audit compliance</li>
+            </ul>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--text);">
+                <i class="fas fa-balance-scale"></i> Your Rights
+            </h3>
+            <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.8; font-size: 0.9rem;">
+                <li><strong>Right to be informed</strong> - You have the right to know what data we collect</li>
+                <li><strong>Right to access</strong> - You can request copies of your submitted documents</li>
+                <li><strong>Right to rectification</strong> - You can request corrections to your data</li>
+                <li><strong>Right to erasure</strong> - You can request deletion of your documents</li>
+                <li><strong>Right to object</strong> - You can refuse verification (service limitations apply)</li>
+                <li><strong>Right to data portability</strong> - You can request your data in a portable format</li>
+            </ul>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--text);">
+                <i class="fas fa-clock"></i> Retention Period
+            </h3>
+            <p style="font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                Your ID documents will be retained for <strong>5 years</strong> from verification date, as required by:
+            </p>
+            <ul style="margin: 0.5rem 0 0 1.5rem; padding-left: 0; line-height: 1.8; font-size: 0.9rem;">
+                <li>Anti-Money Laundering Act (AMLA) compliance</li>
+                <li>Know Your Customer (KYC) regulations</li>
+                <li>Financial transaction audit requirements</li>
+            </ul>
+        </div>
+
+        <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--error); margin-bottom: 1.5rem;">
+            <p style="font-size: 0.85rem; line-height: 1.6; margin: 0; color: var(--error);">
+                <strong><i class="fas fa-exclamation-triangle"></i> Important:</strong> 
+                Submitting fake or tampered documents is a violation of Philippine law and may result in criminal prosecution under RA 10173 (Data Privacy Act) and RA 8484 (Access Devices Regulation Act).
+            </p>
+        </div>
+
+        <div style="border: 2px solid var(--primary); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <label style="display: flex; align-items: start; gap: 0.75rem; cursor: pointer;">
+                <input type="checkbox" id="kycConsentCheckbox" style="width: 20px; height: 20px; margin-top: 0.2rem; flex-shrink: 0; cursor: pointer;">
+                <span style="font-size: 0.9rem; line-height: 1.6;">
+                    I have read and understood the Data Privacy Notice. I hereby give my <strong>free, voluntary, and informed consent</strong> to Systemly to collect, process, and store my personal identification documents for identity verification purposes in accordance with RA 10173.
+                </span>
+            </label>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+            <button onclick="closeKycConsentModal()" style="flex: 1; padding: 0.85rem; border-radius: 8px; background: white; color: var(--gray-dark); border: 1px solid var(--border); font-weight: 600; cursor: pointer;">
+                <i class="fas fa-times"></i> Decline
+            </button>
+            <button id="kycConsentAcceptBtn" onclick="acceptKycConsent()" disabled style="flex: 1; padding: 0.85rem; border-radius: 8px; background: var(--primary); color: white; border: none; font-weight: 600; cursor: not-allowed; opacity: 0.5;">
+                <i class="fas fa-check"></i> Accept & Continue
+            </button>
+        </div>
+
+        <p style="font-size: 0.75rem; color: var(--gray-medium); text-align: center; margin-top: 1rem;">
+            For data privacy concerns, contact: <strong>privacy@systemly.com</strong><br>
+            Data Protection Officer: DPO@systemly.com
+        </p>
+    </div>
+</div>
 
 
 
@@ -2517,12 +2613,64 @@ window.resetPhoneVerification = function() {
    
 
         window.openKYCModal = function() {
-            // Reset modal to step 1
-            kycCurrentStep = 1;
-            kycUploadedFiles = { idFront: null, idBack: null, selfie: null };
-            resetKYCModal();
-            document.getElementById('kycModal').style.display = 'flex';
+    // Show consent modal first
+    document.getElementById('kycConsentModal').style.display = 'flex';
+}
+
+window.closeKycConsentModal = function() {
+    document.getElementById('kycConsentModal').style.display = 'none';
+    document.getElementById('kycConsentCheckbox').checked = false;
+    updateConsentButton();
+}
+
+window.acceptKycConsent = function() {
+    if (!document.getElementById('kycConsentCheckbox').checked) {
+        alert('Please read and accept the Data Privacy Notice to continue.');
+        return;
+    }
+    
+    // Log consent
+    console.log('✅ User consented to KYC data processing:', new Date().toISOString());
+    
+    // Close consent modal
+    closeKycConsentModal();
+    
+    // Reset and open KYC modal
+    kycCurrentStep = 1;
+    kycUploadedFiles = { idFront: null, idBack: null, selfie: null };
+    resetKYCModal();
+    document.getElementById('kycModal').style.display = 'flex';
+}
+
+// Enable accept button when checkbox is checked
+document.addEventListener('DOMContentLoaded', function() {
+    const checkbox = document.getElementById('kycConsentCheckbox');
+    const acceptBtn = document.getElementById('kycConsentAcceptBtn');
+    
+    if (checkbox && acceptBtn) {
+        checkbox.addEventListener('change', function() {
+            updateConsentButton();
+        });
+    }
+});
+
+function updateConsentButton() {
+    const checkbox = document.getElementById('kycConsentCheckbox');
+    const acceptBtn = document.getElementById('kycConsentAcceptBtn');
+    
+    if (checkbox && acceptBtn) {
+        if (checkbox.checked) {
+            acceptBtn.disabled = false;
+            acceptBtn.style.cursor = 'pointer';
+            acceptBtn.style.opacity = '1';
+        } else {
+            acceptBtn.disabled = true;
+            acceptBtn.style.cursor = 'not-allowed';
+            acceptBtn.style.opacity = '0.5';
         }
+    }
+}
+
 
         window.closeKYCModal = function() {
             document.getElementById('kycModal').style.display = 'none';
@@ -2669,6 +2817,11 @@ async function uploadKYCToCloudinary(file, type, buttonId) {
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_KYC_PRESET); // Make sure this preset exists in your Cloudinary
     formData.append('folder', `systemly-kyc/${currentUser.uid}`);
+// Preserve original file extension
+const fileExtension = file.name.split('.').pop().toLowerCase();
+const customFilename = `${type}_${Date.now()}.${fileExtension}`;
+formData.append('public_id', customFilename);
+formData.append('use_filename', false); // Don't use original filename
     formData.append('tags', `kyc,${type},${currentUser.uid}`);
 
     try {
@@ -2682,17 +2835,21 @@ async function uploadKYCToCloudinary(file, type, buttonId) {
             }
         });
 
-        xhr.addEventListener('load', () => {
-            if (xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
-                
-                // Store the full public_id including folder path
-                kycUploadedFiles[type] = {
-                    publicId: response.public_id, // This should be like "systemly-kyc/USER_ID/filename"
-                    uploadedAt: new Date().toISOString(),
-                    fileType: file.type,
-                    fileSize: file.size
-                };
+    xhr.addEventListener('load', () => {
+    if (xhr.status === 200) {
+        const response = JSON.parse(xhr.responseText);
+        
+        console.log('✅ Cloudinary upload response:', response);
+        
+        // Store the COMPLETE secure_url (no need to reconstruct later)
+        kycUploadedFiles[type] = {
+            publicId: response.public_id,
+            secureUrl: response.secure_url, // ← This has the correct extension
+            format: response.format,
+            uploadedAt: new Date().toISOString(),
+            fileType: file.type,
+            fileSize: file.size
+        };
                 
                 console.log(`✅ ${type} uploaded. Public ID: ${response.public_id}`);
                 
@@ -2734,6 +2891,16 @@ window.submitKYCVerification = async function() {
     }
 
     const submitBtn = document.getElementById('kycSubmitBtn');
+// Record consent timestamp
+const consentTimestamp = new Date().toISOString();
+const consentData = {
+    consented: true,
+    consentedAt: consentTimestamp,
+    ipAddress: 'Not collected (privacy compliance)',
+    userAgent: navigator.userAgent,
+    consentVersion: '1.0'
+};
+
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<span class="spinner"></span> Submitting...';
     submitBtn.disabled = true;
@@ -2741,13 +2908,17 @@ window.submitKYCVerification = async function() {
     try {
         // ✅ SECURITY: Store only public_id in Firestore (NO URLs)
         const userDocRef = doc(db, 'users', currentUser.uid);
-        await updateDoc(userDocRef, {
-            'verification.kycStatus': 'pending',
-            'verification.kycSubmittedAt': new Date().toISOString(),
-            'verification.kycDocuments': {
-                idFront: kycUploadedFiles.idFront.publicId,
-                idBack: kycUploadedFiles.idBack.publicId,
-                selfie: kycUploadedFiles.selfie.publicId,
+    await updateDoc(userDocRef, {
+    'verification.kycStatus': 'pending',
+    'verification.kycSubmittedAt': new Date().toISOString(),
+    'verification.kycConsent': consentData,
+    'verification.kycDocuments': {
+        idFront: kycUploadedFiles.idFront.publicId,
+        idFrontUrl: kycUploadedFiles.idFront.secureUrl, // ← Save complete URL
+        idBack: kycUploadedFiles.idBack.publicId,
+        idBackUrl: kycUploadedFiles.idBack.secureUrl, // ← Save complete URL
+        selfie: kycUploadedFiles.selfie.publicId,
+        selfieUrl: kycUploadedFiles.selfie.secureUrl, // ← Save complete URL
                 // Store metadata separately
                 metadata: {
                     idFrontUploadedAt: kycUploadedFiles.idFront.uploadedAt,
@@ -2769,6 +2940,44 @@ window.submitKYCVerification = async function() {
         submitBtn.disabled = false;
     }
 }
+
+
+
+
+
+
+
+window.requestKYCDeletion = async function() {
+    if (!confirm('Request deletion of your ID verification documents?\n\n⚠️ This will:\n• Remove your verification status\n• Require re-verification for future transactions\n• Process within 30 days per DPA requirements\n\nContinue?')) {
+        return;
+    }
+    
+    try {
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        await updateDoc(userDocRef, {
+            'verification.deletionRequested': true,
+            'verification.deletionRequestedAt': new Date().toISOString(),
+            'verification.deletionReason': 'User requested under Data Privacy Act'
+        });
+        
+        alert('✅ Deletion request submitted.\n\nYour ID documents will be deleted within 30 days as required by the Data Privacy Act.\n\nYou will receive a confirmation email once completed.');
+        
+    } catch (error) {
+        console.error('Error requesting deletion:', error);
+        alert('Failed to submit deletion request: ' + error.message);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
    // ==========================================
 // UPDATE VERIFICATION STATUS UI
