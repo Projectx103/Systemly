@@ -2,6 +2,17 @@ const express = require('express');
 const multer = require('multer');
 const { Pool } = require('pg');
 const cors = require('cors');
+const cron = require('node-cron');
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: 'dxv11m11i',
+  api_key: '529854585619313',
+  api_secret: 'fvA38y_hoN6A_3-CL-ANMd94CZI'
+});
+
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -155,6 +166,154 @@ async function initDatabase() {
 }
 
 initDatabase();
+
+
+// ============================================
+// CLOUDINARY & CLEANUP HELPERS
+// ============================================
+
+function extractPublicId(cloudinaryUrl) {
+  if (!cloudinaryUrl) return null;
+  try {
+    const parts = cloudinaryUrl.split('/upload/');
+    if (parts.length < 2) return null;
+    const pathParts = parts[1].split('/');
+    const startIndex = pathParts[0].startsWith('v') ? 1 : 0;
+    const publicId = pathParts.slice(startIndex).join('/').replace(/\.[^/.]+$/, '');
+    return publicId;
+  } catch (error) {
+    console.error('⚠️ Error extracting public_id:', error);
+    return null;
+  }
+}
+
+async function deleteFromCloudinary(publicId) {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    return result;
+  } catch (error) {
+    console.error(`❌ Cloudinary deletion failed for ${publicId}:`, error);
+    throw error;
+  }
+}
+
+async function deleteRejectedKYCDocuments(daysOld = 14) {
+  console.log(`\n🗑️ Starting cleanup of rejected KYC documents older than ${daysOld} days...`);
+  
+  const stats = {
+    recordsFound: 0,
+    filesDeleted: 0,
+    recordsAnonymized: 0,
+    errors: []
+  };
+  
+  try {
+    const oldRejected = await pool.query(`
+      SELECT 
+        id, user_id, id_front_url, id_back_url, selfie_url, rejected_at,
+        EXTRACT(DAY FROM (NOW() - rejected_at)) as days_since_rejection
+      FROM kyc_verifications
+      WHERE status = 'REJECTED'
+        AND rejected_at IS NOT NULL
+        AND rejected_at < NOW() - INTERVAL '${daysOld} days'
+      ORDER BY rejected_at ASC
+    `);
+    
+    stats.recordsFound = oldRejected.rows.length;
+    console.log(`📋 Found ${stats.recordsFound} rejected KYC records to clean up`);
+    
+    if (stats.recordsFound === 0) {
+      console.log('✅ No rejected KYC documents to delete');
+      return stats;
+    }
+    
+    for (const record of oldRejected.rows) {
+      try {
+        console.log(`\n📂 Processing KYC ID: ${record.id} (rejected ${Math.floor(record.days_since_rejection)} days ago)`);
+        
+        const urls = [record.id_front_url, record.id_back_url, record.selfie_url];
+        
+        for (const url of urls) {
+          if (!url) continue;
+          try {
+            const publicId = extractPublicId(url);
+            if (!publicId) {
+              console.log(`⚠️ Could not extract public_id from URL`);
+              continue;
+            }
+            const result = await deleteFromCloudinary(publicId);
+            if (result.result === 'ok' || result.result === 'not found') {
+              stats.filesDeleted++;
+              console.log(`✅ Deleted from Cloudinary: ${publicId}`);
+            }
+          } catch (cloudinaryError) {
+            console.error(`❌ Cloudinary deletion error: ${cloudinaryError.message}`);
+            stats.errors.push({ recordId: record.id, error: `Cloudinary: ${cloudinaryError.message}` });
+          }
+        }
+        
+        await pool.query(`
+          UPDATE kyc_verifications
+          SET 
+            id_front_url = NULL, id_back_url = NULL, selfie_url = NULL,
+            status = 'DELETED',
+            rejection_reason = 'Record anonymized after ${daysOld} days (DPA compliance)',
+            deleted_at = NOW(),
+            deleted_reason = 'Auto-cleanup: rejected > ${daysOld} days'
+          WHERE id = $1
+        `, [record.id]);
+        
+        stats.recordsAnonymized++;
+        console.log(`✅ Database record anonymized (ID: ${record.id})`);
+        
+        await pool.query(`
+          INSERT INTO audit_logs (action, target_type, target_id, performed_by, details, created_at)
+          VALUES ('KYC_REJECTED_CLEANUP', 'kyc_verification', $1, 'SYSTEM', $2, NOW())
+        `, [
+          record.id,
+          JSON.stringify({
+            reason: 'Auto-cleanup rejected KYC documents',
+            days_since_rejection: Math.floor(record.days_since_rejection),
+            files_deleted: 3,
+            compliant_with: 'Data Privacy Act 2012'
+          })
+        ]);
+        
+      } catch (recordError) {
+        console.error(`❌ Error processing record ${record.id}:`, recordError);
+        stats.errors.push({ recordId: record.id, error: recordError.message });
+      }
+    }
+    
+    console.log('\n' + '='.repeat(60));
+    console.log('🎯 REJECTED KYC CLEANUP SUMMARY');
+    console.log('='.repeat(60));
+    console.log(`Records found:      ${stats.recordsFound}`);
+    console.log(`Files deleted:      ${stats.filesDeleted}`);
+    console.log(`Records anonymized: ${stats.recordsAnonymized}`);
+    console.log(`Errors:             ${stats.errors.length}`);
+    console.log('='.repeat(60));
+    
+    if (stats.errors.length > 0) {
+      console.log('\n⚠️ ERRORS:');
+      stats.errors.forEach(err => {
+        console.log(`  - Record ${err.recordId}: ${err.error}`);
+      });
+    }
+    
+    return stats;
+    
+  } catch (error) {
+    console.error('❌ Fatal error in deleteRejectedKYCDocuments:', error);
+    throw error;
+  }
+}
+
+
+
+
+
+
 
 // ============================================
 // MULTER CONFIGURATION
@@ -1244,7 +1403,39 @@ app.post('/api/admin/generate-kyc-urls', async (req, res) => {
   }
 });
 
-
+// ============================================
+// ADMIN: MANUAL REJECTED KYC CLEANUP
+// ============================================
+app.post('/api/admin/cleanup-rejected-kyc', async (req, res) => {
+  try {
+    const { daysOld } = req.body;
+    const days = parseInt(daysOld) || 14;
+    
+    if (days < 7) {
+      return res.status(400).json({
+        success: false,
+        error: 'Minimum 7 days required for safety'
+      });
+    }
+    
+    console.log(`🔧 Admin triggered rejected KYC cleanup (${days} days)`);
+    
+    const stats = await deleteRejectedKYCDocuments(days);
+    
+    res.json({
+      success: true,
+      message: 'Rejected KYC cleanup completed',
+      stats: stats
+    });
+    
+  } catch (error) {
+    console.error('❌ Manual cleanup failed:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Cleanup failed: ' + error.message
+    });
+  }
+});
 
 
 
@@ -1369,6 +1560,22 @@ server.timeout = 300000; // 5 minutes
 server.keepAliveTimeout = 300000;
 server.headersTimeout = 300000;
 
+// ============================================
+// SCHEDULED JOBS
+// ============================================
+cron.schedule('0 2 * * *', async () => {
+  console.log('\n⏰ [CRON] Starting scheduled rejected KYC cleanup...');
+  try {
+    await deleteRejectedKYCDocuments(14);
+    console.log('✅ [CRON] Rejected KYC cleanup completed');
+  } catch (error) {
+    console.error('❌ [CRON] Rejected KYC cleanup failed:', error);
+  }
+}, {
+  timezone: "Asia/Manila"
+});
+
+console.log('⏰ Cron job scheduled: Rejected KYC cleanup (daily at 2:00 AM Manila time)');
 
 
 
