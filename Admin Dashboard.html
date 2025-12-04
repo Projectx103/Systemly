@@ -7186,8 +7186,6 @@ async function loadKYCReviews() {
 }
 
 
-// Generate signed URLs for KYC documents
-// Generate signed URLs for KYC documents
 async function generateSignedUrls(userId) {
     try {
         const userDoc = await getDoc(doc(db, 'users', userId));
@@ -7202,15 +7200,13 @@ async function generateSignedUrls(userId) {
             throw new Error('KYC documents not found');
         }
         
-        console.log('📄 KYC Documents:', kycDocs);
-        
-        // Use saved secure URLs if available, fallback to constructing from public_id
+        // Use saved secure URLs (new uploads) or construct from public_id (old uploads)
         const cloudName = 'dxv11m11i';
         
         return {
-            idFront: kycDocs.idFrontUrl || `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.idFront}`,
-            idBack: kycDocs.idBackUrl || `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.idBack}`,
-            selfie: kycDocs.selfieUrl || `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.selfie}`
+            idFront: kycDocs.idFrontUrl || `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.idFront}.jpg`,
+            idBack: kycDocs.idBackUrl || `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.idBack}.jpg`,
+            selfie: kycDocs.selfieUrl || `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.selfie}.jpg`
         };
         
     } catch (error) {
@@ -7218,8 +7214,6 @@ async function generateSignedUrls(userId) {
         throw error;
     }
 }
-
-
 
 
 
