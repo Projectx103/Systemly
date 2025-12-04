@@ -7190,7 +7190,6 @@ async function loadKYCReviews() {
 // Generate signed URLs for KYC documents
 async function generateSignedUrls(userId) {
     try {
-        // First, get the KYC document public IDs from Firestore
         const userDoc = await getDoc(doc(db, 'users', userId));
         if (!userDoc.exists()) {
             throw new Error('User not found');
@@ -7199,23 +7198,23 @@ async function generateSignedUrls(userId) {
         const userData = userDoc.data();
         const kycDocs = userData.verification?.kycDocuments;
         
-        if (!kycDocs || !kycDocs.idFront || !kycDocs.idBack || !kycDocs.selfie) {
+        if (!kycDocs) {
             throw new Error('KYC documents not found');
         }
         
-        // Generate Cloudinary URLs with transformation for security
-        const cloudName = 'dxv11m11i';
-        const timestamp = Math.round(Date.now() / 1000);
+        console.log('📄 KYC Documents:', kycDocs);
         
-        // Simple direct URLs (Cloudinary free tier allows this)
+        // Use saved secure URLs if available, fallback to constructing from public_id
+        const cloudName = 'dxv11m11i';
+        
         return {
-            idFront: `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.idFront}`,
-            idBack: `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.idBack}`,
-            selfie: `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.selfie}`
+            idFront: kycDocs.idFrontUrl || `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.idFront}`,
+            idBack: kycDocs.idBackUrl || `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.idBack}`,
+            selfie: kycDocs.selfieUrl || `https://res.cloudinary.com/${cloudName}/image/upload/${kycDocs.selfie}`
         };
         
     } catch (error) {
-        console.error('Error generating signed URLs:', error);
+        console.error('❌ Error generating signed URLs:', error);
         throw error;
     }
 }
@@ -7384,9 +7383,8 @@ window.viewKYCReview = async function(userId) {
     modalBody.innerHTML = `
         <div style="text-align: center; padding: 3rem;">
             <div class="spinner"></div>
-            <p style="margin-top: 1rem; color: var(--gray-medium);">🔒 Generating secure document links...</p>
-            <p style="font-size: 0.85rem; color: var(--gray-medium); margin-top: 0.5rem;">Links expire in 5 minutes for security</p>
-        </div>
+            <p style="margin-top: 1rem; color: var(--gray-medium);"> Generating secure document links...</p>
+             </div>
     `;
     
     modal.classList.add('active');
@@ -7395,6 +7393,34 @@ window.viewKYCReview = async function(userId) {
         // Generate signed URLs
         const signedUrls = await generateSignedUrls(userId);
         
+// Log document access for audit compliance
+try {
+    await addDoc(collection(db, 'audit_logs'), {
+        action: 'KYC_DOCUMENT_VIEWED',
+        adminId: auth.currentUser.uid,
+        adminEmail: auth.currentUser.email,
+        targetUserId: userId,
+        targetUserName: review.userName,
+        timestamp: serverTimestamp(),
+        documentsAccessed: ['idFront', 'idBack', 'selfie'],
+        purpose: 'Identity Verification Review',
+        ipAddress: 'Not collected (privacy compliance)'
+    });
+    console.log('✅ Document access logged for audit');
+} catch (error) {
+    console.error('⚠️ Failed to log document access:', error);
+}
+
+
+
+
+
+
+
+
+
+
+
         modalBody.innerHTML = `
             <div class="detail-section">
                 <h3>User Information</h3>
@@ -7423,13 +7449,14 @@ window.viewKYCReview = async function(userId) {
                 
                 <!-- Security Notice -->
                 <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--info); margin-bottom: 1.5rem;">
-                    <div style="font-size: 0.875rem; color: var(--info); line-height: 1.6;">
-                        <strong><i class="fas fa-shield-alt"></i> Data Privacy & Security:</strong><br>
-                        • Documents are encrypted and access-controlled<br>
-                        • All views are logged for audit compliance<br>
-                        • Compliant with Data Privacy Act of 2012
-                    </div>
-                </div>
+    <div style="font-size: 0.875rem; color: var(--info); line-height: 1.6;">
+        <strong><i class="fas fa-shield-alt"></i> Data Privacy & Security:</strong><br>
+        • Documents stored in secure cloud storage<br>
+        • Access restricted to verified administrators<br>
+        • All views are logged for audit compliance<br>
+        • Compliant with Data Privacy Act of 2012
+    </div>
+</div>
 
                 <!-- Verification Checklist -->
                 <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--warning); margin-bottom: 1.5rem;">
@@ -7443,6 +7470,23 @@ window.viewKYCReview = async function(userId) {
                     </div>
                 </div>
                 
+
+<!-- Data Retention Notice -->
+<div style="background: rgba(20, 184, 166, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--accent); margin-bottom: 1.5rem;">
+    <div style="font-size: 0.875rem; color: var(--accent); line-height: 1.6;">
+        <strong><i class="fas fa-clock"></i> Retention Policy:</strong><br>
+        • Documents retained for 5 years per AMLA/KYC regulations<br>
+        • Auto-delete scheduled: ${new Date(new Date(review.submittedAt).getTime() + (5 * 365 * 24 * 60 * 60 * 1000)).toLocaleDateString('en-PH')}<br>
+        • User has right to request early deletion (subject to legal requirements)
+    </div>
+</div>
+
+
+
+
+
+
+
                 <div style="display: grid; gap: 1.5rem;">
                     <!-- ID Front -->
                     <div>
@@ -7763,4 +7807,3 @@ document.querySelectorAll('.nav-item').forEach(item => {
     </script>
 </body>
 </html>
-
