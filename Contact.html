@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Systemly</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* Header */
+        .site-header {
+            padding: 30px 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #000;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 80px 0 100px;
+            display: grid;
+            grid-template-columns: 1fr 480px;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .page-header-text {
+            max-width: 650px;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 50px;
+            letter-spacing: -1px;
+        }
+
+        .benefits-list {
+            list-style: none;
+            margin-bottom: 45px;
+        }
+
+        .benefits-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+
+        .check-icon {
+            width: 24px;
+            height: 24px;
+            background: #000;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .contact-cta {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #4a4a4a;
+            margin-bottom: 35px;
+        }
+
+        .contact-cta a {
+            color: #000;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 16px 32px;
+            background: #000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background: #333;
+        }
+
+        /* Contact Person */
+        .contact-person {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .contact-person h2 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #666;
+        }
+
+        .vcard {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .vcard-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .vcard-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .vcard-role {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Contact Form */
+        .contact-form {
+            background: #fafafa;
+            padding: 45px;
+            border-radius: 8px;
+            position: sticky;
+            top: 40px;
+        }
+
+        .form-field {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-field label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-field input,
+        .form-field textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #d5d5d5;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: #fff;
+            transition: border-color 0.2s;
+        }
+
+        .form-field input:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: #000;
+        }
+
+        .form-field textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .required {
+            color: #d00;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #333;
+        }
+
+        /* Logo Bar */
+        .logo-bar {
+            background: #fafafa;
+            padding: 60px 0;
+        }
+
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 40px;
+            align-items: center;
+        }
+
+        .logo-item {
+            height: 50px;
+            background: #e5e5e5;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Next Steps */
+        .next-steps {
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .next-steps-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 70px;
+            letter-spacing: -0.5px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .step-card h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .step-card p {
+            font-size: 1.5rem;
+            line-height: 1.4;
+            font-weight: 500;
+            margin-bottom: 40px;
+        }
+
+        .step-image {
+            width: 100%;
+            height: 300px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #0a0a0a;
+            color: #999;
+            padding: 80px 0 40px;
+        }
+
+        .footer-top {
+            margin-bottom: 60px;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .footer-middle {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        .footer-column h3 {
+            color: #fff;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column a {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .footer-column a:hover {
+            color: #fff;
+        }
+
+        .footer-about {
+            grid-column: span 2;
+        }
+
+        .footer-about p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .footer-about .tagline {
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .footer-address {
+            font-style: normal;
+            line-height: 1.8;
+        }
+
+        .footer-address a {
+            color: #999;
+            text-decoration: none;
+        }
+
+        .footer-address a:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            padding-top: 40px;
+            border-top: 1px solid #222;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .page-header {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .contact-form {
+                position: static;
+            }
+
+            .footer-middle {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-about {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+
+            .page-title {
+                font-size: 2.5rem;
+            }
+
+            .logo-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .footer-middle {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <a href="/" class="logo">Systemly</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-header">
+            <div class="container" style="padding: 0;">
+                <div class="page-header-text">
+                    <h1 class="page-title">Let's Talk About Your Project</h1>
+                    
+                    <ul class="benefits-list">
+                        <li>
+                            <span class="check-icon">✓</span>
+                            <span>You speak directly with developers who provide expert advice</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">✓</span>
+                            <span>In our conversation, you'll receive our assessment of technical feasibility and possible approaches</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">✓</span>
+                            <span>We understand business systems and are happy to share insights from our extensive project experience</span>
+                        </li>
+                    </ul>
+
+                    <div class="contact-cta">
+                        <p>We look forward to your call at <a href="tel:+1234567890">+1 (234) 567-890</a>. You can also send us a message via email at <a href="mailto:hello@systemly.com">hello@systemly.com</a> or book a consultation directly 👇</p>
+                    </div>
+
+                    <button class="cta-button" onclick="document.getElementById('contact-name').focus()">Book Consultation</button>
+
+                    <div class="contact-person">
+                        <h2>Your Contact Person</h2>
+                        <div class="vcard">
+                            <div class="vcard-avatar">JM</div>
+                            <div>
+                                <p class="vcard-name">Jefferson Molina</p>
+                                <p class="vcard-role">Founder & CEO</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <form class="contact-form" onsubmit="handleSubmit(event)">
+                    <div class="form-field">
+                        <label for="contact-name">Name<span class="required">*</span></label>
+                        <input type="text" id="contact-name" name="name" placeholder="Name" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="contact-email">Email<span class="required">*</span></label>
+                        <input type="email" id="contact-email" name="email" placeholder="E-Mail" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="contact-phone">Phone</label>
+                        <input type="tel" id="contact-phone" name="phone" placeholder="Phone">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="contact-message">Your Message</label>
+                        <textarea id="contact-message" name="message" placeholder="Your Message"></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Submit Request</button>
+                </form>
+            </div>
+        </div>
+
+        <section class="logo-bar">
+            <div class="container">
+                <div class="logo-grid">
+                    <div class="logo-item">Client 1</div>
+                    <div class="logo-item">Client 2</div>
+                    <div class="logo-item">Client 3</div>
+                    <div class="logo-item">Client 4</div>
+                    <div class="logo-item">Client 5</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="next-steps">
+            <div class="container">
+                <h2 class="next-steps-title">What Happens After Our Conversation:</h2>
+                
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <h3>For Fixed-Price Projects</h3>
+                        <p>You'll receive an initial timeline and free cost estimate within a few days.</p>
+                        <div class="step-image"></div>
+                    </div>
+
+                    <div class="step-card">
+                        <h3>For Ongoing Collaboration</h3>
+                        <p>We can start working on the first tasks within a few days.</p>
+                        <div class="step-image"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-top">
+                <a href="/" class="footer-logo">Systemly</a>
+            </div>
+
+            <div class="footer-middle">
+                <div class="footer-column">
+                    <h3>Our Services</h3>
+                    <ul>
+                        <li><a href="#">Business Systems</a></li>
+                        <li><a href="#">Process Automation</a></li>
+                        <li><a href="#">Custom Software</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Additional Links</h3>
+                    <ul>
+                        <li><a href="#">Projects</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">About</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-about">
+                    <p class="tagline">Your Development Partner for Business Systems</p>
+                    <p>Systemly is a company founded by Jefferson Molina, dedicated to building efficient business systems and automation solutions.</p>
+                    
+                    <address class="footer-address">
+                        <p><a href="mailto:hello@systemly.com">hello@systemly.com</a><br>
+                        <a href="tel:+1234567890">+1 (234) 567-890</a></p>
+                    </address>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2026 Systemly. Founded by Jefferson Molina.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            alert('Thank you for your message! We will get back to you soon.');
+            event.target.reset();
+        }
+    </script>
+</body>
+</html>
