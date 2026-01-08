@@ -2138,9 +2138,14 @@ function renderRecentListings() {
               ${getStatusBadgeHTML(listing.status)}
             </div>
             <div style="text-align: right;">
-              <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">₱${parseInt(listing.askingPrice || 0).toLocaleString()}</div>
-              <div style="font-size: 0.85rem; color: var(--gray);">${listing.views || 0} views</div>
-            </div>
+  <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">
+    ${listing.variants && listing.variants.length > 0 ? 
+      `₱${parseInt(listing.variants[0].price || 0).toLocaleString()}` : 
+      `₱${parseInt(listing.askingPrice || 0).toLocaleString()}`
+    }
+  </div>
+  <div style="font-size: 0.85rem; color: var(--gray);">${listing.views || 0} views</div>
+</div>
           </div>
         `).join('')}
       </div>
@@ -2210,8 +2215,24 @@ function renderListingsTab() {
                   <div style="font-size: 0.85rem; color: var(--gray);">${listing.shortDescription?.substring(0, 50) || ''}...</div>
                 </td>
                 <td>
-                  <strong style="color: var(--primary);">₱${parseInt(listing.askingPrice || 0).toLocaleString()}</strong>
-                </td>
+  <strong style="color: var(--primary);">
+    ${listing.variants && listing.variants.length > 0 ? 
+      (() => {
+        // Show price range if multiple variants
+        const prices = listing.variants.map(v => v.price || 0);
+        const minPrice = Math.min(...prices);
+        const maxPrice = Math.max(...prices);
+        
+        if (minPrice === maxPrice) {
+          return `₱${parseInt(minPrice).toLocaleString()}`;
+        } else {
+          return `₱${parseInt(minPrice).toLocaleString()} - ₱${parseInt(maxPrice).toLocaleString()}`;
+        }
+      })() : 
+      `₱${parseInt(listing.askingPrice || 0).toLocaleString()}`
+    }
+  </strong>
+</td>
                 <td>${listing.categoryName || listing.category}</td>
                 <td>${getStatusBadgeHTML(listing.status)}</td>
                 <td>${listing.views || 0}</td>
@@ -2219,10 +2240,10 @@ function renderListingsTab() {
                 <td>
                   <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                     ${canEditListing(listing) ? `
-                      <button class="btn btn-secondary btn-edit" onclick="openEditListingModal('${listing.id}')" title="Edit">
-                        <i class="fa-solid fa-edit"></i>
-                      </button>
-                    ` : ''}
+  <button class="btn btn-secondary btn-edit" onclick="redirectToEditListing('${listing.id}')" title="Edit">
+    <i class="fa-solid fa-edit"></i>
+  </button>
+` : ''}
                     
                     ${listing.status === 'active' || listing.status === 'approved' ? `
                       <button class="btn btn-secondary btn-view-public" onclick="viewPublicListing('${listing.id}')" title="View Public">
@@ -2646,7 +2667,14 @@ window.openAddListingModal = function() {
   document.getElementById('listingModal').classList.add('active');
 }
 
-window.openEditListingModal = function(listingId) {
+
+
+
+// ============================================
+// REDIRECT TO EDIT ON SELL PAGE
+// ============================================
+
+window.redirectToEditListing = function(listingId) {
   const listing = userListings.find(l => l.id === listingId);
   
   if (!listing) {
@@ -2659,29 +2687,28 @@ window.openEditListingModal = function(listingId) {
     return;
   }
   
-  // Populate form
-  document.getElementById('listingId').value = listing.id;
-  document.getElementById('systemName').value = listing.systemName || '';
-  document.getElementById('category').value = listing.category || '';
-  document.getElementById('shortDescription').value = listing.shortDescription || '';
-  document.getElementById('detailedDescription').value = listing.detailedDescription || '';
-  document.getElementById('askingPrice').value = listing.askingPrice || '';
-  document.getElementById('monthlyRevenue').value = listing.monthlyRevenue || '';
-  document.getElementById('mrr').value = listing.mrr || '';
-  document.getElementById('activeSubscribers').value = listing.activeSubscribers || '';
-  document.getElementById('churnRate').value = listing.churnRate || '';
-  document.getElementById('pricingModel').value = listing.pricingModel || '';
-  document.getElementById('saasType').value = listing.saasType || '';
-  document.getElementById('mainImage').value = listing.mainImage || '';
+  // Store listing data in sessionStorage for sell.html to load
+  sessionStorage.setItem('editingListingId', listing.id);
+  sessionStorage.setItem('editingListingData', JSON.stringify({
+    id: listing.id,
+    ...listing
+  }));
   
-  // Handle additional images
-  if (listing.images && Array.isArray(listing.images)) {
-    document.getElementById('additionalImages').value = listing.images.join(', ');
-  }
-  
-  document.getElementById('listingModalTitle').textContent = 'Edit Listing';
-  document.getElementById('listingModal').classList.add('active');
+  // Redirect to sell.html with edit parameter
+  window.location.href = `sell.html?edit=${listing.id}`;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 window.closeListingModal = function() {
   document.getElementById('listingModal').classList.remove('active');
