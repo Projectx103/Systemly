@@ -859,9 +859,9 @@
             </div>
             <div class="team-grid">
                 <div class="team-member">
-                    <div class="team-avatar">
-                        <img src="https://i.ibb.co/Y5s4qWh/Untitled-design.png"  >
-                    </div>
+<div class="team-avatar" style="cursor: pointer;" onclick="window.location.href='https://projectx103.github.io/Jefferson-Molina/portfolio%20me.html'">
+    <img src="https://i.ibb.co/Y5s4qWh/Untitled-design.png">
+</div>
                     <h4>Jefferson T. Molina</h4>
                     <p class="role">CEO & Founder</p>
                     <div class="team-social">
@@ -1037,8 +1037,7 @@
                 if (element.parentElement.querySelector('.about-stat-label').textContent.includes('Rate')) {
                     element.textContent = displayValue + '%';
                 } else if (element.parentElement.querySelector('.about-stat-label').textContent.includes('Million')) {
-                    element.textContent = '
-                     + displayValue + 'M+';
+                    element.textContent = '₱' + displayValue + 'M+';
                 } else if (target >= 1000) {
                     element.textContent = displayValue + '+';
                 } else {
