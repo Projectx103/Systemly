@@ -1602,13 +1602,13 @@
           <div id="includedList" class="included-list-grid"></div>
         </section>
 
-        <section class="section additional-details">
+       <section class="section additional-details">
   <h2>
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
     </svg>
     Technical & Business Details
-</h2>
+  </h2>
   <div class="detail-grid-2col" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.6rem;margin-top:.6rem">
     <!-- Category-specific fields will be populated here dynamically -->
     <div class="detail-item">
@@ -1619,22 +1619,13 @@
       <div class="detail-label">Business Type</div>
       <div class="detail-value" id="detailBusinessType">—</div>
     </div>
-    <div class="detail-item">
-      <div class="detail-label">Platform/CMS</div>
-      <div class="detail-value" id="detailPlatform">—</div>
-    </div>
+    <!-- ❌ REMOVED Platform/CMS -->
     <div class="detail-item">
       <div class="detail-label">Tech Stack</div>
       <div class="detail-value" id="detailStack">—</div>
     </div>
-    <div class="detail-item">
-      <div class="detail-label">Domain</div>
-      <div class="detail-value" id="detailDomain">—</div>
-    </div>
-    <div class="detail-item">
-      <div class="detail-label">Monthly Visitors</div>
-      <div class="detail-value" id="detailVisitors">—</div>
-    </div>
+    <!-- ❌ REMOVED Domain -->
+    <!-- ❌ REMOVED Monthly Visitors -->
     <div class="detail-item">
       <div class="detail-label">Active Users/Subscribers</div>
       <div class="detail-value" id="detailActiveUsers">—</div>
@@ -1718,47 +1709,6 @@
   </div>
 </div>
 
-<!-- Message Seller Side Panel -->
-<div class="panel-overlay" id="messagePanelOverlay" onclick="closeMessageSellerModal()"></div>
-<div class="side-panel" id="messageSellerPanel">
-  <div class="panel-header">
-    <h2>✉️ Message Seller</h2>
-    <button class="panel-close" onclick="closeMessageSellerModal()" aria-label="Close panel">×</button>
-  </div>
-  
-  <div class="panel-content">
-    <div class="panel-info-box">
-      <div class="listing-name" id="messageListingName">Loading...</div>
-    </div>
-
-    <form id="messageForm" onsubmit="sendMessage(event)">
-      <input type="hidden" id="messageListingId">
-      <input type="hidden" id="messageSellerId">
-      <input type="hidden" id="messageSellerEmail">
-      
-      <div class="form-group">
-        <label class="form-label">Subject *</label>
-        <input type="text" id="messageSubject" class="form-input" required placeholder="What would you like to ask?">
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label">Your Message *</label>
-        <textarea id="messageText" class="form-textarea" rows="8" required placeholder="Type your message here..."></textarea>
-      </div>
-      
-      <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-        <button type="button" class="btn btn-secondary" onclick="closeMessageSellerModal()" style="flex: 1;">Cancel</button>
-        <button type="submit" class="btn btn-primary" style="flex: 2;">
-          <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-          </svg>
-          Send Message
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
-
 
 <!-- PRICING & LICENSE INFO (FLIPPA STYLE) -->
 <section class="price-card" aria-label="Pricing Information">
@@ -1828,7 +1778,7 @@
 
 
 
-        <section class="seller-card" aria-label="Seller Information">
+   <section class="seller-card" aria-label="Seller Information">
   <h3>
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -1836,7 +1786,7 @@
     Seller Information
   </h3>
   <div class="seller-info-content">
-    <img src="https://i.pravatar.cc/100" alt="Seller profile avatar" class="seller-avatar" id="sellerAvatar">
+    <img src="" alt="Seller profile avatar" class="seller-avatar" id="sellerAvatar">
     <div class="seller-details">
       <h4 id="sellerName">Loading…</h4>
       <p id="sellerEmail" style="color:var(--gray-500)">Contact via form</p>
@@ -1857,7 +1807,7 @@
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
       </svg>
-      PayMongo Secure Payments
+      Secure Payments
     </div>
     <div class="trust-badge-item">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2247,30 +2197,21 @@ window.handleMakeOffer = function() {
   }
 }
 
-// Handle contact seller button click
+// Handle contact seller button click - Opens chat page
 window.handleContactSeller = function() {
-  // ✅ CLOSE IMAGE ZOOM FIRST
   window.closeImageZoom();
   
-  if (currentListingData) {
-    openMessageSellerModal(
-      listingId,
-      currentListingData.systemName || currentListingData.title,
-      currentListingData.userId,
-      currentListingData.userEmail
-    );
+  if (!currentUser) {
+    if (confirm('Sign in to chat with seller!\n\nClick OK to go to login page.')) {
+      window.location.href = 'login.html';
+    }
+    return;
   }
-}
-
-// Handle contact seller button click
-window.handleContactSeller = function() {
+  
   if (currentListingData) {
-    openMessageSellerModal(
-      listingId,
-      currentListingData.systemName || currentListingData.title,
-      currentListingData.userId,
-      currentListingData.userEmail
-    );
+    // Redirect to chat page with parameters
+    const chatUrl = `chat.html?listingId=${listingId}&sellerId=${currentListingData.userId}&listingName=${encodeURIComponent(currentListingData.systemName || currentListingData.title)}`;
+    window.location.href = chatUrl;
   }
 }
 
@@ -2662,9 +2603,7 @@ function populateCategorySpecificFields(data) {
   // Content Site specific
   if (data.category === 'content') {
     safeSetText("detailBusinessType", data.contentType || "N/A");
-    safeSetText("detailVisitors", data.monthlyVisitors ? `${toNumber(data.monthlyVisitors).toLocaleString()}` : "N/A");
-    safeSetText("detailPlatform", data.contentManagementSystem || "N/A");
-  }
+     }
 
   // Mobile App specific
   if (data.category === 'mobile-app') {
@@ -2979,6 +2918,63 @@ async function loadSellerPlan(userId) {
 
 
 
+// Load seller information including profile picture
+async function loadSellerInfo(userId, userName, userEmail) {
+    try {
+        const userDocRef = doc(db, 'users', userId);
+        const userDoc = await getDoc(userDocRef);
+        
+        const avatarEl = document.getElementById('sellerAvatar');
+        const nameEl = document.getElementById('sellerName');
+        const emailEl = document.getElementById('sellerEmail');
+        
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            
+            // Set profile picture - priority: photoURL > Cloudinary avatar > UI Avatars
+            if (avatarEl) {
+                const avatarUrl = userData.photoURL || 
+                                 `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || userName || "Seller")}&size=128&background=14B8A6&color=fff&bold=true`;
+                avatarEl.src = avatarUrl;
+                avatarEl.onerror = () => {
+                    // Fallback if image fails to load
+                    avatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || userName || "S")}&size=128&background=14B8A6&color=fff&bold=true`;
+                };
+            }
+            
+            // Set name
+            if (nameEl) {
+                nameEl.textContent = userData.name || userName || 'Marketplace Seller';
+            }
+            
+            // Set email (optional - you might want to hide this for privacy)
+            if (emailEl) {
+                emailEl.textContent = 'Contact via form'; // Or use userEmail if you want to show it
+            }
+            
+            console.log('✅ Seller info loaded:', userData.name, userData.photoURL ? 'with photo' : 'no photo');
+        } else {
+            // User document doesn't exist - use fallback
+            if (avatarEl) {
+                avatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "Seller")}&size=128&background=14B8A6&color=fff&bold=true`;
+            }
+            if (nameEl) nameEl.textContent = userName || 'Marketplace Seller';
+            if (emailEl) emailEl.textContent = 'Contact via form';
+        }
+    } catch (error) {
+        console.error('Error loading seller info:', error);
+        // Set fallback values on error
+        const avatarEl = document.getElementById('sellerAvatar');
+        if (avatarEl) {
+            avatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "Seller")}&size=128&background=14B8A6&color=fff&bold=true`;
+        }
+    }
+}
+
+
+
+
+
 
 
 
@@ -3032,6 +3028,30 @@ if (data.userId) {
     loadSellerPlan(data.userId);
 }
 
+// ADD this after loading seller plan badge
+if (data.userId) {
+    loadSellerPlan(data.userId);
+    
+    // Make seller card clickable
+    const sellerCard = document.querySelector('.seller-card');
+    if (sellerCard) {
+        sellerCard.style.cursor = 'pointer';
+        sellerCard.onclick = () => {
+            window.location.href = `seller-profile.html?id=${data.userId}`;
+        };
+        sellerCard.title = 'View seller profile';
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3067,8 +3087,6 @@ if (data.userId) {
 
     // Technical & Business Details - Universal Fields
     safeSetText("detailCategory", formatCategoryName(data.category));
-    safeSetText("detailDomain", data.domain || "N/A");
-    safeSetText("detailPlatform", data.platform || data.contentManagementSystem || data.ecommercePlatform || "N/A");
     safeSetText("detailStack", data.techStack || "N/A");
     safeSetText("detailSystemAge", formatSystemAge(data.systemAge));
     safeSetText("detailReasonSelling", formatReason(data.reasonForSelling));
@@ -3077,12 +3095,17 @@ if (data.userId) {
     // Category-specific fields
     populateCategorySpecificFields(data);
 
-    // Seller info
-    safeSetText("sellerName", data.userName || "Marketplace Seller");
-    safeSetText("sellerEmail", data.userEmail || "Contact via form");
-    const avatarEl = getEl("sellerAvatar");
-    if (avatarEl) {
-      avatarEl.src = data.userAvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.userName || "Seller")}&background=14B8A6&color=fff`;
+    // Seller info - Load from Firebase user document
+    if (data.userId) {
+        loadSellerInfo(data.userId, data.userName, data.userEmail);
+    } else {
+        // Fallback if userId is missing
+        safeSetText("sellerName", data.userName || "Marketplace Seller");
+        safeSetText("sellerEmail", "Contact via form");
+        const avatarEl = getEl("sellerAvatar");
+        if (avatarEl) {
+          avatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.userName || "Seller")}&size=128&background=14B8A6&color=fff&bold=true`;
+        }
     }
 
     // What's Included section
@@ -3106,59 +3129,80 @@ if (data.userId) {
 }
     // ---------- helper: load similar (no change needed here) ----------
     async function loadSimilarListings(category, excludeId) {
-      try {
-        const grid = getEl("similarGrid");
-        if (!grid) return;
-        
-        if (!category) {
-            grid.innerHTML = "<p style='color:var(--gray-medium)'>No category defined to find similar listings.</p>";
-            return;
-        }
+  try {
+    const grid = getEl("similarGrid");
+    if (!grid) return;
+    
+    if (!category) {
+        grid.innerHTML = "<p style='color:var(--gray-medium)'>No category defined to find similar listings.</p>";
+        return;
+    }
 
-        const q = query(collection(db, "listings"), where("category", "==", category), limit(5));
-        const snap = await getDocs(q);
-        
-        grid.innerHTML = "";
-        let count = 0;
-        
-        snap.forEach(docSnap => {
-          if (docSnap.id === excludeId || count >= 4) return;
-          count++;
-          
-          const item = docSnap.data();
-          const card = document.createElement("a");
-          card.href = `listing-detail.html?id=${docSnap.id}`;
-          card.className = "similar-card";
-          
-          const img = (item.images && item.images[0]) || item.mainImage || (item.thumbnails && item.thumbnails[0]) || "";
-          const imgHTML = img 
-              ? `<div style="height:140px;background:var(--gray-light);overflow:hidden;border-bottom:1px solid var(--gray-light)"><img src="${img}" style="width:100%;height:100%;object-fit:cover" alt="Image for ${item.systemName || item.title || 'Untitled'}"></div>`
-              : `<div style="height:140px;background:var(--gray-light);display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--gray-medium)"><i class="fa-solid fa-lightbulb" aria-hidden="true"></i></div>`;
+    const q = query(collection(db, "listings"), where("category", "==", category), limit(5));
+    const snap = await getDocs(q);
+    
+    grid.innerHTML = "";
+    let count = 0;
+    
+    snap.forEach(docSnap => {
+      if (docSnap.id === excludeId || count >= 4) return;
+      count++;
+      
+      const item = docSnap.data();
+      const card = document.createElement("a");
+      card.href = `listing-detail.html?id=${docSnap.id}`;
+      card.className = "similar-card";
+      
+      // Get price from variants or fallback to askingPrice
+      let displayPrice = 0;
+      if (item.variants && Array.isArray(item.variants) && item.variants.length > 0) {
+        const prices = item.variants.map(v => v.price || 0).filter(p => p > 0);
+        displayPrice = prices.length > 0 ? Math.min(...prices) : 0;
+      } else {
+        displayPrice = item.askingPrice || 0;
+      }
+      
+      const img = (item.images && item.images[0]) || item.mainImage || (item.thumbnails && item.thumbnails[0]) || "";
+      const imgHTML = img 
+          ? `<div style="height:180px;background:var(--gray-light);overflow:hidden;border-bottom:1px solid var(--gray-light)"><img src="${img}" style="width:100%;height:100%;object-fit:cover" alt="Image for ${item.systemName || item.title || 'Untitled'}"></div>`
+          : `<div style="height:180px;background:var(--gray-light);display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--gray-medium);opacity:0.3">🖼️</div>`;
 
-          card.innerHTML = `${imgHTML}
-  <div style="padding:.8rem 1rem">
-    <div style="font-weight:700;font-size:1.1rem;color:var(--text);">
+      card.innerHTML = `${imgHTML}
+  <div style="padding:1.25rem">
+    <div style="font-weight:700;font-size:1rem;color:var(--text);margin-bottom:0.5rem;line-height:1.3;min-height:2.6rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
       ${item.systemName || item.title || 'Untitled'}
     </div>
-    <div style="color:var(--primary);font-weight:800;font-family:'Archivo',sans-serif;font-size:1.2rem;margin-top:.4rem">
-      ₱${toNumber(item.askingPrice).toLocaleString()}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.75rem;">
+      <div>
+        <div style="font-size:0.75rem;color:var(--gray-500);margin-bottom:0.25rem;">Starting at</div>
+        <div style="color:var(--primary);font-weight:900;font-family:'Archivo',sans-serif;font-size:1.5rem;line-height:1;">
+          ₱${toNumber(displayPrice).toLocaleString()}
+        </div>
+      </div>
+      <div style="background:var(--gray-50);padding:0.5rem 0.75rem;border-radius:6px;font-size:0.75rem;color:var(--gray-600);">
+        <svg style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>
+        ${toNumber(item.views || 0).toLocaleString()}
+      </div>
     </div>
   </div>`;
 
-          
-          card.addEventListener("click", (e) => {
-             sessionStorage.setItem("selectedListingId", docSnap.id);
-          });
-          grid.appendChild(card);
-        });
+      
+      card.addEventListener("click", (e) => {
+         sessionStorage.setItem("selectedListingId", docSnap.id);
+      });
+      grid.appendChild(card);
+    });
 
-        if (count === 0) {
-            grid.innerHTML = "<p style='color:var(--gray-medium)'>No other similar listings found in this category.</p>";
-        }
-      } catch (e) {
-        console.error("Error loading similar listings:", e);
-      }
+    if (count === 0) {
+        grid.innerHTML = "<p style='color:var(--gray-medium)'>No other similar listings found in this category.</p>";
     }
+  } catch (e) {
+    console.error("Error loading similar listings:", e);
+  }
+}
 
     
 
@@ -3263,83 +3307,6 @@ window.submitOffer = async function(event) {
 // ============================================
 // MESSAGE FUNCTIONS
 // ============================================
-
-window.openMessageSellerModal = function(listingId, listingName, sellerId, sellerEmail) {
-  window.closeImageZoom();
-  
-  if (!currentUser) {
-    if (confirm('Sign in to message the seller!\n\nClick OK to go to login page.')) {
-      window.location.href = 'login.html';
-    }
-    return;
-  }
-
-  document.getElementById('messageListingId').value = listingId;
-  document.getElementById('messageListingName').textContent = listingName;
-  document.getElementById('messageSellerId').value = sellerId;
-  document.getElementById('messageSellerEmail').value = sellerEmail;
-  document.getElementById('messageSubject').value = 'Inquiry about ' + listingName;
-  document.getElementById('messageText').value = '';
-  
-  // Open side panel with overlay
-  document.getElementById('messagePanelOverlay').classList.add('active');
-  document.getElementById('messageSellerPanel').classList.add('active');
-  document.body.style.overflow = 'hidden'; // Prevent background scrolling
-}
-
-window.closeMessageSellerModal = function() {
-  document.getElementById('messagePanelOverlay').classList.remove('active');
-  document.getElementById('messageSellerPanel').classList.remove('active');
-  document.body.style.overflow = ''; // Restore scrolling
-}
-
-// ============================================
-// SEND MESSAGE TO FIREBASE (CORRECTED)
-// ============================================
-
-window.sendMessage = async function(event) {
-  event.preventDefault();
-
-  const submitBtn = event.target.querySelector('button[type="submit"]');
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-
-  try {
-    // ✅ FIX: Use serverTimestamp() instead of ISO string
-    const messageData = {
-      listingId: document.getElementById('messageListingId').value,
-      listingName: document.getElementById('messageListingName').textContent,
-      sellerId: document.getElementById('messageSellerId').value,
-      sellerEmail: document.getElementById('messageSellerEmail').value,
-      buyerId: userData.id,
-      buyerEmail: userData.email,
-      buyerName: userData.name,
-      subject: document.getElementById('messageSubject').value,
-      message: document.getElementById('messageText').value,
-      isRead: false,
-      createdAt: serverTimestamp()  // ✅ CHANGED: Use Firebase serverTimestamp
-    };
-
-    console.log('📤 Sending message to Firebase:', messageData);
-
-    const docRef = await addDoc(collection(db, 'messages'), messageData);
-    
-    console.log('✅ Message created with ID:', docRef.id);
-    
-    showToast('✓ Message sent successfully!', 'success');
-    closeMessageSellerModal();
-    
-  } catch (error) {
-    console.error('❌ Error sending message:', error);
-    console.error('Error code:', error.code);
-    console.error('Error message:', error.message);
-    showToast('Failed to send message: ' + error.message, 'error');
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
-  }
-}
-
 
 
 
